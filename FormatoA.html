@@ -1,0 +1,368 @@
+<div id="formatoA_root">
+    <!-- Vista Listado -->
+    <div id="formatoA_list" class="view-section">
+        <header class="view-header">
+            <div class="view-title">
+                <h1>Formato A: Indicadores</h1>
+                <p>Captura y monitoreo de datos institucionales semestrales</p>
+            </div>
+            <button class="btn-primary" onclick="formatoA_openForm()">
+                <i class="fa-solid fa-plus"></i> Agregar Indicador
+            </button>
+        </header>
+
+        <!-- Tarjetas de Resumen -->
+        <div class="summary-cards" id="formatoA_summary">
+            <!-- Dinámico -->
+        </div>
+
+        <!-- Filtros y Tabla -->
+        <div class="data-container">
+            <div class="table-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Buscar indicador por nombre o código..." oninput="formatoA_filter(this.value)">
+                </div>
+                <div class="action-btns">
+                    <button class="btn-outline"><i class="fa-solid fa-filter"></i> Filtrar</button>
+                    <button class="btn-outline"><i class="fa-solid fa-download"></i> Exportar</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>INDICADOR</th>
+                            <th>META ANUAL</th>
+                            <th>RESULTADO SEMESTRE</th>
+                            <th>% AVANCE</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="formatoA_tbody">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista Formulario -->
+    <div id="formatoA_form" class="view-section" style="display: none;">
+        <header class="view-header">
+            <div class="view-title">
+              <nav class="breadcrumb">
+                <span onclick="formatoA_closeForm()">Formato A</span> / <strong>Agregar Indicador</strong>
+              </nav>
+              <h1>Formato A: Formulario de Indicador</h1>
+              <p>Registro de datos institucionales semestrales para ciclos de reporte.</p>
+            </div>
+        </header>
+
+        <form id="formatoA_mainForm" onsubmit="formatoA_save(event)">
+            <div class="form-grid">
+                <!-- Columna Izquierda: Datos -->
+                <div class="form-main">
+                    <div class="form-card">
+                        <div class="form-section-title"><i class="fa-solid fa-circle-info"></i> Información General</div>
+                        <div class="form-group">
+                            <label>Nombre del Indicador <span class="required">*</span></label>
+                            <input type="text" name="nombre" placeholder="Ej. Tasa de Graduación de Estudiantes de Pregrado" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Responsable <span class="required">*</span></label>
+                            <input type="text" name="responsable" placeholder="Nombre de la unidad o persona encargada" required>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-section-title"><i class="fa-solid fa-chart-simple"></i> Métricas de Desempeño</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meta Anual <span class="required">*</span></label>
+                                <input type="number" step="0.01" name="metaAnual" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resultado del Semestre <span class="required">*</span></label>
+                                <input type="number" step="0.01" name="resultadoSemestre" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-section-title"><i class="fa-solid fa-database"></i> Procedencia de Datos</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fuente del Dato <span class="required">*</span></label>
+                                <select name="fuente" required>
+                                    <option value="">Seleccione una fuente</option>
+                                    <option value="SGA">SGA Institucional</option>
+                                    <option value="ERP">Sistema Financiero ERP</option>
+                                    <option value="Manual">Carga Manual</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Detalles de la Fuente</label>
+                                <input type="text" name="fuenteDetalle" placeholder="Nombre de base de datos u oficina">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha / Final: Evidencias -->
+                <div class="form-evidence">
+                    <div class="form-card">
+                        <div class="form-section-title"><i class="fa-solid fa-link"></i> Evidencias</div>
+                        <div class="form-group">
+                            <label>Enlace (URL)</label>
+                            <div class="input-with-icon">
+                                <span>https://</span>
+                                <input type="url" name="evidenciaUrl" placeholder="almacenamiento-nube.com/documento-evidencia">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Subir Archivo</label>
+                            <div class="file-drop-zone" onclick="formatoA_triggerUpload()">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <p>Arrastre el archivo aquí o haga clic para subir</p>
+                                <span>PDF, JPG, PNG o XLSX (Máx 10MB)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="button" class="btn-text" onclick="formatoA_closeForm()">Cancelar</button>
+                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Borrador</button>
+            </div>
+        </form>
+
+        <div class="help-box">
+            <i class="fa-solid fa-question-circle"></i>
+            <p>¿Necesita ayuda? Consulte la <a href="#">Guía de Indicadores Institucionales</a> para más detalles sobre campos obligatorios y requisitos de evidencia.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* General Styles */
+    #formatoA_root { animation: fadeIn 0.3s ease; }
+    
+    .view-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .view-title h1 { font-size: 28px; font-weight: 900; margin: 0; color: #0f172a; }
+    .view-title p { color: #64748b; margin: 4px 0 0; }
+    
+    .btn-primary { background: #2563eb; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .btn-outline { background: white; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #0f172a; }
+    .btn-text { background: none; border: none; padding: 12px 20px; font-weight: 700; color: #64748b; cursor: pointer; }
+
+    /* Summary Cards */
+    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .summary-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+    .summary-card .label { font-size: 14px; color: #64748b; font-weight: 600; }
+    .summary-card .value-row { display: flex; align-items: baseline; gap: 10px; margin-top: 10px; }
+    .summary-card .value { font-size: 32px; font-weight: 900; color: #0f172a; }
+    .summary-card .trend { font-size: 13px; font-weight: 700; color: #10b981; padding: 2px 8px; border-radius: 999px; background: #ecfdf5; }
+    .summary-card .trend.down { color: #ef4444; background: #fef2f2; }
+
+    /* Table & Actions */
+    .data-container { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+    .table-actions { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; gap: 20px; }
+    .search-box { position: relative; flex: 1; }
+    .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .search-box input { width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px 12px 40px; outline: none; transition: border-color 0.2s; font-size: 14px; }
+    .search-box input:focus { border-color: #2563eb; }
+    .action-btns { display: flex; gap: 10px; }
+
+    .table-responsive { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .data-table th { padding: 16px 20px; font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+    .data-table td { padding: 18px 20px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+    .data-table tr:hover { background: #f8fafc; }
+
+    .indicator-header { display: flex; flex-direction: column; gap: 4px; }
+    .indicator-name { font-weight: 700; color: #0f172a; cursor: pointer; }
+    .indicator-meta { font-size: 12px; color: #94a3b8; }
+
+    .status-badge { padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .status-badge.aprobado { background: #ecfdf5; color: #10b981; }
+    .status-badge.enviado { background: #eff6ff; color: #2563eb; }
+    .status-badge.observado { background: #fff7ed; color: #f59e0b; }
+    .status-badge.borrador { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    .progress-cell { width: 160px; }
+    .mini-progress { height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 4px; }
+    .mini-progress-fill { height: 100%; background: #2563eb; border-radius: 999px; }
+
+    /* Form Styles */
+    .form-grid { display: flex; flex-direction: column; gap: 24px; }
+    .form-main { display: flex; flex-direction: column; gap: 20px; }
+    .form-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; }
+    .form-section-title { font-weight: 800; font-size: 16px; margin-bottom: 20px; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+    .form-section-title i { color: #2563eb; }
+    
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 8px; color: #334155; }
+    .required { color: #ef4444; }
+    
+    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus { border-color: #2563eb; }
+    
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    
+    .input-with-icon { display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; }
+    .input-with-icon span { padding: 0 12px; color: #64748b; font-size: 13px; font-weight: 600; }
+    .input-with-icon input { border: none; background: white; border-radius: 0 10px 10px 0; }
+    
+    .file-drop-zone { border: 2px dashed #cbd5e1; border-radius: 14px; padding: 40px; text-align: center; cursor: pointer; transition: background 0.2s; }
+    .file-drop-zone:hover { background: #f1f5f9; border-color: #2563eb; }
+    .file-drop-zone i { font-size: 24px; color: #2563eb; margin-bottom: 16px; }
+    .file-drop-zone p { font-weight: 700; font-size: 15px; margin: 0 0 4px; }
+    .file-drop-zone span { font-size: 12px; color: #64748b; }
+    
+    .form-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
+    
+    .help-box { margin-top: 30px; background: #eff6ff; padding: 16px 20px; border-radius: 12px; display: flex; gap: 12px; align-items: center; }
+    .help-box i { color: #2563eb; font-size: 20px; }
+    .help-box p { font-size: 13px; color: #1e3a8a; margin: 0; font-weight: 600; }
+    .help-box a { color: #2563eb; text-decoration: underline; }
+
+    .breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+    .breadcrumb strong { color: #0f172a; }
+    .breadcrumb span { cursor: pointer; transition: color 0.2s; }
+    .breadcrumb span:hover { color: #2563eb; }
+</style>
+
+<script>
+    (function init() {
+        formatoA_load();
+    })();
+
+    function formatoA_load() {
+        // Cargar Resumen
+        google.script.run
+            .withSuccessHandler(data => {
+                const row = document.getElementById('formatoA_summary');
+                row.innerHTML = `
+                    <div class="summary-card">
+                        <div class="label">Total de Indicadores</div>
+                        <div class="value-row">
+                            <span class="value">${data.totalIndicadores.valor}</span>
+                            <span class="trend">${data.totalIndicadores.tendencia}</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Avance Promedio</div>
+                        <div class="value-row">
+                            <span class="value">${data.avancePromedio.valor}</span>
+                            <span class="trend">${data.avancePromedio.tendencia}</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Revisiones Pendientes</div>
+                        <div class="value-row">
+                            <span class="value">${data.revisionesPendientes.valor}</span>
+                            <span class="trend down">${data.revisionesPendientes.tendencia}</span>
+                        </div>
+                    </div>
+                `;
+            })
+            .formatoA_getSummary();
+
+        // Cargar Tabla
+        google.script.run
+            .withSuccessHandler(items => {
+                renderTable(items);
+            })
+            .formatoA_getData();
+    }
+
+    function renderTable(items) {
+        const tbody = document.getElementById('formatoA_tbody');
+        tbody.innerHTML = items.map(it => `
+            <tr>
+                <td>
+                    <div class="indicator-header">
+                        <div class="indicator-name" onclick="formatoA_edit('${it.id}')">${it.nombre}</div>
+                        <div class="indicator-meta">${it.id} • ${it.categoria}</div>
+                    </div>
+                </td>
+                <td style="font-weight: 700;">${it.metaAnual.toLocaleString()}</td>
+                <td style="font-weight: 700;">${it.resultadoSemestre.toLocaleString()}</td>
+                <td>
+                    <div class="progress-cell">
+                        <div class="mini-progress">
+                            <div class="mini-progress-fill" style="width: ${it.avance}%"></div>
+                        </div>
+                        <div style="font-size: 12px; font-weight: 800;">${it.avance}%</div>
+                    </div>
+                </td>
+                <td><span class="status-badge ${it.estado.toLowerCase()}">${it.estado}</span></td>
+                <td>
+                    <button class="btn-icon-sm" onclick="formatoA_edit('${it.id}')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function formatoA_openForm() {
+        document.getElementById('formatoA_list').style.display = 'none';
+        document.getElementById('formatoA_form').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    function formatoA_closeForm() {
+        document.getElementById('formatoA_list').style.display = 'block';
+        document.getElementById('formatoA_form').style.display = 'none';
+        document.getElementById('formatoA_mainForm').reset();
+    }
+
+    function formatoA_save(e) {
+        e.preventDefault();
+        const f = e.target;
+        const data = {
+            nombre: f.nombre.value,
+            responsable: f.responsable.value,
+            metaAnual: f.metaAnual.value,
+            resultadoSemestre: f.resultadoSemestre.value,
+            fuente: f.fuente.value,
+            fuenteDetalle: f.fuenteDetalle.value,
+            evidenciaUrl: f.evidenciaUrl.value
+        };
+
+        Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+
+        google.script.run
+            .withSuccessHandler(res => {
+                Swal.fire({ icon: 'success', title: '¡Listo!', text: res.message, timer: 1500 });
+                formatoA_closeForm();
+                formatoA_load();
+            })
+            .withFailureHandler(err => {
+                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+            })
+            .formatoA_saveRecord(data);
+    }
+
+    function formatoA_filter(q) {
+        console.log('Filtrando por:', q);
+        // Implementar filtrado local en items cargados
+    }
+
+    function formatoA_edit(id) {
+        console.log('Editando:', id);
+        formatoA_openForm();
+        // Cargar datos del indicador en el formulario
+    }
+
+    function formatoA_triggerUpload() {
+        Swal.fire({
+            title: 'Subir Evidence',
+            text: 'Aquí se abrirá el cuadro de diálogo para seleccionar archivos.',
+            icon: 'info'
+        });
+    }
+</script>

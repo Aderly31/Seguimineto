@@ -1,0 +1,645 @@
+<div class="u-wrap">
+    <div class="u-head">
+        <div>
+            <h2 class="u-title">Usuarios</h2>
+            <div class="u-sub">Registrar, consultar, modificar y eliminar usuarios (solo admin)</div>
+        </div>
+
+        <div class="u-actions">
+            <div class="u-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="q" type="text" placeholder="Buscar por email, nombre, rol..." oninput="render()">
+            </div>
+
+            <button class="u-btn u-btn-primary" onclick="openCreate()">
+                <i class="fa-solid fa-user-plus"></i> Nuevo
+            </button>
+
+            <button class="u-btn" onclick="loadUsers()">
+                <i class="fa-solid fa-rotate"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+    <div class="u-card">
+        <div class="u-table-wrap">
+            <table class="u-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th class="u-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+
+        <div id="empty" class="u-empty" style="display:none;">
+            No hay usuarios para mostrar.
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="u-modal" id="modal" aria-hidden="true">
+        <div class="u-modal-backdrop" onclick="closeModal()"></div>
+
+        <div class="u-modal-card" role="dialog" aria-modal="true">
+            <div class="u-modal-top">
+                <div>
+                    <div class="u-modal-title" id="mTitle">Nuevo usuario</div>
+                    <div class="u-modal-sub">Completa los datos</div>
+                </div>
+                <button class="u-icon" onclick="closeModal()" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="u-form">
+                <div class="u-grid">
+                    <label class="u-field">
+                        <span>Email *</span>
+                        <input id="f_email" type="email" placeholder="usuario@uandina.edu.pe">
+                    </label>
+
+                    <label class="u-field">
+                        <span>Rol *</span>
+                        <select id="f_rol">
+                            <option value="">Cargando roles...</option>
+                        </select>
+                    </label>
+
+                    <label class="u-field">
+                        <span>Nombre</span>
+                        <input id="f_nombre" type="text" placeholder="Nombre">
+                    </label>
+
+                    <label class="u-field">
+                        <span>Apellido</span>
+                        <input id="f_apellido" type="text" placeholder="Apellido">
+                    </label>
+
+                    <label class="u-field">
+                        <span>Name (opcional)</span>
+                        <input id="f_name" type="text" placeholder="name">
+                    </label>
+
+                    <label class="u-field u-switch">
+                        <span>Activo</span>
+                        <div class="u-switch-row">
+                            <input id="f_activo" type="checkbox" checked>
+                            <span class="u-pill" id="pill">Activo</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="u-form-actions">
+                    <button class="u-btn" onclick="closeModal()">Cancelar</button>
+                    <button class="u-btn u-btn-primary" onclick="save()">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert2 fallback si por alguna razón no está en Main -->
+<script>
+    (function () {
+        if (!window.Swal) {
+            const s = document.createElement('script');
+            s.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+            document.head.appendChild(s);
+        }
+    })();
+</script>
+
+<style>
+    .u-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .u-head {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .u-title {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 900;
+        color: #00417B;
+    }
+
+    .u-sub {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .u-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .u-search {
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #e6e6e6;
+        background: #fff;
+        border-radius: 14px;
+        padding: 10px 12px;
+    }
+
+    .u-search i {
+        color: #64748b;
+    }
+
+    .u-search input {
+        border: 0;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .u-btn {
+        border: 1px solid #e6e6e6;
+        background: #fff;
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .u-btn-primary {
+        background: #00417B;
+        border-color: #00417B;
+        color: #fff;
+    }
+
+    .u-card {
+        border: 1px solid #e6e6e6;
+        border-radius: 16px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .u-table-wrap {
+        width: 100%;
+        overflow: auto;
+    }
+
+    .u-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+    }
+
+    .u-table thead th {
+        text-align: left;
+        background: #f8fafc;
+        padding: 12px;
+        font-size: 12px;
+        color: #334155;
+        border-bottom: 1px solid #e6e6e6;
+        white-space: nowrap;
+    }
+
+    .u-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eef2f7;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .u-right {
+        text-align: right;
+    }
+
+    .u-empty {
+        padding: 14px;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .u-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 800;
+        font-size: 12px;
+        border: 1px solid #e6e6e6;
+        background: #fff;
+    }
+
+    .u-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        display: inline-block;
+    }
+
+    .u-dot.on {
+        background: #00CEFE;
+    }
+
+    .u-dot.off {
+        background: #FF6139;
+    }
+
+    .u-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .u-mini {
+        border: 1px solid #e6e6e6;
+        background: #fff;
+        border-radius: 12px;
+        padding: 8px 10px;
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .u-mini.danger {
+        border-color: #ffd1d1;
+    }
+
+    /* Modal */
+    .u-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 999;
+    }
+
+    .u-modal.show {
+        display: block;
+    }
+
+    .u-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, .45);
+    }
+
+    .u-modal-card {
+        position: relative;
+        width: min(760px, calc(100% - 24px));
+        margin: 18px auto;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid #e6e6e6;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, .25);
+        overflow: hidden;
+    }
+
+    .u-modal-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 14px 12px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e6e6e6;
+    }
+
+    .u-modal-title {
+        font-weight: 900;
+        color: #00417B;
+        font-size: 16px;
+    }
+
+    .u-modal-sub {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .u-icon {
+        border: 1px solid #e6e6e6;
+        background: #fff;
+        border-radius: 12px;
+        padding: 8px 10px;
+        cursor: pointer;
+    }
+
+    .u-form {
+        padding: 14px;
+    }
+
+    .u-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .u-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .u-field span {
+        font-size: 12px;
+        color: #334155;
+        font-weight: 800;
+    }
+
+    .u-field input,
+    .u-field select {
+        border: 1px solid #e6e6e6;
+        border-radius: 14px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        background: #fff;
+    }
+
+    .u-switch .u-switch-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .u-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #e6e6e6;
+        font-weight: 900;
+        font-size: 12px;
+        color: #00417B;
+        background: #fff;
+    }
+
+    .u-form-actions {
+        margin-top: 14px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    @media (min-width: 900px) {
+        .u-head {
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .u-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+
+<script>
+    let USERS = [];
+    let ROLES = [];
+    let EDITING_EMAIL = null;
+
+    function swalLoading(title) {
+        Swal.fire({
+            title: title || 'Procesando...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+    }
+
+    function safeText(v) { return (v === null || v === undefined) ? '' : String(v); }
+
+    function badgeActivo(activo) {
+        const on = !!activo;
+        return `
+      <span class="u-badge">
+        <span class="u-dot ${on ? 'on' : 'off'}"></span>
+        ${on ? 'Activo' : 'Inactivo'}
+      </span>
+    `;
+    }
+
+    function loadRoles(selected) {
+        google.script.run
+            .withSuccessHandler(list => {
+                ROLES = Array.isArray(list) ? list : [];
+                const sel = document.getElementById('f_rol');
+                sel.innerHTML = '<option value="">Seleccione rol</option>';
+
+                ROLES.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r;
+                    opt.textContent = r;
+                    sel.appendChild(opt);
+                });
+
+                if (selected) sel.value = selected;
+            })
+            .withFailureHandler(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error cargando roles',
+                    text: err?.message || String(err)
+                });
+            })
+            .usuarios_roles_listar();
+    }
+
+    function readForm() {
+        return {
+            email: document.getElementById('f_email').value.trim(),
+            rol: document.getElementById('f_rol').value,
+            nombre: document.getElementById('f_nombre').value.trim(),
+            apellido: document.getElementById('f_apellido').value.trim(),
+            name: document.getElementById('f_name').value.trim(),
+            estado: document.getElementById('f_activo').checked
+        };
+    }
+
+    function fillForm(u) {
+        document.getElementById('f_email').value = safeText(u?.email);
+        document.getElementById('f_nombre').value = safeText(u?.nombre || u?.name);
+        document.getElementById('f_apellido').value = safeText(u?.apellido);
+        document.getElementById('f_name').value = safeText(u?.name);
+
+        const activo = !!u?.activo;
+        document.getElementById('f_activo').checked = activo;
+        document.getElementById('pill').textContent = activo ? 'Activo' : 'Inactivo';
+
+        document.getElementById('f_email').disabled = !!EDITING_EMAIL;
+    }
+
+    function openModal(title) {
+        document.getElementById('mTitle').textContent = title || 'Usuario';
+        document.getElementById('modal').classList.add('show');
+        document.getElementById('modal').setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('show');
+        document.getElementById('modal').setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'f_activo') {
+            document.getElementById('pill').textContent = e.target.checked ? 'Activo' : 'Inactivo';
+        }
+    });
+
+    function loadUsers() {
+        swalLoading('Cargando usuarios...');
+        google.script.run
+            .withSuccessHandler(list => {
+                USERS = Array.isArray(list) ? list : [];
+                Swal.close();
+                render();
+            })
+            .withFailureHandler(err => {
+                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+            })
+            .usuarios_listar();
+    }
+
+    function render() {
+        const q = (document.getElementById('q').value || '').toLowerCase().trim();
+        const filtered = USERS.filter(u => {
+            const s = [u.email, u.nombre, u.apellido, u.name, u.rol]
+                .map(x => (x || '').toString().toLowerCase()).join(' ');
+            return !q || s.includes(q);
+        });
+
+        document.getElementById('empty').style.display = filtered.length ? 'none' : 'block';
+
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML = '';
+
+        filtered.forEach(u => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+        <td><strong>${safeText(u.email)}</strong></td>
+        <td>${safeText(u.nombre || u.name)}</td>
+        <td>${safeText(u.apellido)}</td>
+        <td><span class="u-badge">${safeText(u.rol)}</span></td>
+        <td>${badgeActivo(u.activo)}</td>
+        <td class="u-right">
+          <div class="u-row-actions">
+            <button class="u-mini" onclick="openEdit('${encodeURIComponent(u.email)}')">
+              <i class="fa-solid fa-pen"></i> Editar
+            </button>
+            <button class="u-mini danger" onclick="delUser('${encodeURIComponent(u.email)}')">
+              <i class="fa-solid fa-trash"></i> Eliminar
+            </button>
+          </div>
+        </td>
+      `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openCreate() {
+        EDITING_EMAIL = null;
+        fillForm({ email: '', rol: '', nombre: '', apellido: '', name: '', activo: true });
+        loadRoles('');
+        openModal('Nuevo usuario');
+    }
+
+    function openEdit(emailEnc) {
+        const email = decodeURIComponent(emailEnc);
+        swalLoading('Cargando usuario...');
+        google.script.run
+            .withSuccessHandler(u => {
+                Swal.close();
+                if (!u) {
+                    Swal.fire({ icon: 'warning', title: 'No encontrado', text: 'El usuario no existe.' });
+                    return;
+                }
+                EDITING_EMAIL = u.email;
+                fillForm(u);
+                loadRoles(u.rol);
+                openModal('Editar usuario');
+            })
+            .withFailureHandler(err => {
+                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+            })
+            .usuarios_get(email);
+    }
+
+    function save() {
+        const payload = readForm();
+
+        if (!payload.email) {
+            Swal.fire({ icon: 'warning', title: 'Falta email', text: 'El email es obligatorio.' });
+            return;
+        }
+        if (!payload.rol) {
+            Swal.fire({ icon: 'warning', title: 'Falta rol', text: 'El rol es obligatorio.' });
+            return;
+        }
+
+        swalLoading('Guardando...');
+        google.script.run
+            .withSuccessHandler(res => {
+                Swal.close();
+                closeModal();
+                const action = res?.action === 'created' ? 'creado' : 'actualizado';
+                Swal.fire({ icon: 'success', title: `Usuario ${action}`, timer: 900, showConfirmButton: false });
+                loadUsers();
+            })
+            .withFailureHandler(err => {
+                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+            })
+            .usuarios_save(payload);
+    }
+
+    function delUser(emailEnc) {
+        const email = decodeURIComponent(emailEnc);
+
+        Swal.fire({
+            title: '¿Eliminar usuario?',
+            text: email,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(r => {
+            if (!r.isConfirmed) return;
+
+            swalLoading('Eliminando...');
+            google.script.run
+                .withSuccessHandler(() => {
+                    Swal.close();
+                    Swal.fire({ icon: 'success', title: 'Eliminado', timer: 900, showConfirmButton: false });
+                    loadUsers();
+                })
+                .withFailureHandler(err => {
+                    Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+                })
+                .usuarios_delete(email);
+        });
+    }
+
+    // Init
+    loadUsers();
+</script>

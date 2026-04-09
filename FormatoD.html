@@ -1,0 +1,227 @@
+<div id="formatoD_root">
+    <header class="view-header">
+        <div class="view-title">
+            <h1>Formato D: Capacitaciones</h1>
+            <p><i class="fa-solid fa-calendar-days"></i> Periodo de Reporte: Ene - Jun 2024</p>
+        </div>
+        <button class="btn-primary" onclick="formatoD_add()">
+            <i class="fa-solid fa-plus"></i> Registrar Capacitación
+        </button>
+    </header>
+
+    <!-- Tabs Vista -->
+    <div class="view-tabs">
+        <button class="tab-link active" onclick="formatoD_switchTab('grid', this)"><i class="fa-solid fa-table-cells-large"></i> Vista Tarjetas</button>
+        <button class="tab-link" onclick="formatoD_switchTab('calendar', this)"><i class="fa-solid fa-calendar"></i> Calendario</button>
+    </div>
+
+    <!-- Barra de Filtros -->
+    <div class="filters-container">
+        <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Buscar por Nombre de Capacitación o facilitador..." oninput="formatoD_filter(this.value)">
+        </div>
+        <div class="select-wrap">
+            <select name="modalidad">
+                <option value="">Todas las Modalidades</option>
+                <option value="Virtual">Virtual</option>
+                <option value="Presencial">Presencial</option>
+            </select>
+        </div>
+        <div class="select-wrap">
+            <select name="estado">
+                <option value="">Estado</option>
+                <option value="ENVIADO">Enviado</option>
+                <option value="BORRADOR">Borrador</option>
+            </select>
+        </div>
+        <button class="btn-filter-tag danger">
+            <i class="fa-solid fa-triangle-exclamation"></i> Evidencia Pendiente <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Grilla de Tarjetas -->
+    <div class="trainings-grid" id="formatoD_grid">
+        <!-- Dinámico -->
+    </div>
+
+    <!-- Barra de cumplimiento footer -->
+    <footer class="compliance-footer">
+        <div class="compliance-info">
+            <div class="label">CUMPLIMIENTO GENERAL</div>
+            <div class="meta">Meta de reporte institucional: 100%</div>
+        </div>
+        <div class="compliance-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="formatoD_totalProgress" style="width: 0%"></div>
+            </div>
+            <div class="percentage" id="formatoD_percentText">0%</div>
+        </div>
+        <div class="footer-actions">
+            <a href="#">Exportar Reporte PDF</a>
+            <a href="#">Manual de Usuario</a>
+        </div>
+    </footer>
+</div>
+
+<style>
+    #formatoD_root { animation: fadeIn 0.4s ease-out; }
+
+    .view-tabs { display: flex; gap: 4px; border-bottom: 2px solid #f1f5f9; margin-bottom: 24px; padding-bottom: 0; }
+    .tab-link { 
+        background: none; border: none; padding: 12px 20px; font-weight: 800; font-size: 14px; color: #64748b; 
+        cursor: pointer; position: relative; display: flex; align-items: center; gap: 8px; 
+    }
+    .tab-link.active { color: #2563eb; }
+    .tab-link.active::after { content: ""; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background: #2563eb; border-radius: 999px; }
+
+    .filters-container { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+    
+    .search-wrap { position: relative; flex: 1; min-width: 300px; }
+    .search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .search-wrap input { width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px 12px 40px; outline: none; font-size: 14px; }
+
+    .select-wrap select { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; outline: none; font-weight: 700; color: #475569; font-size: 13px; }
+
+    .btn-filter-tag { 
+        display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; border: 1px solid #fee2e2; 
+        background: #fef2f2; color: #ef4444; font-weight: 800; font-size: 13px; cursor: pointer;
+    }
+
+    .trainings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; margin-bottom: 120px; }
+    
+    .training-card { 
+        background: white; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px; position: relative;
+        display: flex; flex-direction: column; gap: 20px; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .training-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .status-tag-sm { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 950; background: #ecfdf5; color: #10b981; }
+    .status-tag-sm.borrador { background: #fff7ed; color: #f59e0b; }
+
+    .card-title-wrap h3 { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0 0 6px; line-height: 1.4; }
+    .card-date { font-size: 13px; color: #64748b; font-weight: 600; }
+
+    .card-pills { display: flex; gap: 8px; }
+    .pill { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; display: flex; align-items: center; gap: 6px; }
+    .pill.blue { background: #eff6ff; color: #2563eb; }
+    .pill.gray { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+
+    .evidence-status { border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: auto; }
+    .evidence-msg { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; }
+    .evidence-msg.ok { color: #10b981; }
+    .evidence-msg.pending { color: #ef4444; margin-bottom: 12px; }
+
+    .btn-secondary-sm { 
+        width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #fee2e2; 
+        background: #fef2f2; color: #ef4444; font-weight: 900; font-size: 12px; cursor: pointer;
+    }
+
+    .card-actions { font-size: 13px; font-weight: 800; color: #2563eb; text-align: right; margin-top: 12px; cursor: pointer; }
+
+    /* Footer Fixed */
+    .compliance-footer { 
+        position: fixed; bottom: 0; left: 300px; right: 0; background: white; 
+        border-top: 1px solid #e2e8f0; padding: 20px 40px; display: flex; align-items: center; gap: 40px; 
+        z-index: 100; box-shadow: 0 -10px 15px -3px rgb(0 0 0 / 0.05);
+    }
+    .app.sidebar-collapsed .compliance-footer { left: 88px; }
+    
+    .compliance-info { flex-shrink: 0; }
+    .compliance-info .label { font-size: 14px; font-weight: 950; color: #0f172a; margin-bottom: 4px; }
+    .compliance-info .meta { font-size: 11px; color: #64748b; font-weight: 700; }
+
+    .compliance-progress { flex: 1; display: flex; align-items: center; gap: 16px; }
+    .compliance-progress .progress-bar { flex: 1; height: 10px; background: #f1f5f9; border-radius: 9999px; overflow: hidden; }
+    .compliance-progress .progress-fill { height: 100%; background: #2563eb; border-radius: 9999px; transition: width 0.8s ease; }
+    .compliance-progress .percentage { font-size: 20px; font-weight: 950; color: #2563eb; }
+
+    .footer-actions { display: flex; gap: 20px; font-size: 12px; font-weight: 800; }
+    .footer-actions a { color: #475569; text-decoration: none; }
+    .footer-actions a:hover { color: #2563eb; }
+
+    @media (max-width: 900px) {
+        .compliance-footer { left: 0; padding: 16px; gap: 20px; flex-direction: column; text-align: center; }
+        .compliance-progress { width: 100%; }
+        .footer-actions { width: 100%; justify-content: center; }
+    }
+</style>
+
+<script>
+    (function init() {
+        formatoD_load();
+    })();
+
+    function formatoD_load() {
+        google.script.run
+            .withSuccessHandler(data => {
+                renderTrainings(data);
+            })
+            .formatoD_getTrainings();
+
+        google.script.run
+            .withSuccessHandler(summary => {
+                const fill = document.getElementById('formatoD_totalProgress');
+                const text = document.getElementById('formatoD_percentText');
+                fill.style.width = summary.cumplimientoGeneral + '%';
+                text.textContent = summary.cumplimientoGeneral + '%';
+            })
+            .formatoD_getSummary();
+    }
+
+    function renderTrainings(items) {
+        const grid = document.getElementById('formatoD_grid');
+        grid.innerHTML = items.map(it => `
+            <div class="training-card">
+                <div class="card-header">
+                    <span class="status-tag-sm ${it.estado.toLowerCase()}">${it.estado}</span>
+                    <button class="btn-icon-sm"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+                <div class="card-title-wrap">
+                    <h3>Nombre de Capacitación: ${it.nombre}</h3>
+                    <div class="card-date"><i class="fa-regular fa-calendar"></i> Fecha: ${it.fecha}</div>
+                </div>
+                <div class="card-pills">
+                    <span class="pill blue"><i class="fa-solid fa-desktop"></i> Modalidad: ${it.modalidad}</span>
+                    <span class="pill gray"><i class="fa-solid fa-user-group"></i> Nº Participantes: ${it.participantes}</span>
+                </div>
+                <div class="evidence-status">
+                    ${it.evidenciaCompleta ? `
+                        <div class="evidence-msg ok"><i class="fa-solid fa-circle-check"></i> Evidencia Completa</div>
+                    ` : `
+                        <div class="evidence-msg pending"><i class="fa-solid fa-circle-exclamation"></i> Evidencia Obligatoria <strong>REQUERIDO</strong></div>
+                        <div class="progress-bar-sm" style="height: 6px; background: #fee2e2; border-radius: 10px; margin-bottom: 12px;">
+                            <div style="height: 100%; width: ${it.progresoEvidencia}%; background: #ef4444; border-radius: 10px;"></div>
+                        </div>
+                        <button class="btn-secondary-sm" onclick="formatoD_uploadEvidence('${it.id}')">Subir Lista de Asistencia</button>
+                    `}
+                </div>
+                <div class="card-actions" onclick="formatoD_details('${it.id}')">Ver Detalles</div>
+            </div>
+        `).join('');
+    }
+
+    function formatoD_switchTab(tab, btn) {
+        const btns = document.querySelectorAll('.tab-link');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        Swal.fire({ icon: 'info', title: 'Cambio de Vista', text: 'Cargando vista de ' + tab, timer: 800, showConfirmButton: false });
+    }
+
+    function formatoD_add() {
+        Swal.fire('Registrar Capacitación', 'Abriendo formulario de registro...', 'info');
+    }
+
+    function formatoD_uploadEvidence(id) {
+        Swal.fire('Subir Evidencia', 'ID: ' + id + ' - Seleccione el archivo de asistencia.', 'info');
+    }
+
+    function formatoD_details(id) {
+        Swal.fire('Detalles', 'Cargando información completa de la capacitación ' + id, 'info');
+    }
+
+    function formatoD_filter(q) {
+        console.log('Buscando:', q);
+    }
+</script>

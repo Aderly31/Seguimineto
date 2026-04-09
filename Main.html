@@ -1,0 +1,949 @@
+<!-- 5=========================
+     Main.html (COMPLETO)
+     ✅ FIX: Sidebar fijo al hacer scroll (desktop)
+     ✅ Scroll solo en el contenido, no en el body
+========================= -->
+<!doctype html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --c-primary: #00417B;
+            --c-cyan: #00CEFE;
+            --c-pink: #EE2A6E;
+            --c-yellow: #FFDF43;
+            --c-orange: #FF6139;
+            --c-purple: #A255FF;
+
+            --line: #e6e6e6;
+            --muted: #64748b;
+
+            --sidebar-w: 300px;
+            --sidebar-collapsed-w: 88px;
+
+            --sb-bg: #073a63;
+            --sb-txt: #ffffff;
+            --sb-txt-2: rgba(255, 255, 255, .78);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, Arial;
+            background: #fff;
+            color: #0f172a;
+            overflow: hidden;
+            /* ✅ el body ya NO hace scroll */
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            display: none;
+            z-index: 60;
+            backdrop-filter: blur(2px);
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* ✅ APP ocupa toda la ventana */
+        .app {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            /* ✅ evita scroll global */
+        }
+
+        /* ===== SIDEBAR (FIJO / STICKY EN DESKTOP) ===== */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sb-bg);
+            color: var(--sb-txt);
+            display: flex;
+            flex-direction: column;
+            padding: 18px 16px 14px;
+            transition: width .22s ease, padding .22s ease, transform .22s ease;
+
+            position: sticky;
+            /* ✅ se mantiene fijo al scroll */
+            top: 0;
+            height: 100vh;
+            /* ✅ ocupa toda la altura */
+            flex: 0 0 auto;
+            overflow: hidden;
+        }
+
+        .app.sidebar-collapsed .sidebar {
+            width: var(--sidebar-collapsed-w);
+            padding: 18px 10px 14px;
+        }
+
+        /* ===== BRAND PLANO ===== */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 6px 12px;
+            background: transparent;
+            border: 0;
+        }
+
+        .brand img {
+            height: 44px;
+            width: 44px;
+            object-fit: contain;
+            display: block;
+            background: transparent;
+            border-radius: 12px;
+        }
+
+        .brand-text {
+            min-width: 0;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 950;
+            letter-spacing: .6px;
+            line-height: 1.1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .brand-sub {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--sb-txt-2);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .app.sidebar-collapsed .brand {
+            justify-content: center;
+            padding: 6px 0 12px;
+        }
+
+        .app.sidebar-collapsed .brand .brand-text {
+            display: none;
+        }
+
+        /* ✅ línea debajo del brand */
+        .brand-sep {
+            height: 1px;
+            width: 100%;
+            margin: 2px 0 10px;
+            background: rgba(255, 255, 255, .14);
+        }
+
+        /* ===== ACCENTS HORIZONTALES ===== */
+        .accents {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 2px 12px;
+        }
+
+        .accent-line {
+            flex: 1;
+            height: 6px;
+            border-radius: 999px;
+            opacity: .95;
+        }
+
+        .accent-line.c1 {
+            background: var(--c-cyan);
+        }
+
+        .accent-line.c2 {
+            background: var(--c-pink);
+        }
+
+        .accent-line.c3 {
+            background: var(--c-yellow);
+        }
+
+        .accent-line.c4 {
+            background: var(--c-orange);
+        }
+
+        .accent-line.c5 {
+            background: var(--c-purple);
+        }
+
+        .app.sidebar-collapsed .accents {
+            padding: 0 6px 12px;
+            gap: 8px;
+        }
+
+        .app.sidebar-collapsed .accent-line {
+            height: 5px;
+        }
+
+        /* ===== BUSCADOR ===== */
+        .sb-search {
+            margin: 2px 6px 10px;
+            padding: 12px 14px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, .08);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+        }
+
+        .sb-search i {
+            opacity: .92;
+        }
+
+        .sb-search input {
+            width: 100%;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: .2px;
+            font-size: 14px;
+        }
+
+        .sb-search input::placeholder {
+            color: rgba(255, 255, 255, .72);
+        }
+
+        .app.sidebar-collapsed .sb-search {
+            justify-content: center;
+            padding: 12px;
+            margin: 2px 6px 10px;
+        }
+
+        .app.sidebar-collapsed .sb-search input {
+            display: none;
+        }
+
+        /* ===== MENU (solo el menú tiene scroll) ===== */
+        .menu {
+            flex: 1 1 auto;
+            overflow: auto;
+            /* ✅ el scroll del lado izquierdo queda aquí */
+            padding: 10px 6px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .menu::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .menu-link,
+        .menu-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 14px;
+            border: 0;
+            cursor: pointer;
+            text-decoration: none;
+            background: transparent;
+            color: #fff;
+            border-radius: 18px;
+            font: inherit;
+            font-weight: 950;
+            letter-spacing: .2px;
+            transition: background .16s ease, transform .12s ease;
+        }
+
+        .menu-link:hover,
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .menu-link:active,
+        .menu-btn:active {
+            transform: translateY(1px);
+        }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .menu-left i {
+            width: 28px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .menu-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .menu-link.active {
+            background: #fff;
+            color: var(--c-primary);
+        }
+
+        .menu-link.active i {
+            color: var(--c-primary);
+        }
+
+        .chev {
+            opacity: .88;
+            transition: transform .18s ease;
+        }
+
+        .menu-item.open .chev {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            display: none;
+            margin: 4px 8px 10px;
+            padding: 8px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .06);
+        }
+
+        .menu-item.open .submenu {
+            display: block;
+        }
+
+        .submenu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 12px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 900;
+            background: transparent;
+            transition: background .16s ease;
+        }
+
+        .submenu a:hover {
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .submenu a.active {
+            background: #fff;
+            color: var(--c-primary);
+        }
+
+        .app.sidebar-collapsed .menu-link,
+        .app.sidebar-collapsed .menu-btn {
+            justify-content: center;
+            padding: 14px 10px;
+        }
+
+        .app.sidebar-collapsed .menu-text {
+            display: none;
+        }
+
+        .app.sidebar-collapsed .chev {
+            display: none;
+        }
+
+        .app.sidebar-collapsed .submenu {
+            display: none !important;
+        }
+
+        .sidebar-footer {
+            flex: 0 0 auto;
+            padding: 12px 10px 6px;
+            color: rgba(255, 255, 255, .86);
+            font-size: 12px;
+            line-height: 1.35;
+            border-top: 1px solid rgba(255, 255, 255, .10);
+        }
+
+        .app.sidebar-collapsed .sidebar-footer {
+            display: none;
+        }
+
+        /* ===== MAIN: fija topbar, scroll solo contenido ===== */
+        .main {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            width: 100%;
+            background: #fff;
+            height: 100vh;
+            overflow: hidden;
+            /* ✅ no scroll aquí */
+        }
+
+        .topbar {
+            flex: 0 0 auto;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .btn-icon {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 14px;
+            padding: 10px 12px;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 950;
+            color: var(--c-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .btn {
+            border: 1px solid var(--line);
+            background: #fff;
+            padding: 10px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 950;
+            white-space: nowrap;
+        }
+
+        /* ✅ AQUÍ ocurre el scroll del contenido */
+        .content-scroll {
+            flex: 1 1 auto;
+            overflow: auto;
+        }
+
+        .content {
+            padding: 18px;
+            width: 100%;
+            max-width: none;
+        }
+
+        .app:not(.sidebar-collapsed) .content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app.sidebar-collapsed .content {
+            max-width: none;
+            margin: 0;
+        }
+
+        /* ===== MOBILE: sidebar drawer ===== */
+        @media (max-width: 900px) {
+            body {
+                overflow: auto;
+            }
+
+            /* en móvil puedes permitir normal */
+            .app {
+                height: 100dvh;
+            }
+
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                height: 100%;
+                transform: translateX(-100%);
+                z-index: 80;
+                width: var(--sidebar-w);
+                top: 0;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .app.sidebar-collapsed .sidebar {
+                width: var(--sidebar-w);
+                padding: 18px 16px 14px;
+            }
+
+            .content {
+                max-width: none !important;
+                margin: 0 !important;
+            }
+        }
+
+        /* ===== POPOVER ===== */
+        .sb-popover {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+            display: none;
+            width: 280px;
+            padding: 10px;
+            border-radius: 18px;
+            background: rgba(7, 58, 99, .92);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, .35);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            transform-origin: left top;
+            animation: popIn .12s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateX(-6px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .sb-popover .pop-title {
+            font-weight: 950;
+            letter-spacing: .2px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .06);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sb-popover .pop-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sb-popover a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 12px;
+            border-radius: 14px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 900;
+            background: transparent;
+            transition: background .16s ease;
+        }
+
+        .sb-popover a:hover {
+            background: rgba(255, 255, 255, .10);
+        }
+
+        .sb-popover a.active {
+            background: #fff;
+            color: var(--c-primary);
+        }
+
+        .sb-popover a i {
+            width: 22px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay" id="overlay" onclick="hideSidebarMobile()"></div>
+
+    <div class="app" id="appRoot">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img src="<?= logoUrl ?>" alt="Logo">
+                <div class="brand-text">
+                    <div class="brand-title">
+                        <?= appName ?>
+                    </div>
+                    <div class="brand-sub">Panel principal</div>
+                </div>
+            </div>
+
+            <div class="brand-sep" aria-hidden="true"></div>
+
+            <div class="accents" aria-hidden="true">
+                <div class="accent-line c1"></div>
+                <div class="accent-line c2"></div>
+                <div class="accent-line c3"></div>
+                <div class="accent-line c4"></div>
+                <div class="accent-line c5"></div>
+            </div>
+
+            <div class="sb-search" title="Buscar en el menú">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="menuSearch" placeholder="Buscar..." oninput="filterMenu()">
+            </div>
+
+            <nav class="menu" id="menu">
+                <? for (var i = 0; i < menuTree.length; i++) {
+          var node = menuTree[i];
+          var isParent = node.children && node.children.length > 0;
+          var isActive = (String(currentPage).toLowerCase() === String(node.urlKey).toLowerCase());
+        ?>
+
+                <? if (isParent) { ?>
+                <div class="menu-item" data-parent="<?= node.urlKey ?>" data-title="<?= node.title ?>">
+                    <button class="menu-btn" type="button" data-kind="parent" data-key="<?= node.urlKey ?>"
+                        data-title="<?= node.title ?>" onmouseenter="onMenuHoverEnter(event)"
+                        onmouseleave="onMenuHoverLeave(event)" onclick="toggleAccordion('<?= node.urlKey ?>')"
+                        aria-label="<?= node.title ?>" title="<?= node.title ?>">
+                        <div class="menu-left">
+                            <i class="fa-solid fa-folder"></i>
+                            <span class="menu-text">
+                                <?= node.title ?>
+                            </span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+
+                    <div class="submenu">
+                        <? for (var j = 0; j < node.children.length; j++) {
+                  var ch = node.children[j];
+                  var isChildActive = (String(currentPage).toLowerCase() === String(ch.urlKey).toLowerCase());
+                ?>
+                        <a class="<?= isChildActive ? 'active' : '' ?>" href="<?= appUrl ?>?page=<?= ch.urlKey ?>"
+                            target="_top" onclick="hideSidebarMobile()" title="<?= ch.title ?>">
+                            <i class="fa-regular fa-file-lines"></i>
+                            <span class="menu-text">
+                                <?= ch.title ?>
+                            </span>
+                        </a>
+                        <? } ?>
+                    </div>
+                </div>
+                <? } else { ?>
+                <a class="menu-link <?= isActive ? 'active' : '' ?>" href="<?= appUrl ?>?page=<?= node.urlKey ?>"
+                    target="_top" onclick="hideSidebarMobile()" data-kind="leaf" data-title="<?= node.title ?>"
+                    data-key="<?= node.urlKey ?>" onmouseenter="onMenuHoverEnter(event)"
+                    onmouseleave="onMenuHoverLeave(event)" title="<?= node.title ?>">
+                    <div class="menu-left">
+                        <i class="fa-solid <?= node.urlKey === 'home' ? 'fa-house' : 'fa-users' ?>"></i>
+                        <span class="menu-text">
+                            <?= node.title ?>
+                        </span>
+                    </div>
+                </a>
+                <? } ?>
+
+                <? } ?>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div>Usuario</div>
+                <strong>
+                    <?= session.name ?>
+                </strong>
+                <div style="opacity:.9;">
+                    <?= session.email ?>
+                </div>
+                <div style="opacity:.9;">Rol:
+                    <?= session.rol ?>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <button class="btn-icon" type="button" onclick="toggleSidebar()" aria-label="Menú">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="page-title">
+                    <?=
+            (routes[String(currentPage).toLowerCase()] && routes[String(currentPage).toLowerCase()].title)
+              ? routes[String(currentPage).toLowerCase()].title
+              : 'Página'
+          ?>
+                </div>
+
+                <button class="btn" onclick="logoutSystem()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir
+                </button>
+            </div>
+
+            <!-- ✅ Scroll solo aquí -->
+            <div class="content-scroll" id="contentScroll">
+                <div class="content">
+                    <?!= include_(view); ?>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="sb-popover" id="sbPopover" onmouseenter="popoverEnter()" onmouseleave="popoverLeave()">
+        <div class="pop-title" id="popTitle"></div>
+        <div class="pop-list" id="popList"></div>
+    </div>
+
+    <script>
+        function isMobile() { return window.matchMedia && window.matchMedia('(max-width: 900px)').matches; }
+
+        function hideSidebarMobile() {
+            if (!isMobile()) return;
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.remove('open');
+            ov.classList.remove('show');
+        }
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            const app = document.getElementById('appRoot');
+
+            if (isMobile()) {
+                const open = sb.classList.contains('open');
+                sb.classList.toggle('open', !open);
+                ov.classList.toggle('show', !open);
+            } else {
+                const collapsed = app.classList.contains('sidebar-collapsed');
+                app.classList.toggle('sidebar-collapsed', !collapsed);
+                closePopover(true);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            const app = document.getElementById('appRoot');
+
+            if (!isMobile()) {
+                ov.classList.remove('show');
+                sb.classList.remove('open');
+            } else {
+                app.classList.remove('sidebar-collapsed');
+                closePopover(true);
+            }
+        });
+
+        function toggleAccordion(parentKey) {
+            const app = document.getElementById('appRoot');
+            if (app.classList.contains('sidebar-collapsed')) return;
+
+            const el = document.querySelector('.menu-item[data-parent="' + parentKey + '"]');
+            if (!el) return;
+
+            el.classList.toggle('open');
+            const open = el.classList.contains('open');
+            localStorage.setItem('utd_uac_acc_' + parentKey, open ? '1' : '0');
+        }
+
+        (function restoreAccordions() {
+            const items = document.querySelectorAll('.menu-item[data-parent]');
+            items.forEach(el => {
+                const pk = el.getAttribute('data-parent');
+                const saved = localStorage.getItem('utd_uac_acc_' + pk);
+                if (saved === '1') el.classList.add('open');
+                if (el.querySelector('a.active')) el.classList.add('open');
+            });
+        })();
+
+        function logoutSystem() {
+            Swal.fire({
+                title: '¿Cerrar sesión del sistema?',
+                text: 'No cierra tu cuenta Google, solo regresa al login.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Salir',
+                cancelButtonText: 'Cancelar'
+            }).then(r => {
+                if (!r.isConfirmed) return;
+
+                google.script.run
+                    .withSuccessHandler(() => {
+                        Swal.fire({ icon: 'success', title: 'Sesión cerrada', timer: 900, showConfirmButton: false })
+                            .then(() => window.top.location.href = "<?= appUrl ?>?page=login");
+                    })
+                    .withFailureHandler(err => Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) }))
+                    .auth_logout();
+            });
+        }
+
+        function filterMenu() {
+            const q = (document.getElementById('menuSearch')?.value || '').trim().toLowerCase();
+            const menu = document.getElementById('menu');
+            if (!menu) return;
+
+            if (!q) {
+                menu.querySelectorAll('.menu-item, .menu-link').forEach(el => el.style.display = '');
+                return;
+            }
+
+            menu.querySelectorAll('.menu-link').forEach(a => {
+                const t = (a.getAttribute('data-title') || a.textContent || '').toLowerCase();
+                a.style.display = t.includes(q) ? '' : 'none';
+            });
+
+            menu.querySelectorAll('.menu-item[data-parent]').forEach(parent => {
+                const title = (parent.getAttribute('data-title') || '').toLowerCase();
+                const anyChild = Array.from(parent.querySelectorAll('.submenu a'))
+                    .some(a => (a.textContent || '').toLowerCase().includes(q));
+                parent.style.display = (title.includes(q) || anyChild) ? '' : 'none';
+
+                const app = document.getElementById('appRoot');
+                if (!app.classList.contains('sidebar-collapsed')) {
+                    parent.classList.toggle('open', anyChild);
+                }
+            });
+        }
+
+        // ===== Popover estable =====
+        const pop = { el: null, title: null, list: null, hideTimer: null, isOverPopover: false };
+
+        function initPopover() {
+            pop.el = document.getElementById('sbPopover');
+            pop.title = document.getElementById('popTitle');
+            pop.list = document.getElementById('popList');
+        }
+        initPopover();
+
+        function popoverEnter() {
+            pop.isOverPopover = true;
+            if (pop.hideTimer) clearTimeout(pop.hideTimer);
+            pop.hideTimer = null;
+        }
+        function popoverLeave() {
+            pop.isOverPopover = false;
+            scheduleHidePopover();
+        }
+
+        function onMenuHoverEnter(ev) {
+            const app = document.getElementById('appRoot');
+            if (isMobile()) return;
+            if (!app.classList.contains('sidebar-collapsed')) return;
+
+            const target = ev.currentTarget;
+            if (!target) return;
+
+            if (pop.hideTimer) clearTimeout(pop.hideTimer);
+            pop.hideTimer = null;
+
+            const kind = target.getAttribute('data-kind');
+            const key = target.getAttribute('data-key');
+            const title = target.getAttribute('data-title') || target.textContent || '';
+
+            let html = '';
+            if (kind === 'parent') {
+                const parentWrap = target.closest('.menu-item[data-parent]');
+                const kids = parentWrap ? Array.from(parentWrap.querySelectorAll('.submenu a')) : [];
+                html = kids.map(a => {
+                    const href = a.getAttribute('href');
+                    const txt = (a.textContent || '').trim();
+                    const active = a.classList.contains('active') ? 'active' : '';
+                    return `<a class="${active}" href="${href}" target="_top"><i class="fa-regular fa-file-lines"></i><span>${escapeHtml(txt)}</span></a>`;
+                }).join('');
+                if (!html) {
+                    html = `<a href="<?= appUrl ?>?page=${key}" target="_top"><i class="fa-regular fa-file-lines"></i><span>Abrir</span></a>`;
+                }
+            } else {
+                const href = target.getAttribute('href');
+                const active = target.classList.contains('active') ? 'active' : '';
+                html = `<a class="${active}" href="${href}" target="_top"><i class="fa-solid fa-arrow-right"></i><span>Abrir</span></a>`;
+            }
+
+            openPopoverAt(target, title, html);
+        }
+
+        function onMenuHoverLeave() {
+            const app = document.getElementById('appRoot');
+            if (isMobile()) return;
+            if (!app.classList.contains('sidebar-collapsed')) return;
+            scheduleHidePopover();
+        }
+
+        function scheduleHidePopover() {
+            if (pop.hideTimer) clearTimeout(pop.hideTimer);
+            pop.hideTimer = setTimeout(() => {
+                if (pop.isOverPopover) return;
+                closePopover(false);
+            }, 160);
+        }
+
+        function openPopoverAt(anchorEl, title, listHtml) {
+            pop.title.textContent = title;
+            pop.list.innerHTML = listHtml;
+
+            pop.el.style.display = 'block';
+            const r = anchorEl.getBoundingClientRect();
+            const left = Math.min(window.innerWidth - 20 - 280, r.right + 12);
+            const h = pop.el.offsetHeight || 220;
+
+            const desiredTop = r.top + (r.height / 2) - 18;
+            const top = clamp(desiredTop, 12, window.innerHeight - 12 - h);
+
+            pop.el.style.left = left + 'px';
+            pop.el.style.top = top + 'px';
+        }
+
+        function closePopover(force) {
+            if (force || !pop.isOverPopover) {
+                pop.el.style.display = 'none';
+            }
+        }
+
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        // ✅ Cierra popover al hacer scroll del contenido (no del body)
+        const cs = document.getElementById('contentScroll');
+        if (cs) {
+            cs.addEventListener('scroll', () => closePopover(true), { passive: true });
+        }
+        window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopover(true); });
+    </script>
+</body>
+
+</html>

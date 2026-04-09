@@ -1,0 +1,232 @@
+<div id="formatoB_root">
+    <header class="view-header">
+        <div class="view-title">
+            <h1>Formato B: Actividades y Logros</h1>
+            <p>Gestione y realice el seguimiento del progreso institucional semestral frente a los objetivos estratégicos.</p>
+        </div>
+    </header>
+
+    <!-- Filtros y Acciones -->
+    <div class="filters-bar">
+        <div class="tab-filters">
+            <button class="tab-btn active" onclick="formatoB_filter('All', this)">Todos</button>
+            <button class="tab-btn" onclick="formatoB_filter('Estratégico', this)">Estratégico</button>
+            <button class="tab-btn" onclick="formatoB_filter('Misional', this)">Misional</button>
+            <button class="tab-btn" onclick="formatoB_filter('Soporte', this)">Soporte</button>
+            <button class="tab-btn" onclick="formatoB_filter('Digital', this)">Digital</button>
+        </div>
+        <div class="filter-actions">
+            <button class="btn-outline"><i class="fa-solid fa-sliders"></i> Más Filtros</button>
+            <button class="btn-primary" onclick="formatoB_add()"><i class="fa-solid fa-plus"></i> Agregar Actividad</button>
+        </div>
+    </div>
+
+    <!-- Grilla de Actividades -->
+    <div class="activities-grid" id="formatoB_grid">
+        <!-- Dinámico -->
+    </div>
+
+    <div class="footer-btn">
+        <button class="btn-outline" onclick="formatoB_loadMore()">Cargar más actividades</button>
+    </div>
+</div>
+
+<style>
+    #formatoB_root { animation: fadeIn 0.4s ease-out; }
+
+    .filters-bar { 
+        background: white; 
+        border: 1px solid #e2e8f0; 
+        padding: 14px; 
+        border-radius: 16px; 
+        margin-bottom: 24px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .tab-filters { 
+        display: flex; 
+        background: #f1f5f9; 
+        padding: 4px; 
+        border-radius: 12px; 
+        gap: 4px;
+    }
+
+    .tab-btn { 
+        padding: 8px 16px; 
+        border-radius: 10px; 
+        border: none; 
+        background: transparent; 
+        font-weight: 800; 
+        font-size: 13px; 
+        color: #64748b; 
+        cursor: pointer; 
+        transition: all 0.2s;
+    }
+
+    .tab-btn.active { 
+        background: white; 
+        color: #2563eb; 
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); 
+    }
+
+    .activities-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+        gap: 24px; 
+    }
+
+    .activity-card { 
+        background: white; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 18px; 
+        overflow: hidden; 
+        display: flex; 
+        flex-direction: column; 
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .activity-card:hover { 
+        transform: translateY(-4px); 
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); 
+    }
+
+    .card-img-wrap { 
+        position: relative; 
+        height: 180px; 
+    }
+
+    .card-img-wrap img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+
+    .status-tag { 
+        position: absolute; 
+        top: 12px; 
+        right: 12px; 
+        padding: 4px 10px; 
+        border-radius: 999px; 
+        font-size: 11px; 
+        font-weight: 900; 
+        color: white; 
+        background: #64748b; 
+        text-transform: uppercase;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .status-tag.completado { background: #10b981; }
+    .status-tag.en_progreso { background: #2563eb; }
+    .status-tag.retrasado { background: #f59e0b; }
+
+    .category-pin { 
+        position: absolute; 
+        bottom: 12px; 
+        right: 12px; 
+        padding: 4px 10px; 
+        border-radius: 6px; 
+        font-size: 10px; 
+        font-weight: 950; 
+        background: rgba(0,0,0,0.7); 
+        color: white; 
+    }
+
+    .card-body { 
+        padding: 20px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 12px; 
+        flex: 1;
+    }
+
+    .card-id { font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-title { font-weight: 900; font-size: 18px; color: #0f172a; line-height: 1.3; }
+    .card-desc { font-size: 13px; color: #64748b; line-height: 1.5; height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+    .card-meta { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+    .meta-line { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #475569; font-weight: 700; }
+    .meta-line i { color: #2563eb; width: 14px; text-align: center; font-size: 14px; }
+
+    .footer-btn { margin-top: 40px; display: flex; justify-content: center; }
+
+    @media (max-width: 600px) {
+        .filters-bar { flex-direction: column; align-items: stretch; }
+        .tab-filters { overflow-x: auto; padding: 2px; }
+        .activities-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    let ALL_ACTIVITIES = [];
+
+    (function init() {
+        formatoB_load();
+    })();
+
+    function formatoB_load() {
+        google.script.run
+            .withSuccessHandler(items => {
+                ALL_ACTIVITIES = items;
+                renderActivities(items);
+            })
+            .formatoB_getActivities();
+    }
+
+    function renderActivities(items) {
+        const grid = document.getElementById('formatoB_grid');
+        grid.innerHTML = items.map(it => `
+            <div class="activity-card">
+                <div class="card-img-wrap">
+                    <img src="${it.imagen}" alt="${it.titulo}">
+                    <div class="status-tag ${it.estado.toLowerCase()}">${it.estado.replace('_', ' ')}</div>
+                    <div class="category-pin">${it.categoria}</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-id">ACTIVIDAD</div>
+                    <h3 class="card-title">${it.titulo}</h3>
+                    <p class="card-desc">${it.descripcion}</p>
+                    <div class="card-meta">
+                        <div class="meta-line">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Impacto: ${it.impacto}</span>
+                        </div>
+                        <div class="meta-line">
+                            <i class="fa-solid fa-bullseye"></i>
+                            <span>Objetivo PEI: ${it.objetivoPEI}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function formatoB_filter(cat, btn) {
+        // Toggle Active Class
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Filter Data
+        const filtered = (cat === 'All') 
+            ? ALL_ACTIVITIES 
+            : ALL_ACTIVITIES.filter(it => it.categoria === cat || it.tag === cat);
+        
+        renderActivities(filtered);
+    }
+
+    function formatoB_add() {
+        Swal.fire({
+            title: 'Nueva Actividad',
+            text: 'Se abrirá el formulario para registrar un nuevo logro estratégico.',
+            icon: 'info'
+        });
+    }
+
+    function formatoB_loadMore() {
+        Swal.fire('Cargando...', 'Buscando más registros en el servidor...', 'info');
+    }
+</script>

@@ -1,0 +1,283 @@
+<div id="formatoC_root">
+    <header class="view-header">
+        <div class="view-title">
+            <nav class="breadcrumb">
+                <span>SIG</span> / <span>Informe de Gestión</span> / <strong>Formato C: Riesgos y Brechas</strong>
+            </nav>
+            <h1>Formato C: Formulario de Riesgos</h1>
+            <p>Registro de riesgos institucionales semestrales, brechas y acciones de mitigación.</p>
+        </div>
+        <div class="view-actions">
+            <button class="btn-outline" onclick="formatoC_saveDraft()">Guardar Borrador</button>
+            <button class="btn-primary" onclick="formatoC_finalize()">Finalizar Informe</button>
+        </div>
+    </header>
+
+    <div class="form-layout">
+        <!-- Columna Principal: Formulario -->
+        <main class="form-content">
+            <!-- Sección 1 -->
+            <section class="form-section">
+                <div class="section-header">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <h2>Análisis e Impacto</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label>Brecha / Riesgo</label>
+                    <textarea name="riesgo" rows="4" placeholder="Descripción detallada de la brecha o riesgo institucional identificado..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Causa</label>
+                        <input type="text" name="causa" placeholder="Identificar la causa raíz">
+                    </div>
+                    <div class="form-group">
+                        <label>Impacto</label>
+                        <input type="text" name="impacto" placeholder="Consecuencias si no se aborda">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <div class="priority-selector">
+                        <button type="button" class="prio-btn alta" onclick="formatoC_setPrio('ALTA', this)"><i class="fa-solid fa-circle"></i> ALTA</button>
+                        <button type="button" class="prio-btn media active" onclick="formatoC_setPrio('MEDIA', this)"><i class="fa-solid fa-circle"></i> MEDIA</button>
+                        <button type="button" class="prio-btn baja" onclick="formatoC_setPrio('BAJA', this)"><i class="fa-solid fa-circle"></i> BAJA</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección 2 -->
+            <section class="form-section">
+                <div class="section-header">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <h2>Mitigación y Acciones</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>Acción Propuesta</label>
+                    <textarea name="accion" rows="4" placeholder="Describa los pasos tomados o planificados para mitigar el riesgo..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Ejecución">En Ejecución</option>
+                            <option value="Finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Objetivo de Resolución</label>
+                        <input type="date" name="fechaObjetivo">
+                    </div>
+                </div>
+            </section>
+
+            <footer class="form-actions-bottom">
+                <span class="save-status">Último guardado: Hoy a las 2:45 PM</span>
+                <div class="btn-group">
+                    <button class="btn-text" onclick="formatoC_discard()">Descartar Cambios</button>
+                    <button class="btn-primary" onclick="formatoC_submit()">Enviar Formato C</button>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Columna Lateral: Evidencias -->
+        <aside class="form-sidebar">
+            <div class="sidebar-card">
+                <div class="section-header">
+                    <i class="fa-solid fa-paperclip"></i>
+                    <h2>Panel de Evidencias</h2>
+                </div>
+
+                <!-- Drag & Drop -->
+                <div class="drop-zone-sm" onclick="formatoC_upload()">
+                    <i class="fa-solid fa-cloud-upload"></i>
+                    <p>Haga clic o arrastre archivos para subir</p>
+                    <span>PDF, JPG, PNG (Máx 10MB)</span>
+                </div>
+
+                <!-- Enlace -->
+                <div class="link-add">
+                    <label>AGREGAR ENLACE DE EVIDENCIA</label>
+                    <div class="input-inline">
+                        <input type="url" id="evUrl" placeholder="https://almacenamiento-nube.com/doc">
+                        <button type="button" onclick="formatoC_addLink()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Adjuntos -->
+                <div class="adjuntos-list">
+                    <label>ARCHIVOS ADJUNTOS (2)</label>
+                    <div class="file-item">
+                        <i class="fa-solid fa-file-pdf icon"></i>
+                        <div class="file-info">
+                            <div class="name">Evaluacion_Riesgo...</div>
+                            <div class="size">2.4 MB</div>
+                        </div>
+                    </div>
+                    <div class="file-item link">
+                        <i class="fa-solid fa-link icon"></i>
+                        <div class="file-info">
+                            <div class="name">Portal de Auditoría ...</div>
+                            <div class="size">Enlace Externo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="sidebar-alert info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div class="alert-content">
+                    <h3>Guía de Diligenciamiento</h3>
+                    <p>Por favor, asegúrese de que todos los riesgos identificados tengan al menos una acción de mitigación y una fecha de resolución. Los riesgos de alta prioridad requieren la aprobación del jefe de área.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+    /* Layout */
+    .form-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: flex-start; }
+    
+    .form-content { display: flex; flex-direction: column; gap: 24px; }
+    .form-section { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 30px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+    
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-header i { font-size: 20px; color: #2563eb; }
+    .section-header h2 { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; }
+
+    .form-group { margin-bottom: 24px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 8px; }
+    
+    .form-group input, .form-group textarea, .form-group select { 
+        width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; 
+        outline: none; font-size: 14px; transition: border-color 0.2s; 
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #2563eb; }
+    
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+    /* Priority Selector */
+    .priority-selector { display: flex; gap: 12px; }
+    .prio-btn { 
+        flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; 
+        background: #f8fafc; font-weight: 800; font-size: 12px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+    }
+    .prio-btn i { font-size: 8px; opacity: 0.6; }
+    
+    .prio-btn.alta.active { background: #fee2e2; color: #ef4444; border-color: #ef4444; }
+    .prio-btn.media.active { background: #fff7ed; color: #f59e0b; border-color: #f59e0b; }
+    .prio-btn.baja.active { background: #ecfdf5; color: #10b981; border-color: #10b981; }
+
+    .view-actions { display: flex; gap: 12px; }
+
+    /* Sidebar */
+    .form-sidebar { display: flex; flex-direction: column; gap: 24px; }
+    .sidebar-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+    
+    .drop-zone-sm { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 30px 10px; text-align: center; cursor: pointer; margin-bottom: 20px; }
+    .drop-zone-sm i { font-size: 24px; color: #94a3b8; margin-bottom: 12px; }
+    .drop-zone-sm p { font-size: 13px; font-weight: 700; margin: 0 0 4px; color: #475569; }
+    .drop-zone-sm span { font-size: 11px; color: #94a3b8; }
+    
+    .link-add label { font-size: 11px; font-weight: 900; color: #64748b; display: block; margin-bottom: 8px; }
+    .input-inline { display: flex; gap: 8px; margin-bottom: 24px; }
+    .input-inline input { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; font-size: 13px; }
+    .input-inline button { background: #2563eb; color: white; border: none; border-radius: 8px; width: 36px; cursor: pointer; display: grid; place-items: center; }
+
+    .adjuntos-list label { font-size: 11px; font-weight: 900; color: #64748b; display: block; margin-bottom: 12px; }
+    
+    .file-item { 
+        display: flex; align-items: center; gap: 14px; padding: 12px; 
+        background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #f1f5f9; 
+    }
+    .file-item .icon { font-size: 20px; color: #2563eb; }
+    .file-item.link .icon { color: #f59e0b; }
+    .file-info .name { font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+    .file-info .size { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+    .sidebar-alert { display: flex; gap: 14px; padding: 20px; border-radius: 16px; }
+    .sidebar-alert.info { background: #eff6ff; color: #1e3a8a; }
+    .sidebar-alert i { font-size: 20px; color: #2563eb; }
+    .sidebar-alert h3 { font-size: 14px; font-weight: 900; margin: 0 0 6px; }
+    .sidebar-alert p { font-size: 12px; margin: 0; line-height: 1.5; font-weight: 600; }
+
+    .form-actions-bottom { 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding-top: 20px; border-top: 1px solid #e2e8f0; margin-top: 20px; 
+    }
+    .save-status { font-size: 13px; color: #64748b; font-weight: 600; }
+    .btn-group { display: flex; gap: 12px; }
+
+    @media (max-width: 900px) {
+        .form-layout { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    let CURRENT_PRIO = 'MEDIA';
+
+    (function init() {
+        console.log('Formato C cargado');
+    })();
+
+    function formatoC_setPrio(prio, btn) {
+        CURRENT_PRIO = prio;
+        const btns = document.querySelectorAll('.prio-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function formatoC_saveDraft() {
+        Swal.fire({ icon: 'success', title: 'Borrador guardado', timer: 1200, showConfirmButton: false });
+    }
+
+    function formatoC_finalize() {
+        Swal.fire({ title: 'Finalizando...', didOpen: () => Swal.showLoading() });
+        setTimeout(() => {
+            Swal.fire('¡Informe Finalizado!', 'El Formato C ha sido validado correctamente.', 'success');
+        }, 1500);
+    }
+
+    function formatoC_upload() {
+        Swal.fire('Subida de archivos', 'Selección de evidencias en desarrollo...', 'info');
+    }
+
+    function formatoC_addLink() {
+        const url = document.getElementById('evUrl').value;
+        if(!url) return;
+        Swal.fire('Enlace Agregado', url, 'success');
+        document.getElementById('evUrl').value = '';
+    }
+
+    function formatoC_submit() {
+        Swal.fire({
+            title: '¿Enviar Formato C?',
+            text: 'Una vez enviado, no podrá ser editado hasta que sea revisado.',
+            icon: 'question',
+            showCancelButton: true
+        }).then(res => {
+            if(res.isConfirmed) {
+                Swal.fire('Formato Enviado', 'Su análisis de riesgos ha sido registrado.', 'success');
+            }
+        });
+    }
+
+    function formatoC_discard() {
+        Swal.fire({
+            title: '¿Descartar cambios?',
+            text: 'Se perderán los datos que no han sido guardados.',
+            icon: 'warning',
+            showCancelButton: true
+        });
+    }
+</script>

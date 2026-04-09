@@ -1,0 +1,388 @@
+<div class="dash-container">
+    <!-- Header -->
+    <header class="dash-header">
+        <div class="header-main">
+            <h1 class="dash-period">Periodo: <span id="periodoTitle">...</span></h1>
+            <p class="dash-subtitle">Captura de datos semestrales institucionales y estado de evaluación de calidad.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-action primary" onclick="abrirNuevoRegistro()">
+                <i class="fa-solid fa-circle-plus"></i> Nuevo Registro
+            </button>
+            <button class="btn-action secondary" onclick="enviarAValidacion()">
+                <i class="fa-solid fa-paper-plane"></i> Enviar a Validación
+            </button>
+        </div>
+    </header>
+
+    <!-- Secciones Principales -->
+    <div class="dash-grid">
+        <!-- Columna Izquierda: Progreso y Alertas -->
+        <div class="dash-col-left">
+            <section class="dash-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-chart-line"></i> Progreso por Formatos
+                </div>
+                <div class="formats-grid" id="formatsGrid">
+                    <!-- Dinámico -->
+                </div>
+            </section>
+
+            <section class="dash-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Alertas
+                </div>
+                <div class="alerts-list" id="alertsList">
+                    <!-- Dinámico -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Columna Derecha: Actividad -->
+        <aside class="dash-col-right">
+            <section class="dash-section full-height">
+                <div class="section-title">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Actividad Reciente
+                </div>
+                <div class="activity-timeline" id="activityTimeline">
+                    <!-- Dinámico -->
+                </div>
+                <button class="btn-link" onclick="verTodaActividad()">VER TODA LA ACTIVIDAD</button>
+            </section>
+        </aside>
+    </div>
+</div>
+
+<style>
+    :root {
+        --c-blue: #2563eb;
+        --c-blue-soft: #eff6ff;
+        --c-orange: #f59e0b;
+        --c-orange-soft: #fffbeb;
+        --c-red: #ef4444;
+        --c-red-soft: #fef2f2;
+        --c-gray: #64748b;
+        --c-gray-soft: #f8fafc;
+        --c-bg: #f1f5f9;
+        --c-card: #ffffff;
+        --c-border: #e2e8f0;
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
+    .dash-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .dash-period {
+        font-size: 32px;
+        font-weight: 900;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .dash-subtitle {
+        color: var(--c-gray);
+        margin: 8px 0 0;
+        font-size: 15px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-action {
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn-action:active { transform: scale(0.98); }
+
+    .btn-action.primary { background: var(--c-blue); color: white; }
+    .btn-action.secondary { background: white; color: #0f172a; border: 1px solid var(--c-border); }
+
+    /* Grid Layout */
+    .dash-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 24px;
+    }
+
+    .dash-col-left {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .dash-section {
+        background: var(--c-card);
+        border: 1px solid var(--c-border);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .full-height { height: 100%; display: flex; flex-direction: column; }
+
+    .section-title {
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+    }
+
+    .section-title i { color: var(--c-blue); font-size: 18px; }
+
+    /* Formatos Grid */
+    .formats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .format-card {
+        border: 1px solid var(--c-border);
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .format-card .meta { display: flex; justify-content: space-between; align-items: center; }
+    .format-card .name { font-weight: 800; font-size: 14px; }
+    .format-card .percentage { font-weight: 900; font-size: 18px; color: var(--c-blue); }
+    .format-card .detail { font-size: 12px; color: var(--c-gray); }
+
+    .progress-bar {
+        height: 6px;
+        background: #eef2f7;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+    .progress-fill.blue { background: var(--c-blue); }
+    .progress-fill.orange { background: var(--c-orange); }
+    .progress-fill.red { background: var(--c-red); }
+    .progress-fill.gray { background: #cbd5e1; }
+
+    .format-card .status { font-size: 11px; font-weight: 800; color: var(--c-gray); text-transform: uppercase; }
+
+    /* Alertas */
+    .alerts-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .alert-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--c-gray-soft);
+        border: 1px solid var(--c-border);
+    }
+
+    .alert-item.danger { background: var(--c-red-soft); border-color: #fee2e2; }
+    .alert-item.warning { background: var(--c-orange-soft); border-color: #fef3c7; }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .danger .alert-icon { background: #ef4444; color: white; }
+    .warning .alert-icon { background: #f59e0b; color: white; }
+    .info .alert-icon { background: #64748b; color: white; }
+
+    .alert-content { flex: 1; }
+    .alert-title { font-weight: 800; font-size: 14px; margin-bottom: 2px; }
+    .alert-msg { font-size: 13px; color: #475569; }
+
+    .alert-action {
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+
+    .danger .alert-action { color: #b91c1c; }
+    .warning .alert-action { color: #b45309; }
+
+    /* Timeline activity */
+    .activity-timeline {
+        position: relative;
+        padding-left: 24px;
+        flex: 1;
+    }
+
+    .activity-timeline::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e2e8f0;
+    }
+
+    .activity-item {
+        position: relative;
+        margin-bottom: 24px;
+    }
+
+    .activity-item::before {
+        content: "";
+        position: absolute;
+        left: -24px;
+        top: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        border: 2px solid white;
+        z-index: 2;
+    }
+
+    .activity-item.blue::before { background: var(--c-blue); }
+
+    .activity-time { font-size: 11px; color: var(--c-gray); margin-bottom: 4px; }
+    .activity-title { font-weight: 800; font-size: 13px; margin-bottom: 2px; line-height: 1.4; }
+    .activity-user { font-size: 12px; color: var(--c-gray); }
+
+    .btn-link {
+        background: none;
+        border: none;
+        color: var(--c-blue);
+        font-weight: 900;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        border-top: 1px solid var(--c-border);
+        margin-top: 10px;
+    }
+
+    @media (max-width: 1000px) {
+        .dash-grid { grid-template-columns: 1fr; }
+        .dash-col-right { order: 2; }
+    }
+</style>
+
+<script>
+    (function init() {
+        dashboard_load();
+    })();
+
+    function dashboard_load() {
+        google.script.run
+            .withSuccessHandler(data => {
+                renderDashboard(data);
+            })
+            .withFailureHandler(err => {
+                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
+            })
+            .home_getDashboardData();
+    }
+
+    function renderDashboard(data) {
+        document.getElementById('periodoTitle').textContent = data.periodo || '---';
+
+        // Render Formatos
+        const formatsGrid = document.getElementById('formatsGrid');
+        formatsGrid.innerHTML = data.progreso.map(f => `
+            <div class="format-card">
+                <div class="meta">
+                    <span class="name">${f.nombre}</span>
+                    <span class="percentage" style="color: var(--c-${f.color})">${f.porcentaje}%</span>
+                </div>
+                <div class="detail">${f.detalle}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill ${f.color}" style="width: ${f.porcentaje}%"></div>
+                </div>
+                <div class="status">ESTADO: ${f.estado}</div>
+            </div>
+        `).join('');
+
+        // Render Alertas
+        const alertsList = document.getElementById('alertsList');
+        alertsList.innerHTML = data.alertas.map(a => `
+            <div class="alert-item ${a.tipo}">
+                <div class="alert-icon"><i class="fa-solid ${a.icon}"></i></div>
+                <div class="alert-content">
+                    <div class="alert-title">${a.titulo}</div>
+                    <div class="alert-msg">${a.mensaje}</div>
+                </div>
+                ${a.accion ? `<div class="alert-action" onclick="alertAccion('${a.accion}')">${a.accion}</div>` : ''}
+            </div>
+        `).join('');
+
+        // Render Actividad
+        const activityTimeline = document.getElementById('activityTimeline');
+        activityTimeline.innerHTML = data.actividad.map(ac => `
+            <div class="activity-item ${ac.color}">
+                <div class="activity-time">${ac.tiempo}</div>
+                <div class="activity-title">${ac.titulo}</div>
+                <div class="activity-user">Por ${ac.usuario}</div>
+            </div>
+        `).join('');
+    }
+
+    function abrirNuevoRegistro() {
+        Swal.fire('Función en desarrollo', 'Esta acción abrirá el formulario del Formato A.', 'info');
+    }
+
+    function enviarAValidacion() {
+        Swal.fire({
+            title: '¿Enviar a Validación?',
+            text: 'Se iniciará el proceso de revisión técnica.',
+            icon: 'question',
+            showCancelButton: true
+        }).then(r => {
+            if(r.isConfirmed) Swal.fire('Enviado', 'Los datos han sido enviados.', 'success');
+        });
+    }
+
+    function verTodaActividad() {
+        Swal.fire('Historial', 'Cargando historial de actividad completo...', 'info');
+    }
+
+    function alertAccion(accion) {
+        Swal.fire('Acción: ' + accion, 'Redirigiendo al formulario correspondiente...', 'info');
+    }
+</script>
+ipt>
