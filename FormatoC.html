@@ -1,239 +1,174 @@
-<!-- 
-     FormatoC.html (Riesgos y Brechas)
-     Aetheria Glass / Bento Style
--->
 <div id="formatoC_root">
-  <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.4);
-      --glow-primary: #00417B;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-    }
+    <style>
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px;
+            border-radius: 24px;
+            color: white;
+            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
+        }
 
-    #formatoC_root {
-      animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      padding-bottom: 40px;
-    }
+        .grid-riesgos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
 
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .card-premium {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            padding: 24px;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
 
-    /* --- Estilos Bento/Corporativos --- */
-    .header-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-      background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-      padding: 40px;
-      border-radius: 24px;
-      color: white;
-      box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-    }
+        .card-premium:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15);
+            transform: translateY(-5px);
+        }
 
-    .header-info h2 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1px; }
-    .header-info p { color: rgba(255, 255, 255, 0.85); margin: 8px 0 0; font-weight: 500; }
+        .badge-status {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
 
-    .grid-riesgos {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 24px;
-    }
+        .status-pendiente {
+            background: #fef3c7;
+            color: #d97706;
+        }
 
-    /* PREMIUM CARD STYLE */
-    .card-premium { 
-        background: white; border-radius: 24px; border: 1px solid #f1f5f9; 
-        overflow: hidden; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        display: flex; flex-direction: column; position: relative;
-    }
-    .card-premium:hover { transform: translateY(-8px); border-color: #00417B; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    
-    .card-banner { width: 100%; height: 180px; position: relative; overflow: hidden; background: #f1f5f9; }
-    .card-banner img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .badge-status { 
-        position: absolute; top: 20px; right: 20px; padding: 6px 14px; border-radius: 999px; 
-        font-size: 10px; font-weight: 950; text-transform: uppercase; letter-spacing: 0.5px;
-        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .status-resuelto { color: #10b981; }
-    .status-encurso { color: #f59e0b; }
-    .status-pendiente { color: #64748b; }
+        .status-encurso {
+            background: #dbeafe;
+            color: #1e40af;
+        }
 
-    .badge-category { 
-        position: absolute; bottom: 20px; left: 20px; padding: 6px 14px; border-radius: 999px;
-        font-size: 11px; font-weight: 900; background: rgba(0, 65, 123, 0.9); color: white;
-        backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px;
-    }
+        .status-resuelto {
+            background: #dcfce7;
+            color: #166534;
+        }
 
-    .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-    .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .card-section-tag { font-size: 11px; font-weight: 950; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .btn-edit-sm { 
-        background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; 
-        padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 900; 
-        cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-    }
-    .btn-edit-sm:hover { background: #00417B; color: white; border-color: #00417B; transform: scale(1.05); }
+        .custom-input,
+        .custom-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            background: #fcfcfd;
+        }
+    </style>
 
-    .card-title { font-size: 18px; font-weight: 950; color: var(--text-main); margin-bottom: 12px; line-height: 1.4; }
-    .card-desc { font-size: 14px; color: var(--text-muted); font-weight: 600; line-height: 1.6; margin-bottom: 24px; }
-
-    .card-detail-box { 
-        background: rgba(0, 65, 123, 0.03); border: 1px solid rgba(0, 65, 123, 0.05); 
-        border-radius: 20px; padding: 20px; margin-top: auto;
-    }
-    .detail-item { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-    .detail-item:last-child { margin-bottom: 0; }
-    .detail-item i { color: #00417B; font-size: 16px; width: 20px; text-align: center; }
-    .detail-item span { font-size: 13px; font-weight: 700; color: #475569; }
-    .detail-item strong { color: #1e293b; font-weight: 950; }
-
-  </style>
-
-  <div class="header-actions">
-    <div class="header-info">
-      <h2>Formato C: Riesgos y Brechas</h2>
-      <p>Gestión de riesgos institucionales y medidas de mitigación estratégicas.</p>
+    <div class="header-actions">
+        <div>
+            <h2 style="margin:0; font-size:32px; font-weight:950;">Formato C: Riesgos</h2>
+            <p style="margin:8px 0 0; opacity:0.9; font-weight:500;">Gestión de brechas y acciones de mitigación</p>
+        </div>
+        <button
+            style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
+            onclick="modalRiesgo()">
+            + Registrar Riesgo
+        </button>
     </div>
-    <button class="btn-primary" onclick="modalRiesgo()">
-      <i class="fa-solid fa-plus-circle"></i> Agregar Riesgo
-    </button>
-  </div>
 
-  <div id="gridRiesgos" class="grid-riesgos"></div>
+    <div id="gridRiesgos" class="grid-riesgos"></div>
 
-  <script>
-    function modalRiesgo(data = null) {
-      const isEdit = !!data;
-      Swal.fire({
-        title: isEdit ? 'Editar Riesgo Institucional' : 'Registro de Riesgo Institucional',
-        width: '750px',
-        customClass: { popup: 'custom-modal-radius' },
-        confirmButtonText: isEdit ? 'Actualizar' : 'Guardar Borrador',
-        confirmButtonColor: '#00417B',
-        showCancelButton: true,
-        cancelButtonText: 'Cancelar',
-        html: `
-          <div class="modal-wrapper">
-            <input type="hidden" id="riesgo_id" value="${data ? data.id : ''}">
-            <div class="sec-title"><i class="fa-solid fa-chart-line"></i> Análisis e Impacto</div>
-            <div class="field">
-              <label>Descripción de la Brecha / Riesgo *</label>
-              <textarea id="brecha" class="custom-textarea" placeholder="Describe detalladamente el riesgo identificado...">${data ? data.brecha : ''}</textarea>
-            </div>
-            <div class="form-row">
-              <div class="field"><label>Causa Raíz</label><input id="causa" class="custom-input" placeholder="¿Qué origina este riesgo?" value="${data ? data.causa : ''}"></div>
-              <div class="field"><label>Impacto Potencial</label><input id="impacto" class="custom-input" placeholder="Consecuencias institucionales" value="${data ? data.impacto : ''}"></div>
-            </div>
+    <script>
+        let CACHE_RIESGOS = [];
 
-            <div class="sec-title"><i class="fa-solid fa-shield-halved"></i> Mitigación y Acciones</div>
-            <div class="field"><label>Acción de Mitigación Propuesta</label><textarea id="accion" class="custom-textarea" placeholder="Pasos para reducir o eliminar el impacto...">${data ? data.accion : ''}</textarea></div>
-            <div class="form-row">
-              <div class="field">
-                <label>Estado Actual</label>
-                <select id="estado" class="custom-input">
-                  <option ${data?.estado == 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                  <option ${data?.estado == 'En curso' ? 'selected' : ''}>En curso</option>
-                  <option ${data?.estado == 'Resuelto' ? 'selected' : ''}>Resuelto</option>
-                </select>
-              </div>
-              <div class="field"><label>Fecha Objetivo</label><input id="fecha" type="date" class="custom-input" value="${data ? data.fecha : ''}"></div>
-            </div>
-
-            <div class="sec-title"><i class="fa-solid fa-cloud-arrow-up"></i> Panel de Evidencias</div>
-            <div class="drop-zone"><i class="fa-solid fa-upload"></i> Haga clic o arrastre archivos aquí (PDF, JPG, PNG Máx 10MB)</div>
-            <div class="field" style="margin-top:16px;">
-              <label>Agregar Enlace de Evidencia</label>
-              <input id="enlace" class="custom-input" placeholder="https://drive.google.com/..." value="${data ? data.enlace : ''}">
-            </div>
-          </div>
-        `,
-        preConfirm: () => {
-          const val = (id) => document.getElementById(id).value;
-          return {
-            id: val('riesgo_id'),
-            brecha: val('brecha'),
-            causa: val('causa'),
-            impacto: val('impacto'),
-            accion: val('accion'),
-            estado: val('estado'),
-            fecha: val('fecha'),
-            enlace: val('enlace')
-          }
-        }
-      }).then(r => {
-        if (r.isConfirmed) {
-          Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
-          google.script.run.withSuccessHandler(res => {
-            if(res.success) {
-              Swal.fire({ icon: 'success', title: isEdit ? 'Registro actualizado' : 'Riesgo registrado', timer: 1500, showConfirmButton: false });
-              renderRiesgos();
-            } else {
-              Swal.fire({ icon: 'error', title: 'Error', text: res.message });
-            }
-          }).riesgos_guardar(r.value);
-        }
-      });
-    }
-
-    function renderRiesgos() {
-      google.script.run.withSuccessHandler(data => {
-        const grid = document.getElementById('gridRiesgos');
-        if (!data || data.length === 0) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 80px; color:#94a3b8; font-weight: 800;">No hay riesgos registrados aún.</div>';
-          return;
+        function formatoC_load() {
+            google.script.run.withSuccessHandler(data => {
+                CACHE_RIESGOS = data;
+                renderRiesgos(data);
+            }).formatoC_get();
         }
 
-        grid.innerHTML = data.map(r => {
-          const statusClass = (r.estado || 'pendiente').toLowerCase().replace(' ', '');
-          const safeData = JSON.stringify(r).replace(/'/g, "&apos;");
-          
-          return `
-            <div class="card-premium">
-                <div class="card-banner">
-                    <img src="https://images.unsplash.com/photo-1454165833767-027ffea9e61?q=80&w=800&auto=format&fit=crop" alt="Banner Riesgo">
-                    <div class="badge-status status-${statusClass}">${r.estado || 'PENDIENTE'}</div>
-                    <div class="badge-category">
-                        <i class="fa-solid fa-shield-halved"></i> GESTIÓN DE RIESGO
+        function renderRiesgos(items) {
+            const grid = document.getElementById('gridRiesgos');
+            if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b; font-weight:800;">No hay riesgos registrados.</div>'; return; }
+
+            grid.innerHTML = items.map(r => {
+                const sClass = r.estado.toLowerCase().replace(/\s/g, '');
+                return `
+                <div class="card-premium">
+                    <div class="badge-status status-${sClass}">${r.estado}</div>
+                    <div style="font-size:11px; font-weight:900; color:#94a3b8; margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation"></i> ANÁLISIS DE BRECHA</div>
+                    <h3 style="margin:0 0 12px; font-size:18px; color:#1e293b; font-weight:950;">${r.brecha}</h3>
+                    <div style="background:#fff7ed; border:1px solid #ffedd5; padding:16px; border-radius:16px; font-size:13px; color:#9a3412; margin-bottom:16px;">
+                        <strong>Causa:</strong> ${r.causa}<br>
+                        <strong>Impacto:</strong> ${r.impacto}
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-header-row">
-                        <span class="card-section-tag">ANÁLISIS DE BRECHA</span>
-                        <button class="btn-edit-sm" onclick='modalRiesgo(${safeData})'>
-                            <i class="fa-solid fa-pen"></i> EDITAR
-                        </button>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; color:#10b981; font-weight:800; max-width:65%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <i class="fa-solid fa-shield-halved"></i> ${r.accion || 'Sin acción'}
+                        </span>
+                        <button style="background:#f1f5f9; border:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:900; cursor:pointer; color:#475569;" onclick="modalRiesgo('${r.id}')">EDITAR</button>
                     </div>
-                    <h3 class="card-title">${String(r.brecha || 'Sin descripción').substring(0, 100)}${String(r.brecha).length > 100 ? '...' : ''}</h3>
-                    
-                    <div class="card-detail-box">
-                        <div class="detail-item">
-                            <i class="fa-solid fa-circle-question"></i>
-                            <span>Causa: <strong>${r.causa || '-'}</strong></span>
+                </div>`;
+            }).join('');
+        }
+
+        function modalRiesgo(id = null) {
+            const data = id ? CACHE_RIESGOS.find(x => x.id === id) : null;
+            Swal.fire({
+                title: data ? 'Editar Riesgo' : 'Nuevo Riesgo',
+                width: '600px',
+                html: `
+                    <div style="text-align:left;">
+                        <input type="hidden" id="fC_id" value="${data ? data.id : ''}">
+                        <label style="font-size:12px; font-weight:800;">Descripción de la Brecha / Riesgo *</label>
+                        <textarea id="fC_brecha" class="custom-textarea">${data ? data.brecha : ''}</textarea>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div><label style="font-size:12px; font-weight:800;">Causa Raíz</label><input id="fC_causa" class="custom-input" value="${data ? data.causa : ''}"></div>
+                            <div><label style="font-size:12px; font-weight:800;">Impacto</label><input id="fC_impacto" class="custom-input" value="${data ? data.impacto : ''}"></div>
                         </div>
-                        <div class="detail-item">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Impacto: <strong>${r.impacto || '-'}</strong></span>
-                        </div>
-                        <div class="detail-item" style="border-top:1px solid rgba(0,0,0,0.05); margin-top:12px; padding-top:12px;">
-                            <i class="fa-solid fa-shield-check" style="color:#10b981;"></i>
-                            <span style="font-style:italic;">"${String(r.accion || 'Sin acción').substring(0, 60)}..."</span>
-                        </div>
+                        
+                        <label style="font-size:12px; font-weight:800;">Acción de Mitigación</label>
+                        <textarea id="fC_accion" class="custom-textarea">${data ? data.accion : ''}</textarea>
+                        
+                        <label style="font-size:12px; font-weight:800;">Estado</label>
+                        <select id="fC_estado" class="custom-input">
+                            <option ${data?.estado == 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                            <option ${data?.estado == 'En curso' ? 'selected' : ''}>En curso</option>
+                            <option ${data?.estado == 'Resuelto' ? 'selected' : ''}>Resuelto</option>
+                        </select>
                     </div>
-                </div>
-            </div>
-          `;
-        }).join('');
-      }).riesgos_get_all();
-    }
-    
-    renderRiesgos();
-  </script>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#00417B',
+                confirmButtonText: 'Guardar',
+                preConfirm: () => ({
+                    id: document.getElementById('fC_id').value,
+                    brecha: document.getElementById('fC_brecha').value,
+                    causa: document.getElementById('fC_causa').value,
+                    impacto: document.getElementById('fC_impacto').value,
+                    accion: document.getElementById('fC_accion').value,
+                    estado: document.getElementById('fC_estado').value
+                })
+            }).then(r => {
+                if (r.isConfirmed) {
+                    Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+                    google.script.run.withSuccessHandler(res => {
+                        if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoC_load(); }
+                        else Swal.fire('Error', res.message, 'error');
+                    }).formatoC_save(r.value);
+                }
+            });
+        }
+        formatoC_load();
+    </script>
 </div>
