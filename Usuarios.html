@@ -122,8 +122,8 @@
     :root {
         --glass-bg: rgba(255, 255, 255, 0.7);
         --glass-border: rgba(255, 255, 255, 0.4);
-        --glow-primary: #6366f1;
-        --glow-secondary: #0ea5e9;
+        --glow-primary: #00417B;
+        --glow-secondary: #002d56;
         --accent-success: #10b981;
         --accent-danger: #ef4444;
         --text-main: #1e293b;
@@ -142,46 +142,48 @@
 
     /* Premium Header */
     .u-head { 
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
         padding: 40px; border-radius: 24px; color: white;
-        box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
         display: flex; flex-direction: column; gap: 24px;
     }
 
-    .u-title { margin: 0; font-size: 32px; font-weight: 950; color: white; letter-spacing: -1px; }
+    .u-title { margin: 0; font-size: 32px; font-weight: 950; color: white; letter-spacing: -1.5px; }
     .u-sub { color: rgba(255, 255, 255, 0.9); font-size: 14px; font-weight: 500; }
 
     .u-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
 
     .u-search { 
         flex: 1; min-width: 280px; display: flex; align-items: center; gap: 12px; 
-        background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); 
+        background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); 
         border-radius: 14px; padding: 12px 16px; backdrop-filter: blur(10px);
     }
     .u-search i { color: rgba(255, 255, 255, 0.8); }
     .u-search input { 
-        border: 0; outline: none; width: 100%; font-size: 14px; background: transparent; color: white; font-weight: 500;
+        border: 0; outline: none; width: 100%; font-size: 14px; background: transparent; color: white; font-weight: 600;
     }
     .u-search input::placeholder { color: rgba(255, 255, 255, 0.6); }
 
     .u-btn { 
         border: 1px solid #e2e8f0; background: white; border-radius: 12px; 
-        padding: 12px 20px; cursor: pointer; font-weight: 800; display: inline-flex; 
+        padding: 12px 20px; cursor: pointer; font-weight: 900; display: inline-flex; 
         align-items: center; gap: 10px; transition: all 0.2s; color: var(--text-main); font-size: 14px;
     }
     .u-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
 
     .u-btn-primary { 
-        background: white; border-color: white; color: var(--glow-primary); 
+        background: white; border-color: white; color: #00417B; 
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
-    .u-btn-primary i { color: var(--glow-primary); }
+    .u-btn-primary i { color: #00417B; }
 
     /* User List Glass */
     .u-card { 
         background: white; border: 1px solid #f1f5f9; border-radius: 28px; 
         overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
     }
+    .u-card:hover { border-color: #00417B; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
 
     .u-table-wrap { width: 100%; overflow: auto; }
     .u-table { width: 100%; border-collapse: collapse; min-width: 800px; }
@@ -189,14 +191,14 @@
     .u-table thead th { 
         text-align: left; background: #fcfcfd; padding: 20px; font-size: 11px; 
         color: var(--text-muted); border-bottom: 1px solid #f1f5f9; white-space: nowrap; 
-        font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+        font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
     }
 
-    .u-table td { padding: 20px; border-bottom: 1px solid #f8fafc; font-size: 14px; vertical-align: middle; color: var(--text-main); font-weight: 600; }
+    .u-table td { padding: 20px; border-bottom: 1px solid #f8fafc; font-size: 14px; vertical-align: middle; color: var(--text-main); font-weight: 700; }
     .u-table tr:hover { background: #fafbff; }
 
     .u-right { text-align: right; }
-    .u-empty { padding: 40px; color: var(--text-muted); font-size: 15px; text-align: center; font-weight: 600; }
+    .u-empty { padding: 40px; color: var(--text-muted); font-size: 15px; text-align: center; font-weight: 800; }
 
     /* Badges */
     .u-badge { 

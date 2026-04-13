@@ -1,50 +1,58 @@
 /**
- * FormatoD_g.gs
- * Lógica para la gestión de Capacitaciones y Talleres
+ * FormatoD_g.gs - Módulo de Capacitaciones e Interacción
  */
 
-function formatoD_getTrainings() {
-  const session = Auth.getSession();
-  
-  // Datos de ejemplo basados en la captura (Imagen 6)
-  return [
-    {
-      id: 'CAP-001',
-      nombre: 'Herramientas Pedagógicas Avanzadas',
-      fecha: '12 de Marzo, 2024',
-      modalidad: 'Virtual',
-      participantes: 45,
-      estado: 'ENVIADO',
-      evidenciaCompleta: true,
-      progresoEvidencia: 100
-    },
-    {
-      id: 'CAP-002',
-      nombre: 'Taller de Ética en la Investigación',
-      fecha: '05 de Abril, 2024',
-      modalidad: 'Presencial',
-      participantes: 12,
-      estado: 'BORRADOR',
-      evidenciaCompleta: false,
-      progresoEvidencia: 20
-    },
-    {
-      id: 'CAP-003',
-      nombre: 'Fundamentos de Ciberseguridad',
-      fecha: '19 de Mayo, 2024',
-      modalidad: 'Virtual',
-      participantes: 110,
-      estado: 'ENVIADO',
-      evidenciaCompleta: true,
-      progresoEvidencia: 100
-    }
-  ];
+function cap_get_all() {
+  const data = SheetService.readObjects_(APP_CONFIG.SHEETS.CAPACITACIONES);
+  return data.map(it => ({
+    id: it.id,
+    nombre: it.nombre,
+    fecha: it.fecha,
+    modalidad: it.modalidad,
+    participantes: it.participantes,
+    estado: it.estado || 'BORRADOR',
+    tiene_evidencia: it.tiene_evidencia === 'SI' || it.tiene_evidencia === true
+  }));
 }
 
+function cap_registrar(data) {
+  try {
+    const isEdit = !!data.id;
+    const rowData = {
+      id: data.id || Utilities.getUuid(),
+      nombre: data.nombre,
+      fecha: data.fecha,
+      modalidad: data.modalidad,
+      participantes: data.participantes,
+      estado: 'BORRADOR',
+      tiene_evidencia: 'NO',
+      fecha_registro: new Date()
+    };
+
+    if (isEdit) {
+      const success = SheetService.updateObjectById_(APP_CONFIG.SHEETS.CAPACITACIONES, data.id, rowData);
+      return { success };
+    } else {
+      // Usamos los encabezados de la hoja para mapear el objeto
+      SheetService.saveObject_(APP_CONFIG.SHEETS.CAPACITACIONES, rowData);
+      return { success: true };
+    }
+  } catch (e) {
+    return { success: false, message: e.toString() };
+  }
+}
+
+// Compatibilidad
+function formatoD_getTrainings() { return cap_get_all(); }
 function formatoD_getSummary() {
+  const items = cap_get_all();
+  const total = items.length;
+  const enviados = items.filter(i => i.estado === 'ENVIADO').length;
+  const cumplimiento = total ? Math.round((enviados / total) * 100) : 0;
+  
   return {
-    cumplimientoGeneral: 65,
-    totalCapacitaciones: 18,
-    totalParticipantes: 350
+    cumplimientoGeneral: cumplimiento,
+    totalCapacitaciones: total,
+    totalParticipantes: items.reduce((acc, it) => acc + Number(it.participantes || 0), 0)
   };
 }

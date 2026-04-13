@@ -1,323 +1,249 @@
+<!-- 
+     FormatoB.html (Actividades y Logros)
+     Aetheria Glass Redesign
+-->
 <div id="formatoB_root">
-    <header class="view-header">
-        <div class="view-title">
-            <h1>Formato B: Actividades y Logros</h1>
-            <p>Gestione y realice el seguimiento del progreso institucional semestral frente a los objetivos estratégicos.</p>
-        </div>
-    </header>
-
-    <!-- Filtros y Acciones -->
-    <div class="filters-bar">
-        <div class="tab-filters">
-            <button class="tab-btn active" onclick="formatoB_filter('All', this)">Todos</button>
-            <button class="tab-btn" onclick="formatoB_filter('Estratégico', this)">Estratégico</button>
-            <button class="tab-btn" onclick="formatoB_filter('Misional', this)">Misional</button>
-            <button class="tab-btn" onclick="formatoB_filter('Soporte', this)">Soporte</button>
-            <button class="tab-btn" onclick="formatoB_filter('Digital', this)">Digital</button>
-        </div>
-        <div class="filter-actions">
-            <button class="btn-outline"><i class="fa-solid fa-sliders"></i> Más Filtros</button>
-            <button class="btn-primary" onclick="formatoB_add()"><i class="fa-solid fa-plus"></i> Agregar Actividad</button>
-        </div>
-    </div>
-
-    <!-- Grilla de Actividades -->
-    <div class="activities-grid" id="formatoB_grid">
-        <!-- Dinámico -->
-    </div>
-
-    <div class="footer-btn">
-        <button class="btn-outline" onclick="formatoB_loadMore()">Cargar más actividades</button>
-    </div>
-</div>
-
-<style>
+  <style>
     :root {
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.4);
-        --glow-primary: #6366f1;
-        --glow-secondary: #0ea5e9;
-        --accent-success: #10b981;
-        --accent-warning: #f59e0b;
-        --accent-danger: #ef4444;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glow-primary: #00417B;
+      --glow-secondary: #0ea5e9;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
     }
 
-    #formatoB_root { 
-        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        padding-bottom: 40px;
+    #formatoB_root {
+      animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      padding-bottom: 40px;
     }
 
     @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Premium Header */
-    .view-header { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: flex-end; 
-        margin-bottom: 32px; 
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        padding: 40px;
-        border-radius: 24px;
-        color: white;
-        box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.3);
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+      padding: 40px;
+      border-radius: 24px;
+      color: white;
+      box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
     }
 
-    .view-title h1 { 
-        font-size: 32px; 
-        font-weight: 900; 
-        margin: 0; 
-        color: white; 
-        letter-spacing: -1px;
+    .header-info h2 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1px; }
+    .header-info p { color: rgba(255, 255, 255, 0.85); margin: 8px 0 0; font-weight: 500; }
+
+    .btn-add {
+      background: white;
+      color: #00417B;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0,0,0,0.15); }
+
+    .grid-act {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 32px;
     }
 
-    .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; }
-
-    /* Modern Filter Bar */
-    .filters-bar { 
-        background: var(--glass-bg); 
-        border: 1px solid var(--glass-border); 
-        padding: 18px; 
-        border-radius: 24px; 
-        margin-bottom: 32px; 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        flex-wrap: wrap;
-        gap: 20px;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+    .card-act {
+      background: white;
+      border-radius: 28px;
+      border: 1px solid #f1f5f9;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-act:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+      border-color: #00417B;
     }
 
-    .tab-filters { 
-        display: flex; 
-        background: rgba(255, 255, 255, 0.4); 
-        padding: 6px; 
-        border-radius: 16px; 
-        gap: 6px;
-        border: 1px solid rgba(0,0,0,0.05);
+    .card-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #f1f5f9;
+      transition: transform 0.6s ease;
     }
+    .card-act:hover .card-img { transform: scale(1.08); }
 
-    .tab-btn { 
-        padding: 10px 20px; 
-        border-radius: 10px; 
-        border: none; 
-        background: transparent; 
-        font-weight: 800; 
-        font-size: 14px; 
-        color: var(--text-muted); 
-        cursor: pointer; 
-        transition: all 0.3s ease;
+    .card-body { padding: 28px; flex: 1; display: flex; flex-direction: column; }
+
+    .badge-estado {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
+    .status-COMPLETADO { background: #dcfce7; color: #166534; }
+    .status-EN_PROGRESO { background: #dbeafe; color: #1e40af; }
+    .status-RETRASADO { background: #fee2e2; color: #991b1b; }
 
-    .tab-btn.active { 
-        background: white; 
-        color: var(--glow-primary); 
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); 
+    .card-title { font-weight: 950; font-size: 22px; color: #1e293b; margin: 16px 0 12px; line-height: 1.25; letter-spacing: -0.5px; }
+    .card-desc { font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.6; }
+
+    .card-footer-info {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 18px;
+      font-size: 13px;
+      margin-top: auto;
+      border: 1px solid #f1f5f9;
     }
+    .card-footer-info div { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-weight: 700; color: #334155; }
+    .card-footer-info div:last-child { margin-bottom: 0; }
+    .card-footer-info i { color: #00417B; width: 16px; font-size: 14px; }
 
-    .tab-btn:hover:not(.active) { color: var(--text-main); background: rgba(255,255,255,0.4); }
-
-    .btn-primary { 
-        background: var(--glow-primary); 
-        color: white; 
-        border: none; 
-        padding: 14px 24px; 
-        border-radius: 12px; 
-        font-weight: 800; 
-        cursor: pointer; 
-        display: flex; 
-        align-items: center; 
-        gap: 10px;
-        transition: all 0.2s;
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+    /* Modal Context */
+    .custom-modal-radius { border-radius: 28px !important; padding: 10px !important; }
+    .modal-form-container { text-align: left; padding: 10px; }
+    .field-group { margin-bottom: 18px; }
+    .field-group label { display: block; font-size: 13px; font-weight: 800; color: #475569; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .custom-input, .custom-textarea {
+      width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px;
+      font-size: 15px; box-sizing: border-box; background: #fcfcfd; transition: all 0.2s;
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(99, 102, 241, 0.4); }
+    .custom-input:focus, .custom-textarea:focus { border-color: #00417B; background: #fff; box-shadow: 0 0 0 4px rgba(0, 65, 123, 0.1); outline: none; }
+    .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-    .btn-outline { 
-        background: white; 
-        border: 1px solid #e2e8f0; 
-        padding: 12px 20px; 
-        border-radius: 12px; 
-        font-weight: 800; 
-        cursor: pointer; 
-        display: flex; 
-        align-items: center; 
-        gap: 8px; 
-        color: var(--text-main);
-        transition: all 0.2s;
-    }
-    .btn-outline:hover { border-color: var(--glow-primary); color: var(--glow-primary); transform: translateY(-1px); }
+  </style>
 
-    /* Activities Grid with Premium Cards */
-    .activities-grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); 
-        gap: 32px; 
-    }
+  <div class="header-actions">
+    <div class="header-info">
+      <h2>Formato B: Actividades y Logros</h2>
+      <p>Seguimiento del progreso institucional semestral frente a objetivos PEI.</p>
+    </div>
+    <button class="btn-add" onclick="modalActividad()">
+      <i class="fa-solid fa-plus"></i> Agregar Actividad
+    </button>
+  </div>
 
-    .activity-card { 
-        background: white; 
-        border: 1px solid #f1f5f9; 
-        border-radius: 28px; 
-        overflow: hidden; 
-        display: flex; 
-        flex-direction: column; 
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    }
+  <div id="gridActividades" class="grid-act"></div>
 
-    .activity-card:hover { 
-        transform: translateY(-8px) scale(1.01); 
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); 
-        border-color: var(--glow-primary);
-    }
+  <script>
+    function renderActividades() {
+      google.script.run.withSuccessHandler(data => {
+        const grid = document.getElementById('gridActividades');
+        if (!data || data.length === 0) {
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 60px; background: white; border-radius: 24px; border: 1px solid #f1f5f9; color:#94a3b8; font-weight: 800;">No hay actividades registradas aún.</div>';
+          return;
+        }
 
-    .card-img-wrap { 
-        position: relative; 
-        height: 220px; 
-        overflow: hidden;
-    }
-
-    .card-img-wrap img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-        transition: transform 0.6s ease;
-    }
-    .activity-card:hover .card-img-wrap img { transform: scale(1.08); }
-
-    .status-tag { 
-        position: absolute; 
-        top: 20px; 
-        right: 20px; 
-        padding: 6px 14px; 
-        border-radius: 999px; 
-        font-size: 11px; 
-        font-weight: 900; 
-        color: white; 
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        z-index: 2;
-    }
-
-    .status-tag.completado { background: var(--accent-success); }
-    .status-tag.en_progreso { background: var(--glow-primary); }
-    .status-tag.retrasado { background: var(--accent-warning); }
-
-    .category-pin { 
-        position: absolute; 
-        bottom: 20px; 
-        left: 20px; 
-        padding: 6px 14px; 
-        border-radius: 12px; 
-        font-size: 11px; 
-        font-weight: 950; 
-        background: rgba(255, 255, 255, 0.9); 
-        color: var(--text-main); 
-        backdrop-filter: blur(4px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        z-index: 2;
-    }
-
-    .card-body { 
-        padding: 28px; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 16px; 
-        flex: 1;
-    }
-
-    .card-id { font-size: 11px; font-weight: 900; color: var(--glow-primary); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
-    .card-title { font-weight: 900; font-size: 22px; color: var(--text-main); line-height: 1.25; letter-spacing: -0.5px; }
-    .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; height: 68px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
-
-    .card-meta { margin-top: auto; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 20px; }
-    .meta-line { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #475569; font-weight: 700; }
-    .meta-line i { color: var(--glow-primary); width: 18px; text-align: center; font-size: 15px; opacity: 0.8; }
-
-    .footer-btn { margin-top: 50px; display: flex; justify-content: center; padding-bottom: 20px; }
-
-    @media (max-width: 900px) {
-        .view-header { flex-direction: column; align-items: flex-start; gap: 20px; padding: 30px; }
-        .filters-bar { flex-direction: column; align-items: stretch; border-radius: 20px; }
-        .tab-filters { overflow-x: auto; padding: 4px; }
-        .activities-grid { grid-template-columns: 1fr; }
-    }
-</style>
-
-<script>
-    let ALL_ACTIVITIES = [];
-
-    (function init() {
-        formatoB_load();
-    })();
-
-    function formatoB_load() {
-        google.script.run
-            .withSuccessHandler(items => {
-                ALL_ACTIVITIES = items;
-                renderActivities(items);
-            })
-            .formatoB_getActivities();
-    }
-
-    function renderActivities(items) {
-        const grid = document.getElementById('formatoB_grid');
-        grid.innerHTML = items.map(it => `
-            <div class="activity-card">
-                <div class="card-img-wrap">
-                    <img src="${it.imagen}" alt="${it.titulo}">
-                    <div class="status-tag ${it.estado.toLowerCase()}">${it.estado.replace('_', ' ')}</div>
-                    <div class="category-pin">${it.categoria}</div>
+        grid.innerHTML = data.map(a => {
+          const estadoClase = (a.estado || 'EN PROGRESO').replace(' ', '_');
+          return `
+            <div class="card-act">
+              <div style="position: relative; overflow: hidden; height: 220px;">
+                <img src="${a.imagen_url || 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg'}" class="card-img">
+                <div style="position: absolute; top: 20px; right: 20px;">
+                   <span class="badge-estado status-${estadoClase}">${a.estado || 'EN PROGRESO'}</span>
                 </div>
-                <div class="card-body">
-                    <div class="card-id">ACTIVIDAD</div>
-                    <h3 class="card-title">${it.titulo}</h3>
-                    <p class="card-desc">${it.descripcion}</p>
-                    <div class="card-meta">
-                        <div class="meta-line">
-                            <i class="fa-solid fa-chart-line"></i>
-                            <span>Impacto: ${it.impacto}</span>
-                        </div>
-                        <div class="meta-line">
-                            <i class="fa-solid fa-bullseye"></i>
-                            <span>Objetivo PEI: ${it.objetivoPEI}</span>
-                        </div>
-                    </div>
+                <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 900; backdrop-filter: blur(4px);">
+                  <i class="fa-solid fa-tag"></i> ${a.tipo || 'General'}
                 </div>
+              </div>
+              <div class="card-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size: 11px; font-weight: 900; color: #00417B; letter-spacing: 1.5px;">ESTRATEGIA</span>
+                  <button class="btn-outline" style="padding:4px 12px; font-size:11px; min-height: auto;" onclick='modalActividad(${JSON.stringify(a)})'>
+                    <i class="fa-solid fa-pen"></i> EDITAR
+                  </button>
+                </div>
+                <h3 class="card-title">${a.titulo}</h3>
+                <p class="card-desc">${a.descripcion}</p>
+                <div class="card-footer-info">
+                  <div><i class="fa-solid fa-bolt"></i> <strong>Impacto:</strong> ${a.impacto}</div>
+                  <div><i class="fa-solid fa-bullseye"></i> <strong>Objetivo:</strong> ${a.objetivo_pei}</div>
+                </div>
+              </div>
             </div>
-        `).join('');
+          `;
+        }).join('');
+      }).actividades_list();
     }
 
-    function formatoB_filter(cat, btn) {
-        // Toggle Active Class
-        const btns = document.querySelectorAll('.tab-btn');
-        btns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // Filter Data
-        const filtered = (cat === 'All') 
-            ? ALL_ACTIVITIES 
-            : ALL_ACTIVITIES.filter(it => it.categoria === cat || it.tag === cat);
-        
-        renderActivities(filtered);
+    function modalActividad(data = null) {
+      const isEdit = !!data;
+      Swal.fire({
+        title: isEdit ? 'Editar registro institucional' : 'Nueva Actividad Estratégica',
+        text: 'Completa los campos para registrar el progreso.',
+        width: '650px',
+        customClass: { popup: 'custom-modal-radius' },
+        html: `
+          <div class="modal-form-container">
+            <input type="hidden" id="id" value="${data ? data.id : ''}">
+            <div class="field-group"><label>Título de la Actividad</label><input id="t" class="custom-input" placeholder="Ej: Renovación de Laboratorios Q1" value="${data ? data.titulo : ''}"></div>
+            <div class="field-group"><label>Descripción / Logros</label><textarea id="d" class="custom-textarea" style="height:100px;" placeholder="Detalla qué se logró en este periodo...">${data ? data.descripcion : ''}</textarea></div>
+            <div class="row-grid">
+              <div class="field-group"><label>Categoría</label>
+                <select id="ty" class="custom-input">
+                  ${['Estratégico', 'Misional', 'Soporte', 'Digital'].map(opt => `<option ${data?.tipo == opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>
+              </div>
+              <div class="field-group"><label>Estado de Avance</label>
+                <select id="st" class="custom-input">
+                  ${['EN PROGRESO', 'COMPLETADO', 'RETRASADO'].map(opt => `<option ${data?.estado == opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="field-group"><label>Nivel de Impacto Institucional</label><input id="i" class="custom-input" placeholder="Ej: 850 estudiantes beneficiados" value="${data ? data.impacto : ''}"></div>
+            <div class="field-group"><label>Alineación Objetivo PEI</label><input id="o" class="custom-input" placeholder="Ej: Eje Estratégico 2.1" value="${data ? data.objetivo_pei : ''}"></div>
+            <div class="field-group"><label>URL Multimedia (Opcional)</label><input id="u" class="custom-input" placeholder="https://..." value="${data ? data.imagen_url : ''}"></div>
+          </div>
+        `,
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Guardar cambios',
+        confirmButtonColor: '#00417B',
+        preConfirm: () => {
+           const val = (id) => document.getElementById(id).value;
+           return {
+            id: val('id'),
+            titulo: val('t'),
+            descripcion: val('d'),
+            tipo: val('ty'),
+            estado: val('st'),
+            impacto: val('i'),
+            objetivo: val('o'),
+            url: val('u')
+          }
+        }
+      }).then(r => {
+        if (r.isConfirmed) {
+          Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+          google.script.run.withSuccessHandler(res => {
+            if(res.success) {
+               Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1500, showConfirmButton: false });
+               renderActividades();
+            } else {
+               Swal.fire({ icon: 'error', title: 'Error', text: res.message });
+            }
+          }).actividades_guardar(r.value);
+        }
+      });
     }
 
-    function formatoB_add() {
-        Swal.fire({
-            title: 'Nueva Actividad',
-            text: 'Se abrirá el formulario para registrar un nuevo logro estratégico.',
-            icon: 'info'
-        });
-    }
-
-    function formatoB_loadMore() {
-        Swal.fire('Cargando...', 'Buscando más registros en el servidor...', 'info');
-    }
-</script>
+    renderActividades();
+  </script>
+</div>

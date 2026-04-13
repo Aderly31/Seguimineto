@@ -1,25 +1,44 @@
 /**
- * FormatoC_g.gs
- * Lógica para la gestión de Riesgos y Brechas
+ * FormatoC_g.gs - Módulo de Riesgos y Brechas
  */
 
-function formatoC_saveRisk(formData) {
-  const session = Auth.getSession();
-  console.log('Guardando Análisis de Riesgo:', formData);
-  
-  // Simulación
-  Utilities.sleep(1200);
-  return { 
-    success: true, 
-    message: 'El análisis de riesgo ha sido registrado exitosamente.',
-    id: 'RSK-' + Math.floor(Math.random()*1000)
-  };
+function riesgos_get_all() {
+  const data = SheetService.readObjects_(APP_CONFIG.SHEETS.RIESGOS);
+  return data.map(it => ({
+    id: it.id,
+    brecha: it.brecha || it.riesgo,
+    causa: it.causa,
+    impacto: it.impacto,
+    accion: it.accion || it.accion_propuesta,
+    estado: it.estado || 'Pendiente',
+    fecha: it.fecha || it.fecha_objetivo,
+    enlace: it.enlace || it.enlace_url
+  }));
 }
 
-function formatoC_getEvidences() {
-  // Datos de ejemplo para el panel lateral
-  return [
-    { nombre: 'Evaluacion_Riesgo_Q1.pdf', tamano: '2.4 MB', tipo: 'pdf', id: 'ev-1' },
-    { nombre: 'Portal de Auditoría Interna', url: 'https://interna.uac.edu/auditoria', tipo: 'link', id: 'ev-2' }
-  ];
+function riesgos_guardar(data) {
+  try {
+    const isEdit = !!data.id;
+    const rowData = {
+      id: data.id || Utilities.getUuid(),
+      brecha: data.brecha,
+      causa: data.causa,
+      impacto: data.impacto,
+      accion: data.accion,
+      estado: data.estado,
+      fecha: data.fecha,
+      enlace: data.enlace,
+      fecha_registro: new Date()
+    };
+
+    if (isEdit) {
+      const success = SheetService.updateObjectById_(APP_CONFIG.SHEETS.RIESGOS, data.id, rowData);
+      return { success };
+    } else {
+      SheetService.saveObject_(APP_CONFIG.SHEETS.RIESGOS, rowData);
+      return { success: true };
+    }
+  } catch (e) {
+    return { success: false, message: e.toString() };
+  }
 }

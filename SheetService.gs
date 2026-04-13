@@ -232,6 +232,7 @@ const SheetService = (() => {
     // escritura
     readObjects_,
     saveObject_,
-    updateObjectById_
+    updateObjectById_,
+    appendData: (name, row) => sh_(name).appendRow(row)
   };
 })();

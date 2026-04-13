@@ -1,1 +1,1 @@
-# Seguimineto
+# Seguimiento
