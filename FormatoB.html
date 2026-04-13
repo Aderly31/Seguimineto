@@ -1,28 +1,5 @@
-<!-- 
-     FormatoB.html (Actividades y Logros)
-     Aetheria Glass Redesign
--->
 <div id="formatoB_root">
   <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.4);
-      --glow-primary: #00417B;
-      --glow-secondary: #0ea5e9;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-    }
-
-    #formatoB_root {
-      animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      padding-bottom: 40px;
-    }
-
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .header-actions {
       display: flex;
       justify-content: space-between;
@@ -35,25 +12,6 @@
       box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
     }
 
-    .header-info h2 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1px; }
-    .header-info p { color: rgba(255, 255, 255, 0.85); margin: 8px 0 0; font-weight: 500; }
-
-    .btn-add {
-      background: white;
-      color: #00417B;
-      padding: 14px 24px;
-      border-radius: 12px;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0,0,0,0.15); }
-
     .grid-act {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -65,185 +23,148 @@
       border-radius: 28px;
       border: 1px solid #f1f5f9;
       overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
       display: flex;
       flex-direction: column;
+      transition: transform 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     }
+
     .card-act:hover {
-      transform: translateY(-8px) scale(1.01);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-8px);
       border-color: #00417B;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     .card-img {
       width: 100%;
-      height: 220px;
+      height: 200px;
       object-fit: cover;
-      background: #f1f5f9;
-      transition: transform 0.6s ease;
     }
-    .card-act:hover .card-img { transform: scale(1.08); }
 
-    .card-body { padding: 28px; flex: 1; display: flex; flex-direction: column; }
-
-    .badge-estado {
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    .card-body {
+      padding: 24px;
     }
-    .status-COMPLETADO { background: #dcfce7; color: #166534; }
-    .status-EN_PROGRESO { background: #dbeafe; color: #1e40af; }
-    .status-RETRASADO { background: #fee2e2; color: #991b1b; }
 
-    .card-title { font-weight: 950; font-size: 22px; color: #1e293b; margin: 16px 0 12px; line-height: 1.25; letter-spacing: -0.5px; }
-    .card-desc { font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.6; }
-
-    .card-footer-info {
-      background: #f8fafc;
-      padding: 16px;
-      border-radius: 18px;
-      font-size: 13px;
-      margin-top: auto;
-      border: 1px solid #f1f5f9;
+    .card-title {
+      font-weight: 950;
+      font-size: 20px;
+      color: #1e293b;
+      margin: 12px 0;
     }
-    .card-footer-info div { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-weight: 700; color: #334155; }
-    .card-footer-info div:last-child { margin-bottom: 0; }
-    .card-footer-info i { color: #00417B; width: 16px; font-size: 14px; }
 
-    /* Modal Context */
-    .custom-modal-radius { border-radius: 28px !important; padding: 10px !important; }
-    .modal-form-container { text-align: left; padding: 10px; }
-    .field-group { margin-bottom: 18px; }
-    .field-group label { display: block; font-size: 13px; font-weight: 800; color: #475569; margin-bottom: 8px; letter-spacing: 0.5px; }
-    .custom-input, .custom-textarea {
-      width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px;
-      font-size: 15px; box-sizing: border-box; background: #fcfcfd; transition: all 0.2s;
+    .custom-input,
+    .custom-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
     }
-    .custom-input:focus, .custom-textarea:focus { border-color: #00417B; background: #fff; box-shadow: 0 0 0 4px rgba(0, 65, 123, 0.1); outline: none; }
-    .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
   </style>
 
   <div class="header-actions">
-    <div class="header-info">
-      <h2>Formato B: Actividades y Logros</h2>
-      <p>Seguimiento del progreso institucional semestral frente a objetivos PEI.</p>
+    <div>
+      <h2 style="margin:0; font-size:32px;">Formato B: Actividades</h2>
+      <p style="margin:8px 0 0; opacity:0.9;">Seguimiento del progreso institucional</p>
     </div>
-    <button class="btn-add" onclick="modalActividad()">
-      <i class="fa-solid fa-plus"></i> Agregar Actividad
+    <button
+      style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
+      onclick="modalActividad()">
+      + Agregar Actividad
     </button>
   </div>
 
-  <div id="gridActividades" class="grid-act"></div>
+  <div id="gridAct" class="grid-act"></div>
 
   <script>
-    function renderActividades() {
-      google.script.run.withSuccessHandler(data => {
-        const grid = document.getElementById('gridActividades');
-        if (!data || data.length === 0) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 60px; background: white; border-radius: 24px; border: 1px solid #f1f5f9; color:#94a3b8; font-weight: 800;">No hay actividades registradas aún.</div>';
-          return;
-        }
+    let CACHE_ACTS = [];
 
-        grid.innerHTML = data.map(a => {
-          const estadoClase = (a.estado || 'EN PROGRESO').replace(' ', '_');
-          return `
-            <div class="card-act">
-              <div style="position: relative; overflow: hidden; height: 220px;">
-                <img src="${a.imagen_url || 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg'}" class="card-img">
-                <div style="position: absolute; top: 20px; right: 20px;">
-                   <span class="badge-estado status-${estadoClase}">${a.estado || 'EN PROGRESO'}</span>
-                </div>
-                <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 900; backdrop-filter: blur(4px);">
-                  <i class="fa-solid fa-tag"></i> ${a.tipo || 'General'}
-                </div>
-              </div>
-              <div class="card-body">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size: 11px; font-weight: 900; color: #00417B; letter-spacing: 1.5px;">ESTRATEGIA</span>
-                  <button class="btn-outline" style="padding:4px 12px; font-size:11px; min-height: auto;" onclick='modalActividad(${JSON.stringify(a)})'>
-                    <i class="fa-solid fa-pen"></i> EDITAR
-                  </button>
-                </div>
-                <h3 class="card-title">${a.titulo}</h3>
-                <p class="card-desc">${a.descripcion}</p>
-                <div class="card-footer-info">
-                  <div><i class="fa-solid fa-bolt"></i> <strong>Impacto:</strong> ${a.impacto}</div>
-                  <div><i class="fa-solid fa-bullseye"></i> <strong>Objetivo:</strong> ${a.objetivo_pei}</div>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }).actividades_list();
+    function formatoB_load() {
+      google.script.run.withSuccessHandler(data => {
+        CACHE_ACTS = data;
+        renderAct(data);
+      }).formatoB_get();
     }
 
-    function modalActividad(data = null) {
-      const isEdit = !!data;
+    function renderAct(items) {
+      const grid = document.getElementById('gridAct');
+      if (!items.length) { grid.innerHTML = '<div style="padding:40px; text-align:center;">No hay actividades.</div>'; return; }
+
+      grid.innerHTML = items.map(a => `
+            <div class="card-act">
+                <div style="position:relative;">
+                    <img src="${a.imagen}" class="card-img">
+                    <span style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.9); padding:6px 14px; border-radius:20px; font-size:10px; font-weight:900;">${a.estado}</span>
+                </div>
+                <div class="card-body">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:11px; font-weight:900; color:#00417B;">${a.tipo}</span>
+                        <button style="background:#f1f5f9; border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:900; cursor:pointer;" onclick="modalActividad('${a.id}')">EDITAR</button>
+                    </div>
+                    <h3 class="card-title">${a.titulo}</h3>
+                    <p style="font-size:13px; color:#64748b; margin-bottom:16px;">${a.descripcion}</p>
+                    <div style="background:#f8fafc; padding:12px; border-radius:12px; font-size:12px; color:#475569;">
+                        <strong>Impacto:</strong> ${a.impacto}
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    function modalActividad(id = null) {
+      const data = id ? CACHE_ACTS.find(x => x.id === id) : null;
       Swal.fire({
-        title: isEdit ? 'Editar registro institucional' : 'Nueva Actividad Estratégica',
-        text: 'Completa los campos para registrar el progreso.',
-        width: '650px',
-        customClass: { popup: 'custom-modal-radius' },
+        title: data ? 'Editar Actividad' : 'Nueva Actividad',
         html: `
-          <div class="modal-form-container">
-            <input type="hidden" id="id" value="${data ? data.id : ''}">
-            <div class="field-group"><label>Título de la Actividad</label><input id="t" class="custom-input" placeholder="Ej: Renovación de Laboratorios Q1" value="${data ? data.titulo : ''}"></div>
-            <div class="field-group"><label>Descripción / Logros</label><textarea id="d" class="custom-textarea" style="height:100px;" placeholder="Detalla qué se logró en este periodo...">${data ? data.descripcion : ''}</textarea></div>
-            <div class="row-grid">
-              <div class="field-group"><label>Categoría</label>
-                <select id="ty" class="custom-input">
-                  ${['Estratégico', 'Misional', 'Soporte', 'Digital'].map(opt => `<option ${data?.tipo == opt ? 'selected' : ''}>${opt}</option>`).join('')}
-                </select>
-              </div>
-              <div class="field-group"><label>Estado de Avance</label>
-                <select id="st" class="custom-input">
-                  ${['EN PROGRESO', 'COMPLETADO', 'RETRASADO'].map(opt => `<option ${data?.estado == opt ? 'selected' : ''}>${opt}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-            <div class="field-group"><label>Nivel de Impacto Institucional</label><input id="i" class="custom-input" placeholder="Ej: 850 estudiantes beneficiados" value="${data ? data.impacto : ''}"></div>
-            <div class="field-group"><label>Alineación Objetivo PEI</label><input id="o" class="custom-input" placeholder="Ej: Eje Estratégico 2.1" value="${data ? data.objetivo_pei : ''}"></div>
-            <div class="field-group"><label>URL Multimedia (Opcional)</label><input id="u" class="custom-input" placeholder="https://..." value="${data ? data.imagen_url : ''}"></div>
-          </div>
-        `,
+                    <div style="text-align:left;">
+                        <input type="hidden" id="fB_id" value="${data ? data.id : ''}">
+                        <label style="font-size:12px; font-weight:800;">Título</label>
+                        <input id="fB_titulo" class="custom-input" value="${data ? data.titulo : ''}">
+                        
+                        <label style="font-size:12px; font-weight:800;">Descripción</label>
+                        <textarea id="fB_desc" class="custom-textarea">${data ? data.descripcion : ''}</textarea>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div>
+                                <label style="font-size:12px; font-weight:800;">Categoría</label>
+                                <select id="fB_tipo" class="custom-input">
+                                    <option ${data?.tipo == 'Estratégico' ? 'selected' : ''}>Estratégico</option>
+                                    <option ${data?.tipo == 'Soporte' ? 'selected' : ''}>Soporte</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; font-weight:800;">Estado</label>
+                                <select id="fB_estado" class="custom-input">
+                                    <option ${data?.estado == 'EN PROGRESO' ? 'selected' : ''}>EN PROGRESO</option>
+                                    <option ${data?.estado == 'COMPLETADO' ? 'selected' : ''}>COMPLETADO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label style="font-size:12px; font-weight:800;">Impacto</label>
+                        <input id="fB_impacto" class="custom-input" value="${data ? data.impacto : ''}">
+                    </div>
+                `,
         showCancelButton: true,
-        cancelButtonText: 'Cancelar',
-        confirmButtonText: 'Guardar cambios',
         confirmButtonColor: '#00417B',
-        preConfirm: () => {
-           const val = (id) => document.getElementById(id).value;
-           return {
-            id: val('id'),
-            titulo: val('t'),
-            descripcion: val('d'),
-            tipo: val('ty'),
-            estado: val('st'),
-            impacto: val('i'),
-            objetivo: val('o'),
-            url: val('u')
-          }
-        }
+        confirmButtonText: 'Guardar',
+        preConfirm: () => ({
+          id: document.getElementById('fB_id').value,
+          titulo: document.getElementById('fB_titulo').value,
+          descripcion: document.getElementById('fB_desc').value,
+          tipo: document.getElementById('fB_tipo').value,
+          estado: document.getElementById('fB_estado').value,
+          impacto: document.getElementById('fB_impacto').value
+        })
       }).then(r => {
         if (r.isConfirmed) {
-          Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
+          Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
           google.script.run.withSuccessHandler(res => {
-            if(res.success) {
-               Swal.fire({ icon: 'success', title: '¡Guardado!', timer: 1500, showConfirmButton: false });
-               renderActividades();
-            } else {
-               Swal.fire({ icon: 'error', title: 'Error', text: res.message });
-            }
-          }).actividades_guardar(r.value);
+            if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoB_load(); }
+            else Swal.fire('Error', res.message, 'error');
+          }).formatoB_save(r.value);
         }
       });
     }
-
-    renderActividades();
+    formatoB_load();
   </script>
 </div>

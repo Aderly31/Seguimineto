@@ -1,35 +1,5 @@
-<!-- 
-     FormatoD.html (Capacitaciones)
-     Aetheria Glass Redesign
--->
 <div id="formatoD_root">
     <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glow-primary: #00417B;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-        }
-
-        #formatoD_root {
-            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            padding-bottom: 120px;
-        }
-
-        @keyframes slideUpFade {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* --- Premium Header --- */
         .header-actions {
             display: flex;
             justify-content: space-between;
@@ -42,132 +12,47 @@
             box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
         }
 
-        .header-info h2 {
-            font-size: 32px;
-            font-weight: 950;
-            margin: 0;
-            letter-spacing: -1px;
-        }
-
-        .header-info p {
-            color: rgba(255, 255, 255, 0.85);
-            margin: 8px 0 0;
-            font-weight: 500;
-        }
-
-        /* --- Filtros Estilizados --- */
-        .filters-bar {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 32px;
-            background: var(--glass-bg);
-            padding: 16px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            align-items: center;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: #00417B;
-            box-shadow: 0 0 0 4px rgba(0, 65, 123, 0.1);
-        }
-
-        .select-input {
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--text-main);
-            cursor: pointer;
-        }
-
-        /* --- Grid de Capacitaciones --- */
         .cap-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
 
-        /* PREMIUM CARD STYLE */
-        .card-premium { 
-            background: white; border-radius: 24px; border: 1px solid #f1f5f9; 
-            overflow: hidden; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column; position: relative;
-        }
-        .card-premium:hover { transform: translateY(-8px); border-color: #00417B; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        
-        .card-banner { width: 100%; height: 180px; position: relative; overflow: hidden; background: #f1f5f9; }
-        .card-banner img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .badge-status { 
-            position: absolute; top: 20px; right: 20px; padding: 6px 14px; border-radius: 999px; 
-            font-size: 10px; font-weight: 950; text-transform: uppercase; letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            color: #00417B;
+        .card-premium {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            padding: 24px;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
         }
 
-        .badge-category { 
-            position: absolute; bottom: 20px; left: 20px; padding: 6px 14px; border-radius: 999px;
-            font-size: 11px; font-weight: 900; background: rgba(0, 65, 123, 0.9); color: white;
-            backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px;
+        .card-premium:hover {
+            border-color: #00417B;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-        .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .card-section-tag { font-size: 11px; font-weight: 950; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .btn-edit-sm { 
-            background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; 
-            padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 900; 
-            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+        .custom-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            background: #fcfcfd;
         }
-        .btn-edit-sm:hover { background: #00417B; color: white; border-color: #00417B; transform: scale(1.05); }
 
-        .card-title { font-size: 18px; font-weight: 950; color: var(--text-main); margin-bottom: 12px; line-height: 1.4; }
-        .card-desc { font-size: 14px; color: var(--text-muted); font-weight: 600; line-height: 1.6; margin-bottom: 24px; }
-
-        .card-detail-box { 
-            background: rgba(0, 65, 123, 0.03); border: 1px solid rgba(0, 65, 123, 0.05); 
-            border-radius: 20px; padding: 20px; margin-top: auto;
-        }
-        .detail-item { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-        .detail-item:last-child { margin-bottom: 0; }
-        .detail-item i { color: #00417B; font-size: 16px; width: 20px; text-align: center; }
-        .detail-item span { font-size: 13px; font-weight: 700; color: #475569; }
-        .detail-item strong { color: #1e293b; font-weight: 950; }
-
-        /* --- Footer de Cumplimiento --- */
         .compliance-bar {
-            position: fixed;
-            bottom: 0;
-            left: 300px;
-            right: 0;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--glass-border);
-            padding: 24px 48px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             align-items: center;
             gap: 32px;
-            z-index: 100;
-            transition: left 0.3s ease;
-        }
-
-        .app.sidebar-collapsed .compliance-bar {
-            left: 88px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
         }
 
         .progress-track {
@@ -184,184 +69,121 @@
             border-radius: 999px;
             transition: width 1s ease;
         }
-
-        .progress-text {
-            font-size: 24px;
-            font-weight: 950;
-            color: #00417B;
-        }
     </style>
 
     <div class="header-actions">
-        <div class="header-info">
-            <h2>Formato D: Capacitaciones</h2>
-            <p>Registro y reporte institucional de formación continua del personal.</p>
+        <div>
+            <h2 style="margin:0; font-size:32px; font-weight:950;">Formato D: Capacitaciones</h2>
+            <p style="margin:8px 0 0; opacity:0.9;">Registro y control de formación continua</p>
         </div>
-        <button class="btn"
-            style="background:white; color:#00417B; padding:14px 24px; border-radius:12px; font-weight:800; border:none; cursor:pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);"
-            onclick="modalCapacitacion()">
-            <i class="fa-solid fa-plus-circle"></i> Registrar Capacitación
-        </button>
+        <button
+            style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
+            onclick="modalCap()">+ Registrar Capacitación</button>
     </div>
-
-    <div class="filters-bar">
-        <input type="text" class="search-input" placeholder="Buscar por nombre o modalidad..."
-            oninput="handleSearch(this.value)">
-        <select class="select-input" onchange="handleModalidad(this.value)">
-            <option value="">Todas las Modalidades</option>
-            <option value="Virtual">Virtual</option>
-            <option value="Presencial">Presencial</option>
-        </select>
-    </div>
-
-    <div id="capGrid" class="cap-grid"></div>
 
     <!-- Barra de Cumplimiento -->
     <div class="compliance-bar">
-        <div style="flex-shrink:0;">
+        <div>
             <div style="font-size:14px; font-weight:900; color:#1e293b;">Cumplimiento Institucional</div>
             <div style="font-size:11px; color:#64748b; font-weight:700;">Meta del periodo: 100%</div>
         </div>
         <div class="progress-track">
-            <div id="complianceFill" class="progress-fill" style="width: 0%"></div>
+            <div id="compFill" class="progress-fill" style="width: 0%"></div>
         </div>
-        <div id="complianceText" class="progress-text">0%</div>
+        <div id="compText" style="font-size: 24px; font-weight: 950; color: #00417B;">0%</div>
     </div>
 
-    <script>
-        let ALL_CAPS = [];
+    <div id="gridCap" class="cap-grid"></div>
 
-        function loadCaps() {
+    <script>
+        let CACHE_CAPS = [];
+
+        function formatoD_load() {
             google.script.run.withSuccessHandler(data => {
-                ALL_CAPS = data;
+                CACHE_CAPS = data;
                 renderCaps(data);
-                updateCompliance();
-            }).cap_get_all();
+
+                // Simular cálculo de cumplimiento
+                const total = data.length;
+                const completados = data.filter(c => c.estado === 'Realizado').length;
+                const perc = total ? Math.round((completados / total) * 100) : 0;
+                document.getElementById('compFill').style.width = perc + '%';
+                document.getElementById('compText').textContent = perc + '%';
+            }).formatoD_get();
         }
 
         function renderCaps(items) {
-           const grid = document.getElementById('capGrid');
-           if (!items || items.length === 0) {
-             grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 80px; color:#94a3b8; font-weight: 800;">No hay capacitaciones registradas.</div>';
-             return;
-           }
+            const grid = document.getElementById('gridCap');
+            if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b;">No hay capacitaciones.</div>'; return; }
 
-           grid.innerHTML = items.map(c => {
-             const safeData = JSON.stringify(c).replace(/'/g, "&apos;");
-             return `
-               <div class="card-premium">
-                   <div class="card-banner">
-                       <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop" alt="Banner Capacitación">
-                       <div class="badge-status">${c.modalidad || 'VIRTUAL'}</div>
-                       <div class="badge-category">
-                           <i class="fa-solid fa-graduation-cap"></i> CAPACITACIÓN
-                       </div>
-                   </div>
-                   <div class="card-body">
-                       <div class="card-header-row">
-                           <span class="card-section-tag">FORMACIÓN DOCENTE</span>
-                           <button class="btn-edit-sm" onclick='modalCapacitacion(${safeData})'>
-                               <i class="fa-solid fa-pen"></i> EDITAR
-                           </button>
-                       </div>
-                       <h3 class="card-title">${c.nombre}</h3>
-                       
-                       <div class="card-detail-box">
-                           <div class="detail-item">
-                               <i class="fa-solid fa-calendar-days"></i>
-                               <span>Fecha: <strong>${c.fecha || '-'}</strong></span>
-                           </div>
-                           <div class="detail-item">
-                               <i class="fa-solid fa-users"></i>
-                               <span>Participantes: <strong>${c.participantes || '0'}</strong></span>
-                           </div>
-                           <div class="detail-item">
-                               <i class="fa-solid fa-clock"></i>
-                               <span>Duración: <strong>40 horas académicas</strong></span>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-             `;
-           }).join('');
+            grid.innerHTML = items.map(c => `
+            <div class="card-premium">
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <span style="font-size:11px; font-weight:900; background:#f1f5f9; padding:4px 10px; border-radius:8px; color:#475569;">${c.modalidad}</span>
+                    <span style="font-size:11px; font-weight:900; color:${c.estado === 'Realizado' ? '#10b981' : '#f59e0b'};">${c.estado}</span>
+                </div>
+                <h3 style="margin:0 0 16px; font-size:18px; color:#1e293b; font-weight:950;">${c.nombre}</h3>
+                <div style="font-size:13px; color:#64748b; margin-bottom:8px;"><i class="fa-solid fa-calendar"></i> Fecha: <strong>${c.fecha}</strong></div>
+                <div style="font-size:13px; color:#64748b; margin-bottom:16px;"><i class="fa-solid fa-users"></i> Participantes: <strong>${c.participantes}</strong></div>
+                
+                <button style="width:100%; background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:12px; font-weight:900; cursor:pointer; color:#00417B;" onclick="modalCap('${c.id}')">EDITAR DETALLES</button>
+            </div>`).join('');
         }
 
-        function updateCompliance() {
-            google.script.run.withSuccessHandler(summary => {
-                document.getElementById('complianceFill').style.width = summary.cumplimientoGeneral + '%';
-                document.getElementById('complianceText').textContent = summary.cumplimientoGeneral + '%';
-            }).formatoD_getSummary();
-        }
-
-        function modalCapacitacion(data = null) {
-            const isEdit = !!data;
+        function modalCap(id = null) {
+            const data = id ? CACHE_CAPS.find(x => x.id === id) : null;
             Swal.fire({
-                title: isEdit ? 'Editar Capacitación' : 'Registrar Capacitación',
-                width: '550px',
-                customClass: { popup: 'custom-modal-radius' },
-                confirmButtonText: isEdit ? 'Actualizar' : 'Registrar',
-                confirmButtonColor: '#00417B',
-                showCancelButton: true,
-                cancelButtonText: 'Cancelar',
+                title: data ? 'Editar Capacitación' : 'Nueva Capacitación',
                 html: `
-          <div style="text-align:left; padding:10px;">
-            <input type="hidden" id="cap_id" value="${data ? data.id : ''}">
-            <div class="field">
-              <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:#475569;">Nombre de la Capacitación</label>
-              <input id="n" class="custom-input" placeholder="Ej: Taller de Transformación Digital" value="${data ? data.nombre : ''}">
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
-              <div class="field">
-                <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:#475569;">Fecha de Ejecución</label>
-                <input id="f" type="date" class="custom-input" value="${data ? data.fecha : ''}">
-              </div>
-              <div class="field">
-                <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:#475569;">Modalidad</label>
-                <select id="m" class="custom-input">
-                  <option ${data?.modalidad == 'Virtual' ? 'selected' : ''}>Virtual</option>
-                  <option ${data?.modalidad == 'Presencial' ? 'selected' : ''}>Presencial</option>
-                </select>
-              </div>
-            </div>
-            <div class="field" style="margin-top:16px;">
-              <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:#475569;">Número de Participantes</label>
-              <input id="p" type="number" class="custom-input" placeholder="Ej: 25" value="${data ? data.participantes : ''}">
-            </div>
-          </div>
-        `,
-                preConfirm: () => {
-                    return {
-                        id: document.getElementById('cap_id').value,
-                        nombre: document.getElementById('n').value,
-                        fecha: document.getElementById('f').value,
-                        modalidad: document.getElementById('m').value,
-                        participantes: document.getElementById('p').value
-                    }
-                }
+                    <div style="text-align:left;">
+                        <input type="hidden" id="fD_id" value="${data ? data.id : ''}">
+                        <label style="font-size:12px; font-weight:800;">Nombre de la Capacitación</label>
+                        <input id="fD_nombre" class="custom-input" value="${data ? data.nombre : ''}">
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div><label style="font-size:12px; font-weight:800;">Fecha</label><input type="date" id="fD_fecha" class="custom-input" value="${data ? data.fecha : ''}"></div>
+                            <div><label style="font-size:12px; font-weight:800;">Participantes</label><input type="number" id="fD_participantes" class="custom-input" value="${data ? data.participantes : ''}"></div>
+                        </div>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div>
+                                <label style="font-size:12px; font-weight:800;">Modalidad</label>
+                                <select id="fD_modalidad" class="custom-input">
+                                    <option ${data?.modalidad == 'Virtual' ? 'selected' : ''}>Virtual</option>
+                                    <option ${data?.modalidad == 'Presencial' ? 'selected' : ''}>Presencial</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:12px; font-weight:800;">Estado</label>
+                                <select id="fD_estado" class="custom-input">
+                                    <option ${data?.estado == 'Programado' ? 'selected' : ''}>Programado</option>
+                                    <option ${data?.estado == 'Realizado' ? 'selected' : ''}>Realizado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#00417B',
+                confirmButtonText: 'Guardar',
+                preConfirm: () => ({
+                    id: document.getElementById('fD_id').value,
+                    nombre: document.getElementById('fD_nombre').value,
+                    fecha: document.getElementById('fD_fecha').value,
+                    participantes: document.getElementById('fD_participantes').value,
+                    modalidad: document.getElementById('fD_modalidad').value,
+                    estado: document.getElementById('fD_estado').value
+                })
             }).then(r => {
                 if (r.isConfirmed) {
-                    Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
-                    google.script.run.withSuccessHandler(() => {
-                        Swal.fire({ icon: 'success', title: isEdit ? 'Registro actualizado' : 'Registro exitoso', timer: 1500, showConfirmButton: false });
-                        loadCaps();
-                    }).cap_registrar(r.value);
+                    Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+                    google.script.run.withSuccessHandler(res => {
+                        if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoD_load(); }
+                        else Swal.fire('Error', res.message, 'error');
+                    }).formatoD_save(r.value);
                 }
             });
         }
-
-        function handleSearch(q) {
-            const filtered = ALL_CAPS.filter(c =>
-                c.nombre.toLowerCase().includes(q.toLowerCase()) ||
-                c.modalidad.toLowerCase().includes(q.toLowerCase())
-            );
-            renderCaps(filtered);
-        }
-
-        function handleModalidad(m) {
-            const filtered = m === "" ? ALL_CAPS : ALL_CAPS.filter(c => c.modalidad === m);
-            renderCaps(filtered);
-        }
-
-        loadCaps();
+        formatoD_load();
     </script>
 </div>

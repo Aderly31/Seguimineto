@@ -1,6 +1,226 @@
 <div id="formatoA_root">
-    <!-- Vista Listado -->
-    <div id="formatoA_list" class="view-section">
+    <style>
+        :root {
+            --glow-primary: #00417B;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        #formatoA_root {
+            animation: slideUpFade 0.6s ease;
+            padding-bottom: 40px;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px;
+            border-radius: 24px;
+            color: white;
+            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
+        }
+
+        .view-title h1 {
+            font-size: 32px;
+            font-weight: 950;
+            margin: 0;
+            letter-spacing: -1.5px;
+        }
+
+        .view-title p {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0 0;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #00417B;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .card-premium {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-premium:hover {
+            transform: translateY(-8px);
+            border-color: #00417B;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-banner {
+            width: 100%;
+            height: 160px;
+            position: relative;
+            background: #f1f5f9;
+        }
+
+        .card-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .badge-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 950;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+        }
+
+        .badge-category {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 900;
+            background: rgba(0, 65, 123, 0.9);
+            color: white;
+        }
+
+        .card-body {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .btn-edit-sm {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .btn-edit-sm:hover {
+            background: #00417B;
+            color: white;
+            border-color: #00417B;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 950;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .card-detail-box {
+            background: rgba(0, 65, 123, 0.03);
+            border: 1px solid rgba(0, 65, 123, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        /* Formulario oculto */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            background: #fcfcfd;
+            font-size: 14px;
+        }
+    </style>
+
+    <!-- VISTA LISTADO -->
+    <div id="formatoA_list">
         <header class="view-header">
             <div class="view-title">
                 <h1>Formato A: Indicadores</h1>
@@ -10,632 +230,142 @@
                 <i class="fa-solid fa-plus"></i> Agregar Indicador
             </button>
         </header>
-
-        <!-- Tarjetas de Resumen -->
-        <div class="summary-cards" id="formatoA_summary">
-            <!-- Dinámico -->
-        </div>
-
-        <!-- Filtros y Tabla -->
-        <div class="data-container">
-            <div class="table-actions">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Buscar indicador por nombre o código..." oninput="formatoA_filter(this.value)">
-                </div>
-                <div class="action-btns">
-                    <button class="btn-outline"><i class="fa-solid fa-filter"></i> Filtrar</button>
-                    <button class="btn-outline"><i class="fa-solid fa-download"></i> Exportar</button>
-                </div>
-            </div>
-
-        <div id="formatoA_grid" class="grid-cards">
-            <!-- Dinámico -->
-        </div>
+        <div id="formatoA_grid" class="grid-cards"></div>
     </div>
 
-    <!-- Vista Formulario -->
-    <div id="formatoA_form" class="view-section" style="display: none;">
+    <!-- VISTA FORMULARIO (Oculta por defecto) -->
+    <div id="formatoA_form" style="display: none;">
         <header class="view-header">
             <div class="view-title">
-              <nav class="breadcrumb">
-                <span onclick="formatoA_closeForm()">Formato A</span> / <strong>Agregar Indicador</strong>
-              </nav>
-              <h1>Formato A: Formulario de Indicador</h1>
-              <p>Registro de datos institucionales semestrales para ciclos de reporte.</p>
+                <h1 id="formTitleA">Nuevo Indicador</h1>
+                <p>Complete los datos para guardar el registro</p>
             </div>
         </header>
 
-        <form id="formatoA_mainForm" onsubmit="formatoA_save(event)">
+        <form id="formA_main" onsubmit="formatoA_save(event)">
+            <input type="hidden" id="fA_id">
             <div class="form-grid">
-                <!-- Columna Izquierda: Datos -->
-                <div class="form-main">
-                    <div class="form-card">
-                        <div class="form-section-title"><i class="fa-solid fa-circle-info"></i> Información General</div>
-                        <div class="form-group">
-                            <label>Nombre del Indicador <span class="required">*</span></label>
-                            <input type="text" name="nombre" placeholder="Ej. Tasa de Graduación de Estudiantes de Pregrado" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Responsable <span class="required">*</span></label>
-                            <input type="text" name="responsable" placeholder="Nombre de la unidad o persona encargada" required>
-                        </div>
+                <div class="form-card">
+                    <div class="form-group"><label>Nombre del Indicador *</label><input type="text" id="fA_nombre"
+                            required></div>
+                    <div class="form-group"><label>Responsable *</label><input type="text" id="fA_responsable" required>
                     </div>
-
-                    <div class="form-card">
-                        <div class="form-section-title"><i class="fa-solid fa-chart-simple"></i> Métricas de Desempeño</div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Meta Anual <span class="required">*</span></label>
-                                <input type="number" step="0.01" name="metaAnual" placeholder="0.00" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Resultado del Semestre <span class="required">*</span></label>
-                                <input type="number" step="0.01" name="resultadoSemestre" placeholder="0.00" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-card">
-                        <div class="form-section-title"><i class="fa-solid fa-database"></i> Procedencia de Datos</div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Fuente del Dato <span class="required">*</span></label>
-                                <select name="fuente" required>
-                                    <option value="">Seleccione una fuente</option>
-                                    <option value="SGA">SGA Institucional</option>
-                                    <option value="ERP">Sistema Financiero ERP</option>
-                                    <option value="Manual">Carga Manual</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Detalles de la Fuente</label>
-                                <input type="text" name="fuenteDetalle" placeholder="Nombre de base de datos u oficina">
-                            </div>
-                        </div>
+                    <div class="form-group"><label>Fuente de Datos</label>
+                        <select id="fA_fuente">
+                            <option value="SGA">SGA</option>
+                            <option value="ERP">ERP Financiero</option>
+                            <option value="Manual">Manual</option>
+                        </select>
                     </div>
                 </div>
-
-                <!-- Columna Derecha / Final: Evidencias -->
-                <div class="form-evidence">
-                    <div class="form-card">
-                        <div class="form-section-title"><i class="fa-solid fa-link"></i> Evidencias</div>
-                        <div class="form-group">
-                            <label>Enlace (URL)</label>
-                            <div class="input-with-icon">
-                                <span>https://</span>
-                                <input type="url" name="evidenciaUrl" placeholder="almacenamiento-nube.com/documento-evidencia">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Subir Archivo</label>
-                            <div class="file-drop-zone" onclick="formatoA_triggerUpload()">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <p>Arrastre el archivo aquí o haga clic para subir</p>
-                                <span>PDF, JPG, PNG o XLSX (Máx 10MB)</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="form-card">
+                    <div class="form-group"><label>Meta Anual *</label><input type="number" step="0.01" id="fA_meta"
+                            required></div>
+                    <div class="form-group"><label>Resultado Semestre *</label><input type="number" step="0.01"
+                            id="fA_resultado" required></div>
+                    <div class="form-group"><label>Enlace de Evidencia</label><input type="url" id="fA_enlace"
+                            placeholder="https://..."></div>
                 </div>
             </div>
-
-            <div class="form-footer">
-                <button type="button" class="btn-text" onclick="formatoA_closeForm()">Cancelar</button>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Borrador</button>
+            <div style="display:flex; gap:16px; justify-content:flex-end;">
+                <button type="button" class="btn-primary" style="background:#f1f5f9; color:#64748b;"
+                    onclick="formatoA_closeForm()">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar Registro</button>
             </div>
         </form>
-
-        <div class="help-box">
-            <i class="fa-solid fa-question-circle"></i>
-            <p>¿Necesita ayuda? Consulte la <a href="#">Guía de Indicadores Institucionales</a> para más detalles sobre campos obligatorios y requisitos de evidencia.</p>
-        </div>
     </div>
-</div>
 
-<style>
-    :root {
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.4);
-        --glow-primary: #00417B;
-        --glow-secondary: #002d56;
-        --accent-success: #10b981;
-        --accent-warning: #f59e0b;
-        --accent-danger: #ef4444;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-    }
+    <script>
+        let CACHE_IND = [];
 
-    #formatoA_root { 
-        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        padding-bottom: 40px;
-    }
-    
-    @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .view-header { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: flex-end; 
-        margin-bottom: 32px; 
-        background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-        padding: 40px;
-        border-radius: 24px;
-        color: white;
-        box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-    }
-    .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; color: white; letter-spacing: -1.5px; }
-    .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
-    
-    .btn-primary { 
-        background: white; color: #00417B; border: none; padding: 14px 28px; border-radius: 12px; 
-        font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0,0,0,0.15); }
-
-    /* Summary Section */
-    .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
-    .summary-card { 
-        background: white; border: 1px solid #f1f5f9; border-radius: 20px; padding: 24px; 
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    }
-    .summary-card .label { font-size: 13px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-    .summary-card .value-row { display: flex; align-items: baseline; gap: 10px; }
-    .summary-card .value { font-size: 28px; font-weight: 950; color: var(--text-main); letter-spacing: -1px; }
-
-    /* Grid Layout */
-    .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
-
-    /* PREMIUM CARD STYLE */
-    .card-premium { 
-        background: white; border-radius: 24px; border: 1px solid #f1f5f9; 
-        overflow: hidden; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        display: flex; flex-direction: column; position: relative;
-    }
-    .card-premium:hover { transform: translateY(-8px); border-color: #00417B; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    
-    .card-banner { width: 100%; height: 180px; position: relative; overflow: hidden; background: #f1f5f9; }
-    .card-banner img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .badge-status { 
-        position: absolute; top: 20px; right: 20px; padding: 6px 14px; border-radius: 999px; 
-        font-size: 10px; font-weight: 950; text-transform: uppercase; letter-spacing: 0.5px;
-        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .status-aprobado { color: #10b981; }
-    .status-borrador { color: #f59e0b; }
-    .status-verificado { color: #00417B; }
-
-    .badge-category { 
-        position: absolute; bottom: 20px; left: 20px; padding: 6px 14px; border-radius: 999px;
-        font-size: 11px; font-weight: 900; background: rgba(0, 65, 123, 0.9); color: white;
-        backdrop-filter: blur(4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px;
-    }
-
-    .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-    .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .card-section-tag { font-size: 11px; font-weight: 950; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .btn-edit-sm { 
-        background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; 
-        padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 900; 
-        cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-    }
-    .btn-edit-sm:hover { background: #00417B; color: white; border-color: #00417B; transform: scale(1.05); }
-
-    .card-title { font-size: 20px; font-weight: 950; color: var(--text-main); margin-bottom: 12px; line-height: 1.3; }
-    .card-desc { font-size: 14px; color: var(--text-muted); font-weight: 600; line-height: 1.6; margin-bottom: 24px; }
-
-    .card-detail-box { 
-        background: rgba(0, 65, 123, 0.03); border: 1px solid rgba(0, 65, 123, 0.05); 
-        border-radius: 20px; padding: 20px; margin-top: auto;
-    }
-    .detail-item { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-    .detail-item:last-child { margin-bottom: 0; }
-    .detail-item i { color: #00417B; font-size: 16px; width: 20px; text-align: center; }
-    .detail-item span { font-size: 13px; font-weight: 800; color: #475569; }
-    .detail-item strong { color: #1e293b; font-weight: 950; }
-
-    /* Custom Form Layout for Formato A */
-    .form-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
-    .form-card { background: white; border: 1px solid #f1f5f9; border-radius: 24px; padding: 32px; margin-bottom: 24px; }
-    .form-section-title { font-size: 14px; font-weight: 950; color: #00417B; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 800; color: #475569; margin-bottom: 8px; }
-    .form-group input, .form-group select { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.2s; background: #fcfcfd; }
-    .form-group input:focus { border-color: #00417B; background: white; box-shadow: 0 0 0 4px rgba(0, 65, 123, 0.1); }
-
-    .btn-outline { 
-        background: white; 
-        border: 1px solid #e2e8f0; 
-        padding: 12px 20px; 
-        border-radius: 12px; 
-        font-weight: 800; 
-        cursor: pointer; 
-        display: flex; 
-        align-items: center; 
-        gap: 8px; 
-        color: var(--text-main);
-        transition: all 0.2s;
-    }
-    .btn-outline:hover { background: #f8fafc; border-color: var(--glow-primary); color: var(--glow-primary); }
-
-    .btn-text { background: none; border: none; padding: 12px 24px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
-    .btn-text:hover { color: var(--text-main); }
-
-    /* Summary Glass Cards */
-    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px; }
-    .summary-card { 
-        background: var(--glass-bg); 
-        border: 1px solid var(--glass-border); 
-        backdrop-filter: blur(12px);
-        border-radius: 24px; 
-        padding: 28px; 
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        transition: transform 0.3s ease;
-    }
-    .summary-card:hover { transform: translateY(-4px); }
-    .summary-card .label { font-size: 15px; color: var(--text-muted); font-weight: 700; letter-spacing: -0.2px; }
-    .summary-card .value-row { display: flex; align-items: baseline; gap: 12px; margin-top: 14px; }
-    .summary-card .value { font-size: 38px; font-weight: 900; color: var(--text-main); letter-spacing: -1px; }
-    .summary-card .trend { 
-        font-size: 13px; font-weight: 900; 
-        color: var(--accent-success); 
-        padding: 4px 12px; border-radius: 999px; 
-        background: rgba(16, 185, 129, 0.1); 
-    }
-    .summary-card .trend.down { color: var(--accent-danger); background: rgba(239, 68, 68, 0.1); }
-
-    /* Table Container Glass */
-    .data-container { 
-        background: white; 
-        border: 1px solid #f1f5f9; 
-        border-radius: 24px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        overflow: hidden;
-    }
-    .table-actions { 
-        padding: 28px; 
-        display: flex; 
-        justify-content: space-between; 
-        background: #fcfcfd;
-        border-bottom: 1px solid #f1f5f9; 
-        gap: 24px; 
-    }
-    .search-box { position: relative; flex: 1; }
-    .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px; }
-    .search-box input { 
-        width: 100%; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px 14px 48px; 
-        outline: none; transition: all 0.2s; font-size: 15px; font-weight: 500;
-    }
-    .search-box input:focus { border-color: var(--glow-primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
-    .action-btns { display: flex; gap: 12px; }
-
-    .table-responsive { overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-    .data-table th { 
-        padding: 20px 28px; font-size: 12px; font-weight: 900; 
-        text-transform: uppercase; color: var(--text-muted); 
-        border-bottom: 2px solid #f8fafc;
-        letter-spacing: 1px;
-    }
-    .data-table td { padding: 22px 28px; border-bottom: 1px solid #f8fafc; font-size: 15px; vertical-align: middle; }
-    .data-table tr:hover { background: #fafbff; }
-
-    .indicator-header { display: flex; flex-direction: column; gap: 6px; }
-    .indicator-name { font-weight: 800; color: var(--text-main); cursor: pointer; transition: color 0.2s; }
-    .indicator-name:hover { color: var(--glow-primary); }
-    .indicator-meta { font-size: 12px; font-weight: 600; color: #94a3b8; }
-
-    /* Neon Badges */
-    .status-badge { 
-        padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 900; 
-        text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .status-badge.aprobado { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.2); }
-    .status-badge.enviado { background: rgba(37, 99, 235, 0.1); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.2); }
-    .status-badge.observado { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
-    .status-badge.borrador { background: #f8fafc; color: var(--text-muted); border: 1px solid #e2e8f0; }
-
-    /* Glowing Progress */
-    .progress-cell { width: 180px; }
-    .mini-progress { height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
-    .mini-progress-fill { 
-        height: 100%; 
-        background: linear-gradient(90deg, #6366f1, #0ea5e9); 
-        border-radius: 999px; 
-        box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-    }
-
-    /* Form Styles Premium */
-    .form-grid { display: flex; flex-direction: column; gap: 32px; }
-    .form-main { display: flex; flex-direction: column; gap: 24px; }
-    .form-card { 
-        background: white; 
-        border: 1px solid #f1f5f9; 
-        border-radius: 24px; 
-        padding: 32px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    }
-    .form-section-title { 
-        font-weight: 900; font-size: 18px; margin-bottom: 24px; 
-        color: var(--text-main); display: flex; align-items: center; gap: 12px; 
-        letter-spacing: -0.5px;
-    }
-    .form-section-title i { color: var(--glow-primary); font-size: 20px; }
-    
-    .form-group { margin-bottom: 22px; }
-    .form-group label { display: block; font-size: 14px; font-weight: 800; margin-bottom: 10px; color: #475569; }
-    .required { color: var(--accent-danger); }
-    
-    .form-group input, .form-group select { 
-        width: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 12px; 
-        outline: none; font-size: 15px; transition: all 0.2s; font-weight: 500;
-        background: #fcfcfd;
-    }
-    .form-group input:focus, .form-group select:focus { 
-        border-color: var(--glow-primary); background: white;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); 
-    }
-    
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    
-    .input-with-icon { display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; overflow: hidden; }
-    .input-with-icon span { padding: 0 16px; color: #64748b; font-size: 14px; font-weight: 700; }
-    .input-with-icon input { border: none; background: white; border-radius: 0; }
-    
-    .file-drop-zone { 
-        border: 2px dashed #cbd5e1; border-radius: 20px; padding: 48px; 
-        text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        background: #f8fafc;
-    }
-    .file-drop-zone:hover { background: #f1f5f9; border-color: var(--glow-primary); transform: scale(1.01); }
-    .file-drop-zone i { font-size: 32px; color: var(--glow-primary); margin-bottom: 16px; opacity: 0.8; }
-    .file-drop-zone p { font-weight: 800; font-size: 16px; margin: 0 0 6px; color: var(--text-main); }
-    .file-drop-zone span { font-size: 13px; color: #64748b; font-weight: 500; }
-    
-    .form-footer { margin-top: 40px; padding-top: 28px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 16px; }
-    
-    .help-box { 
-        margin-top: 40px; background: rgba(99, 102, 241, 0.05); 
-        padding: 24px 32px; border-radius: 20px; display: flex; gap: 16px; 
-        align-items: center; border: 1px solid rgba(99, 102, 241, 0.1);
-    }
-    .help-box i { color: var(--glow-primary); font-size: 24px; }
-    .help-box p { font-size: 14px; color: #4338ca; margin: 0; font-weight: 700; line-height: 1.5; }
-    .help-box a { color: var(--glow-primary); text-decoration: none; border-bottom: 2px solid rgba(99, 102, 241, 0.2); transition: border-color 0.2s; }
-    .help-box a:hover { border-color: var(--glow-primary); }
-
-    .breadcrumb { font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 16px; font-weight: 700; }
-    .breadcrumb strong { color: white; }
-    .breadcrumb span { cursor: pointer; transition: color 0.2s; }
-    .breadcrumb span:hover { color: white; }
-
-    @media (max-width: 900px) {
-        .view-header { flex-direction: column; align-items: flex-start; gap: 24px; padding: 30px; }
-        .form-row { grid-template-columns: 1fr; }
-        .summary-cards { grid-template-columns: 1fr; }
-        .table-actions { flex-direction: column; }
-    }
-</style>
-
-<script>
-    (function init() {
-        formatoA_load();
-    })();
-
-    function formatoA_load() {
-        // Cargar Resumen
-        google.script.run
-            .withSuccessHandler(data => {
-                const row = document.getElementById('formatoA_summary');
-                row.innerHTML = `
-                    <div class="summary-card">
-                        <div class="label">Total de Indicadores</div>
-                        <div class="value-row">
-                            <span class="value">${data.totalIndicadores.valor}</span>
-                            <span class="trend">${data.totalIndicadores.tendencia}</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Avance Promedio</div>
-                        <div class="value-row">
-                            <span class="value">${data.avancePromedio.valor}</span>
-                            <span class="trend">${data.avancePromedio.tendencia}</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Revisiones Pendientes</div>
-                        <div class="value-row">
-                            <span class="value">${data.revisionesPendientes.valor}</span>
-                            <span class="trend down">${data.revisionesPendientes.tendencia}</span>
-                        </div>
-                    </div>
-                `;
-            })
-            .formatoA_getSummary();
-
-        // Cargar Tabla
-        google.script.run
-            .withSuccessHandler(items => {
-                renderTable(items);
-            })
-            .indicadores_list();
-    }
-
-    function renderCards(items) {
-        const grid = document.getElementById('formatoA_grid');
-        if (!items || items.length === 0) {
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 80px; color: var(--text-muted); font-weight: 700;">No hay indicadores registrados.</div>';
-            return;
+        function formatoA_load() {
+            google.script.run.withSuccessHandler(data => {
+                CACHE_IND = data;
+                renderIndicadores(data);
+            }).formatoA_get();
         }
 
-        grid.innerHTML = items.map(it => {
-            const statusClass = (it.estado || 'BORRADOR').toLowerCase();
-            const avanceCol = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
-            
-            return `
-            <div class="card-premium">
-                <div class="card-banner">
-                    <img src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?q=80&w=800&auto=format&fit=crop" alt="Banner Indicador">
-                    <div class="badge-status status-${statusClass}">${it.estado || 'BORRADOR'}</div>
-                    <div class="badge-category">
-                        <i class="fa-solid fa-database"></i> ${it.fuente || 'Manual'}
+        function renderIndicadores(items) {
+            const grid = document.getElementById('formatoA_grid');
+            if (!items.length) { grid.innerHTML = '<div style="padding:40px; text-align:center; width:100%;">No hay datos.</div>'; return; }
+
+            grid.innerHTML = items.map(it => {
+                const avanceCol = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
+                return `
+                <div class="card-premium">
+                    <div class="card-banner">
+                        <img src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?q=80&w=600" alt="Banner">
+                        <div class="badge-status">${it.estado}</div>
+                        <div class="badge-category">${it.fuente || 'Manual'}</div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-header-row">
-                        <span class="card-section-tag">INDICADOR INSTITUCIONAL</span>
-                        <button class="btn-edit-sm" onclick="formatoA_edit('${it.id}')">
-                            <i class="fa-solid fa-pen"></i> EDITAR
-                        </button>
-                    </div>
-                    <h3 class="card-title">${it.nombre}</h3>
-                    <p class="card-desc">${it.responsable}</p>
-                    
-                    <div class="card-detail-box">
-                        <div class="detail-item">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Meta Anual: <strong>${Number(it.metaAnual).toLocaleString()}</strong></span>
+                    <div class="card-body">
+                        <div class="card-header-row">
+                            <span style="font-size:11px; font-weight:900; color:#94a3b8;">INDICADOR</span>
+                            <button class="btn-edit-sm" onclick="formatoA_edit('${it.id}')">EDITAR</button>
                         </div>
-                        <div class="detail-item">
-                            <i class="fa-solid fa-bullseye"></i>
-                            <span>Resultado: <strong>${Number(it.resultadoSemestre).toLocaleString()}</strong></span>
-                        </div>
-                        <div style="margin-top:15px;">
-                            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:900; color:#475569; margin-bottom:6px;">
-                                <span>AVANCE</span>
-                                <span>${it.avance}%</span>
+                        <h3 class="card-title">${it.nombre}</h3>
+                        <div class="card-detail-box">
+                            <div style="margin-bottom:8px;">Meta: <strong>${it.metaAnual}</strong> | Result: <strong>${it.resultado}</strong></div>
+                            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:900; margin-bottom:6px;">
+                                <span>AVANCE</span><span>${it.avance}%</span>
                             </div>
                             <div style="height:8px; background:#f1f5f9; border-radius:999px; overflow:hidden;">
-                                <div style="height:100%; width:${it.avance}%; background:${avanceCol}; border-radius:999px; transition: width 1s ease;"></div>
+                                <div style="height:100%; width:${it.avance}%; background:${avanceCol};"></div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    function formatoA_openForm() {
-        document.getElementById('formatoA_list').style.display = 'none';
-        document.getElementById('formatoA_form').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function formatoA_closeForm() {
-        document.getElementById('formatoA_list').style.display = 'block';
-        document.getElementById('formatoA_form').style.display = 'none';
-        document.getElementById('formatoA_mainForm').reset();
-    }
-
-    function formatoA_save(e) {
-        e.preventDefault();
-        const f = e.target;
-        const data = {
-            id: f.id_indicador.value,
-            nombre: f.nombre.value,
-            responsable: f.responsable.value,
-            metaAnual: Number(f.metaAnual.value),
-            resultadoSemestre: Number(f.resultadoSemestre.value),
-            fuente: f.fuente.value,
-            detallesFuente: f.fuenteDetalle.value,
-            enlace: f.evidenciaUrl.value
-        };
-
-        Swal.fire({ 
-            title: 'Guardando registro...', 
-            text: 'Actualizando base de datos institucional',
-            didOpen: () => Swal.showLoading() 
-        });
-
-        google.script.run
-            .withSuccessHandler(res => {
-                if (res.success) {
-                    Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'El indicador ha sido actualizado.', timer: 1500, showConfirmButton: false });
-                    formatoA_closeForm();
-                    formatoA_load();
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Error', text: res.message });
-                }
-            })
-            .withFailureHandler(err => {
-                Swal.fire({ icon: 'error', title: 'Error de Red', text: err?.message || String(err) });
-            })
-            .indicadores_guardar_borrador(data);
-    }
-
-    let CACHE_ITEMS = [];
-
-    function formatoA_edit(id) {
-        const item = CACHE_ITEMS.find(it => it.id === id);
-        if(!item) {
-            Swal.fire('Error', 'No se encontró el registro localmente', 'error');
-            return;
+                </div>`;
+            }).join('');
         }
 
-        formatoA_openForm();
-        const f = document.getElementById('formatoA_mainForm');
-        f.id_indicador.value = item.id;
-        f.nombre.value = item.nombre;
-        f.responsable.value = item.responsable;
-        f.metaAnual.value = item.metaAnual;
-        f.resultadoSemestre.value = item.resultadoSemestre;
-        f.fuente.value = item.fuente;
-        f.fuenteDetalle.value = item.detallesFuente;
-        f.evidenciaUrl.value = item.enlace;
-        
-        document.querySelector('#formatoA_form h1').textContent = 'Editar Indicador';
-    }
-    
-    function formatoA_load() {
-        google.script.run
-            .withSuccessHandler(data => {
-                const row = document.getElementById('formatoA_summary');
-                row.innerHTML = `
-                    <div class="summary-card">
-                        <div class="label">Total de Indicadores</div>
-                        <div class="value-row">
-                            <span class="value">${data.totalIndicadores.valor}</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Avance Promedio</div>
-                        <div class="value-row">
-                            <span class="value">${data.avancePromedio.valor}</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Pendientes</div>
-                        <div class="value-row">
-                            <span class="value">${data.revisionesPendientes.valor}</span>
-                        </div>
-                    </div>
-                `;
-            })
-            .formatoA_getSummary();
+        function formatoA_openForm() {
+            document.getElementById('formatoA_list').style.display = 'none';
+            document.getElementById('formatoA_form').style.display = 'block';
+            document.getElementById('formTitleA').textContent = 'Nuevo Indicador';
+            document.getElementById('formA_main').reset();
+            document.getElementById('fA_id').value = '';
+        }
 
-        google.script.run
-            .withSuccessHandler(items => {
-                CACHE_ITEMS = items;
-                renderCards(items);
-            })
-            .indicadores_list();
-    }
+        function formatoA_closeForm() {
+            document.getElementById('formatoA_list').style.display = 'block';
+            document.getElementById('formatoA_form').style.display = 'none';
+        }
 
-    function formatoA_triggerUpload() {
-        Swal.fire({
-            title: 'Sincronización de Evidencia',
-            text: '¿Deseas conectar este indicador con una carpeta de Google Drive?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Conectar Drive',
-            cancelButtonText: 'Usar URL'
-        });
-    }
-</script>
+        function formatoA_edit(id) {
+            const item = CACHE_IND.find(x => x.id === id);
+            if (!item) return;
+            formatoA_openForm();
+            document.getElementById('formTitleA').textContent = 'Editar Indicador';
+            document.getElementById('fA_id').value = item.id;
+            document.getElementById('fA_nombre').value = item.nombre;
+            document.getElementById('fA_responsable').value = item.responsable;
+            document.getElementById('fA_fuente').value = item.fuente;
+            document.getElementById('fA_meta').value = item.metaAnual;
+            document.getElementById('fA_resultado').value = item.resultado;
+            document.getElementById('fA_enlace').value = item.enlace;
+        }
+
+        function formatoA_save(e) {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('fA_id').value,
+                nombre: document.getElementById('fA_nombre').value,
+                responsable: document.getElementById('fA_responsable').value,
+                fuente: document.getElementById('fA_fuente').value,
+                metaAnual: Number(document.getElementById('fA_meta').value),
+                resultado: Number(document.getElementById('fA_resultado').value),
+                enlace: document.getElementById('fA_enlace').value
+            };
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                    formatoA_closeForm();
+                    formatoA_load();
+                } else { Swal.fire('Error', res.message, 'error'); }
+            }).formatoA_save(data);
+        }
+
+        formatoA_load();
+    </script>
+</div>

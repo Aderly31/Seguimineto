@@ -1,75 +1,48 @@
-/**
- * FormatoA_g.gs - Módulo de Indicadores Institucionales
- */
-
-function indicadores_list() {
+function formatoA_get() {
   const data = SheetService.readObjects_(APP_CONFIG.SHEETS.INDICADORES);
-  
   return data.map(it => {
-    const meta = Number(it.metaAnual || it.meta_anual || 0);
-    const result = Number(it.resultadoSemestre || it.resultado_semestre || 0);
+    // Busca múltiples posibles nombres de columna por seguridad
+    const meta = Number(it.metaanual || it.meta_anual || it.meta || 0);
+    const result = Number(it.resultadosemestre || it.resultado_semestre || it.resultado || 0);
     const avance = meta > 0 ? Math.min(100, Math.round((result / meta) * 100)) : 0;
-
+    
     return {
-      id: it.id,
-      nombre: it.nombre,
-      responsable: it.responsable,
+      id: String(it.id || ''),
+      nombre: it.nombre || '',
+      responsable: it.responsable || '',
       metaAnual: meta,
-      resultadoSemestre: result,
+      resultado: result,
       avance: avance,
-      fuente: it.fuente,
-      detallesFuente: it.detalles_fuente || it.detallesFuente,
-      enlace: it.enlace_url || it.enlace,
-      estado: it.estado || 'Borrador',
-      fechaRegistro: it.fecha_registro || it.fechaRegistro
+      fuente: it.fuente || 'Manual',
+      enlace: it.enlace || it.enlace_url || '',
+      estado: it.estado || 'Borrador'
     };
   });
 }
 
-function indicadores_guardar_borrador(data) {
+function formatoA_save(data) {
   try {
     const isEdit = !!data.id;
+    // Las claves (keys) deben coincidir EXACTAMENTE con el encabezado que pusiste en el Excel
+    // Asumiremos que tus encabezados en Excel son: id, nombre, responsable, metaanual, resultado, fuente, enlace, estado
     const rowData = {
       id: data.id || Utilities.getUuid(),
       nombre: data.nombre,
       responsable: data.responsable,
-      metaAnual: data.metaAnual,
-      meta_anual: data.metaAnual,
-      resultadoSemestre: data.resultadoSemestre,
-      resultado_semestre: data.resultadoSemestre,
+      metaanual: data.metaAnual,
+      resultado: data.resultado,
       fuente: data.fuente,
-      detallesFuente: data.detallesFuente,
-      detalles_fuente: data.detallesFuente,
       enlace: data.enlace,
-      enlace_url: data.enlace,
-      estado: 'Borrador',
-      fechaRegistro: new Date(),
-      fecha_registro: new Date()
+      estado: 'Borrador'
     };
 
     if (isEdit) {
-      const success = SheetService.updateObjectById_(APP_CONFIG.SHEETS.INDICADORES, data.id, rowData);
-      return { success };
+      return { success: SheetService.updateObjectById_(APP_CONFIG.SHEETS.INDICADORES, data.id, rowData) };
     } else {
       SheetService.saveObject_(APP_CONFIG.SHEETS.INDICADORES, rowData);
       return { success: true };
     }
-  } catch (e) {
-    return { success: false, message: e.toString() };
+  } catch(e) {
+    return { success: false, message: String(e) };
   }
 }
-
-// Compatibilidad
-function formatoA_getData() { return indicadores_list(); }
-function formatoA_getSummary() {
-  const items = indicadores_list();
-  const total = items.length;
-  const avgAvance = total ? (items.reduce((acc, it) => acc + it.avance, 0) / total).toFixed(1) : 0;
-  
-  return {
-    totalIndicadores: { valor: total, tendencia: '+0%' },
-    avancePromedio: { valor: avgAvance + '%', tendencia: '+0%' },
-    revisionesPendientes: { valor: items.filter(i => i.estado !== 'Aprobado').length, tendencia: '0' }
-  };
-}
-function formatoA_saveRecord(data) { return indicadores_guardar_borrador(data); }

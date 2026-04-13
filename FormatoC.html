@@ -1,6 +1,6 @@
 <div id="formatoC_root">
     <style>
-        .header-actions {
+        .view-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -45,21 +45,6 @@
             text-transform: uppercase;
         }
 
-        .status-pendiente {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .status-encurso {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-resuelto {
-            background: #dcfce7;
-            color: #166534;
-        }
-
         .custom-input,
         .custom-textarea {
             width: 100%;
@@ -72,50 +57,61 @@
         }
     </style>
 
-    <div class="header-actions">
+    <div class="view-header">
         <div>
-            <h2 style="margin:0; font-size:32px; font-weight:950;">Formato C: Riesgos</h2>
-            <p style="margin:8px 0 0; opacity:0.9; font-weight:500;">Gestión de brechas y acciones de mitigación</p>
+            <h2 style="margin:0; font-size:32px;">Formato C: Riesgos</h2>
+            <p style="margin:8px 0 0; opacity:0.9;">Gestión de brechas y acciones de mitigación</p>
         </div>
         <button
             style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
-            onclick="modalRiesgo()">
-            + Registrar Riesgo
-        </button>
+            onclick="modalRiesgo()">+ Registrar Riesgo</button>
     </div>
 
-    <div id="gridRiesgos" class="grid-riesgos"></div>
+    <div id="gridRiesgos" class="grid-riesgos">
+        <div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">Cargando datos...</div>
+    </div>
 
     <script>
         let CACHE_RIESGOS = [];
 
         function formatoC_load() {
-            google.script.run.withSuccessHandler(data => {
-                CACHE_RIESGOS = data;
-                renderRiesgos(data);
-            }).formatoC_get();
+            google.script.run
+                .withSuccessHandler(data => {
+                    CACHE_RIESGOS = data;
+                    renderRiesgos(data);
+                })
+                .withFailureHandler(err => {
+                    Swal.fire('Error de Conexión', String(err), 'error');
+                })
+                .formatoC_get();
         }
 
         function renderRiesgos(items) {
             const grid = document.getElementById('gridRiesgos');
-            if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b; font-weight:800;">No hay riesgos registrados.</div>'; return; }
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b; font-weight:800; background:white; border-radius:16px;">No hay riesgos registrados. Usa el botón superior para crear uno.</div>';
+                return;
+            }
 
             grid.innerHTML = items.map(r => {
-                const sClass = r.estado.toLowerCase().replace(/\s/g, '');
+                let bg = '#fef3c7'; let textCol = '#d97706'; // Pendiente
+                if (r.estado === 'Resuelto') { bg = '#dcfce7'; textCol = '#166534'; }
+                else if (r.estado === 'En Curso') { bg = '#dbeafe'; textCol = '#1e40af'; }
+
                 return `
                 <div class="card-premium">
-                    <div class="badge-status status-${sClass}">${r.estado}</div>
-                    <div style="font-size:11px; font-weight:900; color:#94a3b8; margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation"></i> ANÁLISIS DE BRECHA</div>
-                    <h3 style="margin:0 0 12px; font-size:18px; color:#1e293b; font-weight:950;">${r.brecha}</h3>
+                    <div class="badge-status" style="background:${bg}; color:${textCol};">${r.estado}</div>
+                    <div style="font-size:11px; font-weight:900; color:#94a3b8; margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation"></i> Prioridad: ${r.prioridad}</div>
+                    <h3 style="margin:0 0 12px; font-size:18px; color:#1e293b; font-weight:950;">${r.riesgo}</h3>
                     <div style="background:#fff7ed; border:1px solid #ffedd5; padding:16px; border-radius:16px; font-size:13px; color:#9a3412; margin-bottom:16px;">
                         <strong>Causa:</strong> ${r.causa}<br>
                         <strong>Impacto:</strong> ${r.impacto}
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:12px; color:#10b981; font-weight:800; max-width:65%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        <span style="font-size:12px; color:#10b981; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width: 60%;">
                             <i class="fa-solid fa-shield-halved"></i> ${r.accion || 'Sin acción'}
                         </span>
-                        <button style="background:#f1f5f9; border:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:900; cursor:pointer; color:#475569;" onclick="modalRiesgo('${r.id}')">EDITAR</button>
+                        <button style="background:#f1f5f9; border:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:900; cursor:pointer;" onclick="modalRiesgo('${r.id}')">EDITAR</button>
                     </div>
                 </div>`;
             }).join('');
@@ -129,12 +125,23 @@
                 html: `
                     <div style="text-align:left;">
                         <input type="hidden" id="fC_id" value="${data ? data.id : ''}">
-                        <label style="font-size:12px; font-weight:800;">Descripción de la Brecha / Riesgo *</label>
-                        <textarea id="fC_brecha" class="custom-textarea">${data ? data.brecha : ''}</textarea>
+                        <label style="font-size:12px; font-weight:800;">Descripción del Riesgo</label>
+                        <textarea id="fC_riesgo" class="custom-textarea">${data ? data.riesgo : ''}</textarea>
                         
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                             <div><label style="font-size:12px; font-weight:800;">Causa Raíz</label><input id="fC_causa" class="custom-input" value="${data ? data.causa : ''}"></div>
                             <div><label style="font-size:12px; font-weight:800;">Impacto</label><input id="fC_impacto" class="custom-input" value="${data ? data.impacto : ''}"></div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div><label style="font-size:12px; font-weight:800;">Prioridad</label>
+                                <select id="fC_prioridad" class="custom-input">
+                                    <option ${data?.prioridad == 'Alta' ? 'selected' : ''}>Alta</option>
+                                    <option ${data?.prioridad == 'Media' ? 'selected' : ''}>Media</option>
+                                    <option ${data?.prioridad == 'Baja' ? 'selected' : ''}>Baja</option>
+                                </select>
+                            </div>
+                            <div><label style="font-size:12px; font-weight:800;">Fecha Objetivo</label><input type="date" id="fC_fechaObj" class="custom-input" value="${data ? data.fechaObjetivo : ''}"></div>
                         </div>
                         
                         <label style="font-size:12px; font-weight:800;">Acción de Mitigación</label>
@@ -143,20 +150,20 @@
                         <label style="font-size:12px; font-weight:800;">Estado</label>
                         <select id="fC_estado" class="custom-input">
                             <option ${data?.estado == 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option ${data?.estado == 'En curso' ? 'selected' : ''}>En curso</option>
+                            <option ${data?.estado == 'En Curso' ? 'selected' : ''}>En Curso</option>
                             <option ${data?.estado == 'Resuelto' ? 'selected' : ''}>Resuelto</option>
                         </select>
                     </div>
                 `,
-                showCancelButton: true,
-                confirmButtonColor: '#00417B',
-                confirmButtonText: 'Guardar',
+                showCancelButton: true, confirmButtonColor: '#00417B', confirmButtonText: 'Guardar',
                 preConfirm: () => ({
                     id: document.getElementById('fC_id').value,
-                    brecha: document.getElementById('fC_brecha').value,
+                    riesgo: document.getElementById('fC_riesgo').value,
                     causa: document.getElementById('fC_causa').value,
                     impacto: document.getElementById('fC_impacto').value,
+                    prioridad: document.getElementById('fC_prioridad').value,
                     accion: document.getElementById('fC_accion').value,
+                    fechaObjetivo: document.getElementById('fC_fechaObj').value,
                     estado: document.getElementById('fC_estado').value
                 })
             }).then(r => {
@@ -164,7 +171,6 @@
                     Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
                     google.script.run.withSuccessHandler(res => {
                         if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoC_load(); }
-                        else Swal.fire('Error', res.message, 'error');
                     }).formatoC_save(r.value);
                 }
             });
