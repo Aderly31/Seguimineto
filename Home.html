@@ -3,7 +3,8 @@
     <header class="dash-header">
         <div class="header-main">
             <h1 class="dash-period">Periodo <span id="periodoTitle">...</span></h1>
-            <p class="dash-subtitle">Panel de recolección de información institucional. Supervisión de calidad y cumplimiento semestral.</p>
+            <p class="dash-subtitle">Panel de recolección de información institucional. Supervisión de calidad y
+                cumplimiento semestral.</p>
         </div>
         <div class="header-actions">
             <button class="btn-action primary" onclick="abrirNuevoRegistro()">
@@ -74,8 +75,15 @@
     }
 
     @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Header Modernizado */
@@ -100,11 +108,14 @@
         left: -10%;
         width: 300px;
         height: 300px;
-        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
         border-radius: 50%;
     }
 
-    .header-main { position: relative; z-index: 1; }
+    .header-main {
+        position: relative;
+        z-index: 1;
+    }
 
     .dash-period {
         font-size: 38px;
@@ -141,20 +152,27 @@
         font-size: 14px;
     }
 
-    .btn-action.primary { 
-        background: white; 
-        color: #6366f1; 
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    .btn-action.primary {
+        background: white;
+        color: #6366f1;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
-    .btn-action.primary:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
 
-    .btn-action.secondary { 
-        background: rgba(255, 255, 255, 0.2); 
-        color: white; 
+    .btn-action.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-action.secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
     }
-    .btn-action.secondary:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .btn-action.secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
 
     /* Grid Layout */
     .dash-grid {
@@ -163,7 +181,11 @@
         gap: 32px;
     }
 
-    .dash-col-left { display: flex; flex-direction: column; gap: 32px; }
+    .dash-col-left {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
 
     /* Secciones Glassmorphism */
     .dash-section {
@@ -187,7 +209,10 @@
         letter-spacing: -0.5px;
     }
 
-    .section-title i { color: var(--glow-primary); font-size: 20px; }
+    .section-title i {
+        color: var(--glow-primary);
+        font-size: 20px;
+    }
 
     /* Formatos Grid */
     .formats-grid {
@@ -208,18 +233,39 @@
         position: relative;
     }
 
-    .format-card:hover { 
-        transform: translateY(-5px); 
+    .format-card:hover {
+        transform: translateY(-5px);
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         border-color: var(--glow-primary);
     }
 
-    .format-card .meta { display: flex; justify-content: space-between; align-items: center; }
-    .format-card .name { font-weight: 800; font-size: 15px; color: var(--text-main); }
-    .format-card .percentage { font-weight: 900; font-size: 20px; }
-    .format-card .detail { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .format-card .meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-    .progress-wrapper { position: relative; }
+    .format-card .name {
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--text-main);
+    }
+
+    .format-card .percentage {
+        font-weight: 900;
+        font-size: 20px;
+    }
+
+    .format-card .detail {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .progress-wrapper {
+        position: relative;
+    }
+
     .progress-bar {
         height: 10px;
         background: #f1f5f9;
@@ -227,30 +273,48 @@
         overflow: hidden;
     }
 
-    .progress-fill { 
-        height: 100%; 
-        border-radius: 999px; 
+    .progress-fill {
+        height: 100%;
+        border-radius: 999px;
         transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
     }
-    
-    /* Neon Colors */
-    .progress-fill.blue { background: linear-gradient(90deg, #6366f1, #818cf8); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
-    .progress-fill.orange { background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-    .progress-fill.red { background: linear-gradient(90deg, #f43f5e, #fb7185); box-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
-    .progress-fill.gray { background: #cbd5e1; }
 
-    .format-card .status { 
-        font-size: 11px; 
-        font-weight: 900; 
-        color: var(--text-muted); 
-        text-transform: uppercase; 
+    /* Neon Colors */
+    .progress-fill.blue {
+        background: linear-gradient(90deg, #6366f1, #818cf8);
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    }
+
+    .progress-fill.orange {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .progress-fill.red {
+        background: linear-gradient(90deg, #f43f5e, #fb7185);
+        box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+    }
+
+    .progress-fill.gray {
+        background: #cbd5e1;
+    }
+
+    .format-card .status {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-muted);
+        text-transform: uppercase;
         letter-spacing: 1px;
         margin-top: 4px;
     }
 
     /* Alertas Premium */
-    .alerts-list { display: flex; flex-direction: column; gap: 16px; }
+    .alerts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
 
     .alert-item {
         display: flex;
@@ -263,10 +327,17 @@
         transition: all 0.3s ease;
     }
 
-    .alert-item:hover { transform: scale(1.02); }
+    .alert-item:hover {
+        transform: scale(1.02);
+    }
 
-    .alert-item.danger { border-left: 6px solid var(--accent-rose); }
-    .alert-item.warning { border-left: 6px solid #f59e0b; }
+    .alert-item.danger {
+        border-left: 6px solid var(--accent-rose);
+    }
+
+    .alert-item.warning {
+        border-left: 6px solid #f59e0b;
+    }
 
     .alert-icon {
         width: 48px;
@@ -277,15 +348,34 @@
         justify-content: center;
         font-size: 22px;
         flex-shrink: 0;
-        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
     }
 
-    .danger .alert-icon { background: var(--accent-rose); color: white; }
-    .warning .alert-icon { background: #f59e0b; color: white; }
+    .danger .alert-icon {
+        background: var(--accent-rose);
+        color: white;
+    }
 
-    .alert-content { flex: 1; }
-    .alert-title { font-weight: 900; font-size: 15px; color: var(--text-main); margin-bottom: 4px; }
-    .alert-msg { font-size: 14px; color: var(--text-muted); }
+    .warning .alert-icon {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-title {
+        font-weight: 900;
+        font-size: 15px;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .alert-msg {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
 
     .alert-action {
         background: #f8fafc;
@@ -298,7 +388,12 @@
         transition: all 0.2s;
         border: 1px solid #e2e8f0;
     }
-    .alert-action:hover { background: var(--glow-primary); color: white; border-color: var(--glow-primary); }
+
+    .alert-action:hover {
+        background: var(--glow-primary);
+        color: white;
+        border-color: var(--glow-primary);
+    }
 
     /* Timeline activity */
     .activity-timeline {
@@ -337,11 +432,32 @@
         transition: all 0.3s ease;
     }
 
-    .activity-item.blue::before { border-color: var(--glow-primary); box-shadow: 0 0 8px rgba(99, 102, 241, 0.4); }
+    .activity-item.blue::before {
+        border-color: var(--glow-primary);
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+    }
 
-    .activity-time { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-    .activity-title { font-weight: 800; font-size: 14px; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
-    .activity-user { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .activity-time {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .activity-title {
+        font-weight: 800;
+        font-size: 14px;
+        color: var(--text-main);
+        margin-bottom: 4px;
+        line-height: 1.4;
+    }
+
+    .activity-user {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
 
     .btn-link {
         background: none;
@@ -357,12 +473,23 @@
         margin-top: auto;
         transition: all 0.2s;
     }
-    .btn-link:hover { background: rgba(99, 102, 241, 0.05); }
+
+    .btn-link:hover {
+        background: rgba(99, 102, 241, 0.05);
+    }
 
     @media (max-width: 1100px) {
-        .dash-grid { grid-template-columns: 1fr; }
-        .dash-col-right { order: 2; }
-        .dash-header { padding: 30px; }
+        .dash-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dash-col-right {
+            order: 2;
+        }
+
+        .dash-header {
+            padding: 30px;
+        }
     }
 </style>
 
@@ -437,7 +564,7 @@
             icon: 'question',
             showCancelButton: true
         }).then(r => {
-            if(r.isConfirmed) Swal.fire('Enviado', 'Los datos han sido enviados.', 'success');
+            if (r.isConfirmed) Swal.fire('Enviado', 'Los datos han sido enviados.', 'success');
         });
     }
 
@@ -449,4 +576,3 @@
         Swal.fire('Acción: ' + accion, 'Redirigiendo al formulario correspondiente...', 'info');
     }
 </script>
-ipt>
