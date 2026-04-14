@@ -139,7 +139,7 @@
             color: #1e40af;
         }
 
-        .status-completado {
+        .status-finalizado {
             background: #d1fae5;
             color: #065f46;
         }
@@ -289,7 +289,7 @@
                 <thead>
                     <tr>
                         <th>Identificación de Actividad</th>
-                        <th>Área / PEI</th>
+                        <th>Eje Estratégico</th>
                         <th>Tipo / Estado</th>
                         <th>Impacto</th>
                         <th>Acciones</th>
@@ -325,25 +325,29 @@
                             <div class="section-icon"><i class="fa-solid fa-link"></i></div>
                             <div class="section-title">Identificación y Vinculación</div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Título de la Actividad <span class="req">*</span></label>
-                            <input type="text" id="fB_titulo" class="form-control"
-                                placeholder="Nombre descriptivo de la actividad" required>
-                        </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Área de Trabajo <span class="req">*</span></label>
-                                <select id="fB_area" class="form-control" onchange="handleAreaChangeB(this.value)"
-                                    required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área...</option>
-                                </select>
+                                <label>Título de la Actividad <span class="req">*</span></label>
+                                <input type="text" id="fB_titulo" class="form-control"
+                                    placeholder="Nombre descriptivo de la actividad" required>
                             </div>
                             <div class="form-group">
-                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
-                                <select id="fB_aei" class="form-control" required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área primero</option>
-                                </select>
+                                <label>Fecha de la Actividad <span class="req">*</span></label>
+                                <input type="date" id="fB_fecha" class="form-control" required>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Ejes Estratégicos <span class="req">*</span></label>
+                            <select id="fB_eje" class="form-control" required style="appearance: auto;">
+                                <option value="" disabled selected>Seleccione eje...</option>
+                                <option value="Eje De Formación Académica Y Acreditación">Eje De Formación Académica Y Acreditación</option>
+                                <option value="Eje De Investigación E Innovación">Eje De Investigación E Innovación</option>
+                                <option value="Eje De Responsabilidad Social">Eje De Responsabilidad Social</option>
+                                <option value="Eje De Gestión Institucional">Eje De Gestión Institucional</option>
+                                <option value="Eje De Internacionalización">Eje De Internacionalización</option>
+                                <option value="Eje De Transformación Digital">Eje De Transformación Digital</option>
+                                <option value="Eje De Egresados Y Empleabilidad">Eje De Egresados Y Empleabilidad</option>
+                            </select>
                         </div>
                     </div>
 
@@ -370,9 +374,7 @@
                             <div class="form-group">
                                 <label>Estado Actual <span class="req">*</span></label>
                                 <select id="fB_estado" class="form-control" required style="appearance: auto;">
-                                    <option value="EN PROGRESO">EN PROGRESO</option>
-                                    <option value="COMPLETADO">COMPLETADO</option>
-                                    <option value="SUSPENDIDO">SUSPENDIDO</option>
+                                    <option value="FINALIZADO">FINALIZADO</option>
                                 </select>
                             </div>
                         </div>
@@ -384,10 +386,14 @@
                             <div class="section-icon"><i class="fa-solid fa-bullseye"></i></div>
                             <div class="section-title">Impacto Institucional</div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom:20px;">
                             <label>Impacto Esperado / Logrado <span class="req">*</span></label>
                             <textarea id="fB_impacto" class="form-control" rows="3"
                                 placeholder="Beneficios para la comunidad universitaria" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Beneficiarios <span class="req">*</span></label>
+                            <input type="number" id="fB_beneficiarios" class="form-control" placeholder="Cantidad de alumnos, docentes y/o administrativos (solo números)" required>
                         </div>
                     </div>
 
@@ -406,51 +412,29 @@
         let GLOBAL_AREAS_B = [];
 
         function formatoB_load() {
-            google.script.run.withSuccessHandler(res => {
-                GLOBAL_AREAS_B = res.areas;
-                renderSelectAreasB(res.areas);
-
-                google.script.run.withSuccessHandler(data => {
-                    CACHE_ACTS = data;
-                    renderAct(data);
-                }).formatoB_get();
-            }).common_getAppData();
+            google.script.run.withSuccessHandler(data => {
+                CACHE_ACTS = data;
+                renderAct(data);
+            }).formatoB_get();
         }
 
-        function renderSelectAreasB(areas) {
-            const select = document.getElementById('fB_area');
-            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
-                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
-        }
 
-        function handleAreaChangeB(areaId) {
-            const selectAei = document.getElementById('fB_aei');
-            selectAei.innerHTML = '<option value="">Cargando...</option>';
-            google.script.run.withSuccessHandler(aeis => {
-                if (!aeis || aeis.length === 0) {
-                    selectAei.innerHTML = '<option value="" disabled>Sin acciones vinculadas</option>';
-                } else {
-                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
-                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                }
-            }).common_getVinculacion(areaId);
-        }
 
         function renderAct(items) {
             const tbody = document.getElementById('formatoB_table_body');
             if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
 
             tbody.innerHTML = items.map(a => {
-                const statusClass = a.estado === 'COMPLETADO' ? 'status-completado' : 'status-proceso';
+                const statusClass = a.estado === 'FINALIZADO' ? 'status-finalizado' : 'status-proceso';
                 return `
                 <tr>
                     <td>
                         <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${a.titulo}</div>
-                        <div style="font-size:12px; color:#64748b;">ID: ${a.id.substring(0, 8)}...</div>
+                        <div style="font-size:12px; color:#64748b; margin-bottom:2px;">ID: ${a.id.substring(0, 8)}...</div>
+                        <div style="font-size:11px; color:#3b82f6; font-weight:600;"><i class="fa-regular fa-calendar"></i> ${a.fecha || 'Sin fecha'}</div>
                     </td>
                     <td>
-                        <div style="font-size:13px; font-weight:600;">${a.area}</div>
-                        <div style="font-size:11px; color:#94a3b8;">PEI: ${a.codAei}</div>
+                        <div style="font-size:13px; font-weight:600;">${a.eje || 'No definido'}</div>
                     </td>
                     <td>
                         <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${a.tipo}</div>
@@ -484,18 +468,13 @@
             document.getElementById('breadcrumbActionB').textContent = 'Editar Actividad';
             document.getElementById('fB_id').value = item.id;
             document.getElementById('fB_titulo').value = item.titulo;
+            document.getElementById('fB_fecha').value = item.fecha || '';
             document.getElementById('fB_desc').value = item.descripcion;
-            document.getElementById('fB_area').value = item.area;
-
-            const selectAei = document.getElementById('fB_aei');
-            google.script.run.withSuccessHandler(aeis => {
-                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                selectAei.value = item.codAei;
-            }).common_getVinculacion(item.area);
-
+            document.getElementById('fB_eje').value = item.eje || '';
             document.getElementById('fB_tipo').value = item.tipo;
             document.getElementById('fB_estado').value = item.estado;
             document.getElementById('fB_impacto').value = item.impacto;
+            document.getElementById('fB_beneficiarios').value = item.beneficiarios || '';
         }
 
         function formatoB_save(e) {
@@ -503,12 +482,13 @@
             const data = {
                 id: document.getElementById('fB_id').value,
                 titulo: document.getElementById('fB_titulo').value,
+                fecha: document.getElementById('fB_fecha').value,
                 descripcion: document.getElementById('fB_desc').value,
-                area: document.getElementById('fB_area').value,
-                codAei: document.getElementById('fB_aei').value,
+                eje: document.getElementById('fB_eje').value,
                 tipo: document.getElementById('fB_tipo').value,
                 estado: document.getElementById('fB_estado').value,
-                impacto: document.getElementById('fB_impacto').value
+                impacto: document.getElementById('fB_impacto').value,
+                beneficiarios: document.getElementById('fB_beneficiarios').value
             };
             Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
             google.script.run.withSuccessHandler(res => {
