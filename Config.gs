@@ -14,7 +14,10 @@ const APP_CONFIG = {
     ACTIVIDADES: 'Actividades',
     RIESGOS: 'Riesgos',
     CAPACITACIONES: 'Capacitaciones',
-    REVISIONES: 'Revisiones'
+    REVISIONES: 'Revisiones',
+    AREAS: 'Areas',
+    PEI: 'Pei',
+    VINCULACION: 'Vinculacion'
   },
 
   // ✅ Branding

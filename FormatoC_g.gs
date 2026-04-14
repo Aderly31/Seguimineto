@@ -18,6 +18,8 @@ function formatoC_get() {
         prioridad: String(it.prioridad || 'Media'), 
         accion: String(it.accion || ''),
         estado: String(it.estado || 'Pendiente'), 
+        area: it.area || '',
+        codAei: it.codaei || '',
         fechaObjetivo: fechaSegura
       };
     });
@@ -36,8 +38,10 @@ function formatoC_save(data) {
       prioridad: data.prioridad,
       accion: data.accion,
       estado: data.estado || 'Pendiente',
+      area: data.area,
+      codaei: data.codAei,
       fechaObjetivo: data.fechaObjetivo,
-      fechaCreacion: new Date() // Esto se queda en GS, así que no rompe el HTML
+      fechaCreacion: new Date()
     };
     
     if (data.id) return { success: SheetService.updateObjectById_(APP_CONFIG.SHEETS.RIESGOS, data.id, rowData) };

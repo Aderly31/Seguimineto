@@ -15,6 +15,8 @@ function formatoD_get() {
         fecha: fechaSegura,
         modalidad: String(it.modalidad || 'Virtual'), 
         participantes: Number(it.participantes || 0),
+        area: it.area || '',
+        codAei: it.codaei || '',
         progresoEvidencia: String(it.progresoEvidencia || ''),
         estado: String(it.estado || 'Programado')
       };
@@ -32,6 +34,8 @@ function formatoD_save(data) {
       fecha: data.fecha,
       modalidad: data.modalidad,
       participantes: data.participantes,
+      area: data.area,
+      codaei: data.codAei,
       progresoEvidencia: data.progresoEvidencia || '',
       estado: data.estado || 'Programado',
       fechaCreacion: new Date()

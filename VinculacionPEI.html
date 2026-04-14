@@ -1,0 +1,451 @@
+<div id="vinculacionPEI_root">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #e2e8f0;
+            --uac-blue: #00417B;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        #vinculacionPEI_root {
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            padding-bottom: 40px;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px;
+            border-radius: 24px;
+            color: white;
+            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
+        }
+
+        .view-title h1 {
+            font-size: 32px;
+            font-weight: 950;
+            margin: 0;
+            letter-spacing: -1.5px;
+        }
+
+        .view-title p {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0 0;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .vinculacion-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Sidebar de Áreas */
+        .area-sidebar {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .area-sidebar h3 {
+            font-size: 15px;
+            font-weight: 950;
+            color: var(--text-main);
+            margin: 0 0 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .area-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .area-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .area-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .area-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: #f8fafc;
+        }
+
+        .area-item:hover {
+            background: white;
+            border-color: #cbd5e1;
+            color: var(--uac-blue);
+            transform: translateX(4px);
+        }
+
+        .area-item.active {
+            background: rgba(0, 65, 123, 0.05);
+            color: var(--uac-blue);
+            border-color: var(--uac-blue);
+            box-shadow: inset 4px 0 0 var(--uac-blue);
+        }
+
+        /* Panel Principal PEI */
+        .pei-main {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .pei-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .pei-empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #cbd5e1;
+        }
+
+        .editor-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 950;
+            color: var(--uac-blue);
+            letter-spacing: -0.5px;
+        }
+
+        .badge-count {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .aei-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .aei-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: #fcfcfd;
+        }
+
+        .aei-card:hover {
+            border-color: var(--uac-blue);
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 65, 123, 0.05);
+        }
+
+        .aei-card.selected {
+            border-color: var(--uac-blue);
+            background: rgba(0, 65, 123, 0.02);
+            box-shadow: 0 0 0 1px var(--uac-blue);
+        }
+
+        .aei-card input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--uac-blue);
+            margin-top: 2px;
+        }
+
+        .aei-info {
+            flex: 1;
+        }
+
+        .aei-code {
+            font-size: 11px;
+            font-weight: 950;
+            color: white;
+            background: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .aei-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .aei-indicator {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .actions-bar {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: flex-end;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding-bottom: 10px;
+        }
+
+        .btn-save {
+            background: var(--uac-blue);
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0, 65, 123, 0.2);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -5px rgba(0, 65, 123, 0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 1000px) {
+            .vinculacion-container {
+                grid-template-columns: 1fr;
+            }
+
+            .area-sidebar {
+                position: static;
+                max-height: 300px;
+            }
+        }
+    </style>
+
+    <header class="view-header">
+        <div class="view-title">
+            <h1>Vinculación Área - PEI</h1>
+            <p>Define qué acciones estratégicas corresponden a cada unidad u oficina.</p>
+        </div>
+    </header>
+
+    <div class="vinculacion-container">
+        <!-- Sidebar de Áreas -->
+        <aside class="area-sidebar">
+            <h3><i class="fa-solid fa-sitemap"></i> Seleccione un Área</h3>
+            <div id="areaList" class="area-list">
+                <div style="padding:20px; text-align:center; color:#94a3b8; font-size:12px;"><i
+                        class="fas fa-spinner fa-spin"></i> Cargando áreas...</div>
+            </div>
+        </aside>
+
+        <!-- Contenido PEI -->
+        <main class="pei-main">
+            <div id="peiEmpty" class="pei-empty-state">
+                <i class="fa-solid fa-hand-pointer"></i>
+                <p>Seleccione un área del panel izquierdo para cargar sus objetivos y metas vinculadas.</p>
+            </div>
+
+            <div id="peiEditor" style="display: none;">
+                <div class="editor-header">
+                    <h2 id="editorAreaName">Área Seleccionada</h2>
+                    <span class="badge-count" id="countBadge">0 vinculadas</span>
+                </div>
+
+                <div id="peiSchemaList" class="aei-list"></div>
+
+                <div class="actions-bar">
+                    <button id="btnSaveV" class="btn-save" onclick="saveVinculacion()">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Configuración
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let DATA_V = { areas: [], pei: [], vinculaciones: [] };
+        let SELECTED_AREA = null;
+
+        function vinculacionPEI_load() {
+            google.script.run
+                .withSuccessHandler(res => {
+                    DATA_V = res;
+                    renderAreasV(res.areas);
+                })
+                .withFailureHandler(err => {
+                    Swal.fire('Error crítico', err.message, 'error');
+                })
+                .vinculacion_getData();
+        }
+
+        function renderAreasV(areas) {
+            const list = document.getElementById('areaList');
+            if (!areas.length) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8; font-size:12px;">No se encontraron áreas.</div>';
+                return;
+            }
+            list.innerHTML = areas.map(a => `
+                <div class="area-item" onclick="selectAreaV('${a.id}', this)">
+                    ${a.label}
+                </div>
+            `).join('');
+        }
+
+        function selectAreaV(id, el) {
+            document.querySelectorAll('.area-item').forEach(x => x.classList.remove('active'));
+            el.classList.add('active');
+
+            SELECTED_AREA = id;
+            document.getElementById('peiEmpty').style.display = 'none';
+            document.getElementById('peiEditor').style.display = 'block';
+            document.getElementById('editorAreaName').textContent = el.textContent;
+
+            renderPEIEditor();
+        }
+
+        function renderPEIEditor() {
+            const container = document.getElementById('peiSchemaList');
+
+            const currentV = DATA_V.vinculaciones
+                .filter(v => v.areaId === String(SELECTED_AREA).toLowerCase())
+                .map(v => v.aeiCode);
+
+            if (!DATA_V.pei || DATA_V.pei.length === 0) {
+                container.innerHTML = '<div style="padding:40px; text-align:center; color:#94a3b8; font-weight:800;">No se encontró el catálogo del PEI.</div>';
+                return;
+            }
+
+            container.innerHTML = DATA_V.pei.map(ch => {
+                const isChecked = currentV.includes(String(ch.codAei).toLowerCase());
+                return `
+                    <label class="aei-card ${isChecked ? 'selected' : ''}" onclick="toggleCardClass(this)">
+                        <input type="checkbox" name="aei_check" value="${ch.codAei}" ${isChecked ? 'checked' : ''} onchange="updateCounter()">
+                        <div class="aei-info">
+                            <span class="aei-code">${ch.codAei}</span>
+                            <div class="aei-text">${ch.accion}</div>
+                            ${ch.indicador ? `<div class="aei-indicator"><i class="fa-solid fa-chart-line"></i> <b>Indicador:</b> ${ch.indicador}</div>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            updateCounter();
+        }
+
+        function toggleCardClass(labelEl) {
+            setTimeout(() => {
+                const chk = labelEl.querySelector('input[type="checkbox"]');
+                if (chk.checked) labelEl.classList.add('selected');
+                else labelEl.classList.remove('selected');
+            }, 10);
+        }
+
+        function updateCounter() {
+            const checks = document.querySelectorAll('input[name="aei_check"]:checked');
+            document.getElementById('countBadge').innerHTML = `<i class="fa-solid fa-link"></i> ${checks.length} vinculadas`;
+        }
+
+        function saveVinculacion() {
+            const checks = document.querySelectorAll('input[name="aei_check"]:checked');
+            const selectedCodes = Array.from(checks).map(c => c.value);
+
+            const btn = document.getElementById('btnSaveV');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            google.script.run
+                .withSuccessHandler(res => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Configuración';
+
+                    if (res.success) {
+                        Swal.fire({ icon: 'success', title: '¡Guardado!', text: res.message, timer: 1500, showConfirmButton: false });
+
+                        // Actualizar caché local
+                        DATA_V.vinculaciones = DATA_V.vinculaciones.filter(v => v.areaId !== String(SELECTED_AREA).toLowerCase());
+                        selectedCodes.forEach(code => {
+                            DATA_V.vinculaciones.push({ areaId: String(SELECTED_AREA).toLowerCase(), aeiCode: String(code).toLowerCase() });
+                        });
+
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                })
+                .vinculacion_save(SELECTED_AREA, selectedCodes);
+        }
+
+        vinculacionPEI_load();
+    </script>
+</div>

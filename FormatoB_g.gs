@@ -7,6 +7,8 @@ function formatoB_get() {
     tipo: it.tipo || it.categoria || 'General',
     estado: it.estado || 'EN PROGRESO',
     impacto: it.impacto || '',
+    area: it.area || '',
+    codAei: it.codaei || '',
     imagen: it.imagen || it.imagenurl || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600'
   }));
 }
@@ -21,12 +23,14 @@ function formatoB_save(data) {
       descripcion: data.descripcion,
       tipo: data.tipo,
       estado: data.estado,
-      impacto: data.impacto
+      impacto: data.impacto,
+      area: data.area,
+      codaei: data.codAei
     };
 
     if (isEdit) {
       return { success: SheetService.updateObjectById_(APP_CONFIG.SHEETS.ACTIVIDADES, data.id, rowData) };
-    } elsse {
+    } else {
       SheetService.saveObject_(APP_CONFIG.SHEETS.ACTIVIDADES, rowData);
       return { success: true };
     }

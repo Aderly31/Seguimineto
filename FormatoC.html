@@ -1,180 +1,336 @@
 <div id="formatoC_root">
     <style>
+        :root {
+            --uac-blue: #00417B;
+            --uac-gold: #f59e0b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        /* Layout Premium */
+        .breadcrumbs { padding: 10px 0; font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 20px; }
+        .breadcrumbs span:after { content: '/'; margin-left: 8px; }
+        .breadcrumbs span:last-child:after { content: ''; }
+
+        .view-header-clean { margin-bottom: 32px; }
+        .view-header-clean h1 { font-size: 28px; font-weight: 900; color: var(--uac-blue); margin: 0; letter-spacing: -1px; }
+        .view-header-clean p { color: var(--text-muted); margin: 4px 0 0; font-size: 15px; }
+
         .view-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-            padding: 40px;
-            border-radius: 24px;
-            color: white;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px; background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px; border-radius: 24px; color: white;
             box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
         }
+        .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
+        .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
 
-        .grid-riesgos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 24px;
+        .btn-primary {
+            background: white; color: #00417B; border: none; padding: 14px 28px;
+            border-radius: 12px; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15); }
 
-        .card-premium {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #f1f5f9;
-            padding: 24px;
-            position: relative;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-        }
+        /* Premium Table */
+        .premium-table-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow: auto; }
+        .premium-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        .premium-table thead th { background: #f8fafc; padding: 16px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        .premium-table tbody td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+        .premium-table tbody tr:hover { background: #fcfcfd; }
 
-        .card-premium:hover {
-            border-color: #f59e0b;
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15);
-            transform: translateY(-5px);
-        }
+        .table-status { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .status-alta { background: #fef2f2; color: #ef4444; }
+        .status-media { background: #fffbeb; color: #f59e0b; }
+        .status-baja { background: #f0fdf4; color: #10b981; }
 
-        .badge-status {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
+        .btn-edit-sm {
+            padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 6px;
+            border: 1px solid var(--border-color); background: white; color: var(--text-main);
+            cursor: pointer; transition: all 0.2s;
         }
+        .btn-edit-sm:hover { background: #f1f5f9; border-color: #cbd5e1; }
 
-        .custom-input,
-        .custom-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            background: #fcfcfd;
-        }
+        /* Premium Form */
+        .premium-form-container { background: white; border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
+        .form-content { padding: 40px; }
+        .form-section { margin-bottom: 40px; }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .section-icon { width: 32px; height: 32px; background: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .section-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: #475569; }
+        .form-control { padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.2s; background: #fcfcfd; }
+        .form-control:focus { outline: none; border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .req { color: #ef4444; }
+
+        .form-footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 10px 20px; font-size: 14px; font-weight: 600; color: #4b5563; background: transparent; border: none; cursor: pointer; }
+        .btn-save { padding: 10px 24px; font-size: 14px; font-weight: 600; color: white; background: #2563eb; border-radius: 8px; border: none; cursor: pointer; }
     </style>
 
-    <div class="view-header">
-        <div>
-            <h2 style="margin:0; font-size:32px;">Formato C: Riesgos</h2>
-            <p style="margin:8px 0 0; opacity:0.9;">Gestión de brechas y acciones de mitigación</p>
+    <!-- VISTA LISTADO -->
+    <div id="formatoC_list">
+        <header class="view-header">
+            <div class="view-title">
+                <h1>Formato C: Gestión de Riesgos</h1>
+                <p>Identificación y mitigación de brechas institucionales</p>
+            </div>
+            <button class="btn-primary" onclick="formatoC_openForm()">
+                <i class="fa-solid fa-plus"></i> Registrar Riesgo
+            </button>
+        </header>
+
+        <div class="premium-table-container">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Descripción del Riesgo</th>
+                        <th>Área / PEI</th>
+                        <th>Prioridad / Estado</th>
+                        <th>Fecha Límite</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="formatoC_table_body"></tbody>
+            </table>
         </div>
-        <button
-            style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
-            onclick="modalRiesgo()">+ Registrar Riesgo</button>
     </div>
 
-    <div id="gridRiesgos" class="grid-riesgos">
-        <div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">Cargando datos...</div>
+    <!-- VISTA FORMULARIO -->
+    <div id="formatoC_form" style="display: none;">
+        <div class="breadcrumbs">
+            <span>Gestión Institucional</span>
+            <span>Formato C</span>
+            <span id="breadcrumbActionC">Registrar Riesgo</span>
+        </div>
+
+        <header class="view-header-clean">
+            <h1 id="formTitleC">Formato C: Formulario de Riesgo</h1>
+            <p>Registro de planes de acción para la prevención y respuesta.</p>
+        </header>
+
+        <form id="formC_main" onsubmit="formatoC_save(event)">
+            <input type="hidden" id="fC_id">
+            
+            <div class="premium-form-container">
+                <div class="form-content">
+                    
+                    <!-- Sección 1: Identificación -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="section-title">Identificación del Riesgo</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Riesgo Detectado <span class="req">*</span></label>
+                            <input type="text" id="fC_riesgo" class="form-control" placeholder="Describa el evento o condición adversa" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Área de Trabajo <span class="req">*</span></label>
+                                <select id="fC_area" class="form-control" onchange="handleAreaChangeC(this.value)" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
+                                <select id="fC_aei" class="form-control" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área primero</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 2: Análisis -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                            <div class="section-title">Análisis de Causa e Impacto</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Causa Raíz <span class="req">*</span></label>
+                                <textarea id="fC_causa" class="form-control" rows="2" placeholder="¿Por qué se origina el riesgo?" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Impacto Potencial <span class="req">*</span></label>
+                                <textarea id="fC_impacto" class="form-control" rows="2" placeholder="Consecuencias del riesgo" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 3: Plan de Mitigación -->
+                    <div class="form-section" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="section-title">Plan de Mitigación y Seguimiento</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Acción de Mitigación <span class="req">*</span></label>
+                            <textarea id="fC_accion" class="form-control" rows="2" placeholder="Medidas para reducir o eliminar el riesgo" required></textarea>
+                        </div>
+                        <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                            <div class="form-group">
+                                <label>Prioridad <span class="req">*</span></label>
+                                <select id="fC_prioridad" class="form-control" style="appearance: auto;">
+                                    <option value="Alta">Alta</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Objetivo <span class="req">*</span></label>
+                                <input type="date" id="fC_fechaObj" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado <span class="req">*</span></label>
+                                <select id="fC_estado" class="form-control" style="appearance: auto;">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="En Curso">En Curso</option>
+                                    <option value="Resuelto">Resuelto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel" onclick="formatoC_closeForm()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar Registro</button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <script>
         let CACHE_RIESGOS = [];
+        let GLOBAL_AREAS_C = [];
 
         function formatoC_load() {
-            google.script.run
-                .withSuccessHandler(data => {
+            google.script.run.withSuccessHandler(res => {
+                GLOBAL_AREAS_C = res.areas;
+                renderSelectAreasC(res.areas);
+                
+                google.script.run.withSuccessHandler(data => {
                     CACHE_RIESGOS = data;
                     renderRiesgos(data);
-                })
-                .withFailureHandler(err => {
-                    Swal.fire('Error de Conexión', String(err), 'error');
-                })
-                .formatoC_get();
+                }).formatoC_get();
+            }).common_getAppData();
+        }
+
+        function renderSelectAreasC(areas) {
+            const select = document.getElementById('fC_area');
+            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
+                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
+        }
+
+        function handleAreaChangeC(areaId) {
+            const selectAei = document.getElementById('fC_aei');
+            selectAei.innerHTML = '<option value="">Cargando...</option>';
+            google.script.run.withSuccessHandler(aeis => {
+                if (!aeis || aeis.length === 0) {
+                    selectAei.innerHTML = '<option value="" disabled>Sin acciones vinculadas</option>';
+                } else {
+                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                }
+            }).common_getVinculacion(areaId);
         }
 
         function renderRiesgos(items) {
-            const grid = document.getElementById('gridRiesgos');
-            if (!items || items.length === 0) {
-                grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b; font-weight:800; background:white; border-radius:16px;">No hay riesgos registrados. Usa el botón superior para crear uno.</div>';
-                return;
-            }
+            const tbody = document.getElementById('formatoC_table_body');
+            if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
 
-            grid.innerHTML = items.map(r => {
-                let bg = '#fef3c7'; let textCol = '#d97706'; // Pendiente
-                if (r.estado === 'Resuelto') { bg = '#dcfce7'; textCol = '#166534'; }
-                else if (r.estado === 'En Curso') { bg = '#dbeafe'; textCol = '#1e40af'; }
-
+            tbody.innerHTML = items.map(r => {
+                const prioClass = `status-${r.prioridad.toLowerCase()}`;
                 return `
-                <div class="card-premium">
-                    <div class="badge-status" style="background:${bg}; color:${textCol};">${r.estado}</div>
-                    <div style="font-size:11px; font-weight:900; color:#94a3b8; margin-bottom:12px;"><i class="fa-solid fa-triangle-exclamation"></i> Prioridad: ${r.prioridad}</div>
-                    <h3 style="margin:0 0 12px; font-size:18px; color:#1e293b; font-weight:950;">${r.riesgo}</h3>
-                    <div style="background:#fff7ed; border:1px solid #ffedd5; padding:16px; border-radius:16px; font-size:13px; color:#9a3412; margin-bottom:16px;">
-                        <strong>Causa:</strong> ${r.causa}<br>
-                        <strong>Impacto:</strong> ${r.impacto}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:12px; color:#10b981; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width: 60%;">
-                            <i class="fa-solid fa-shield-halved"></i> ${r.accion || 'Sin acción'}
-                        </span>
-                        <button style="background:#f1f5f9; border:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:900; cursor:pointer;" onclick="modalRiesgo('${r.id}')">EDITAR</button>
-                    </div>
-                </div>`;
+                <tr>
+                    <td>
+                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${r.riesgo}</div>
+                        <div style="font-size:12px; color:#64748b;">ID: ${r.id.substring(0,8)}...</div>
+                    </td>
+                    <td>
+                        <div style="font-size:13px; font-weight:600;">${r.area}</div>
+                        <div style="font-size:11px; color:#94a3b8;">PEI: ${r.codAei}</div>
+                    </td>
+                    <td>
+                        <div style="margin-bottom:4px;"><span class="table-status ${prioClass}">${r.prioridad}</span></div>
+                        <div style="font-size:12px; font-weight:600; color:#64748b;">${r.estado}</div>
+                    </td>
+                    <td style="font-weight:600;">${r.fechaObjetivo}</td>
+                    <td>
+                        <button class="btn-edit-sm" onclick="formatoC_edit('${r.id}')">EDITAR</button>
+                    </td>
+                </tr>`;
             }).join('');
         }
 
-        function modalRiesgo(id = null) {
-            const data = id ? CACHE_RIESGOS.find(x => x.id === id) : null;
-            Swal.fire({
-                title: data ? 'Editar Riesgo' : 'Nuevo Riesgo',
-                width: '600px',
-                html: `
-                    <div style="text-align:left;">
-                        <input type="hidden" id="fC_id" value="${data ? data.id : ''}">
-                        <label style="font-size:12px; font-weight:800;">Descripción del Riesgo</label>
-                        <textarea id="fC_riesgo" class="custom-textarea">${data ? data.riesgo : ''}</textarea>
-                        
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                            <div><label style="font-size:12px; font-weight:800;">Causa Raíz</label><input id="fC_causa" class="custom-input" value="${data ? data.causa : ''}"></div>
-                            <div><label style="font-size:12px; font-weight:800;">Impacto</label><input id="fC_impacto" class="custom-input" value="${data ? data.impacto : ''}"></div>
-                        </div>
-
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                            <div><label style="font-size:12px; font-weight:800;">Prioridad</label>
-                                <select id="fC_prioridad" class="custom-input">
-                                    <option ${data?.prioridad == 'Alta' ? 'selected' : ''}>Alta</option>
-                                    <option ${data?.prioridad == 'Media' ? 'selected' : ''}>Media</option>
-                                    <option ${data?.prioridad == 'Baja' ? 'selected' : ''}>Baja</option>
-                                </select>
-                            </div>
-                            <div><label style="font-size:12px; font-weight:800;">Fecha Objetivo</label><input type="date" id="fC_fechaObj" class="custom-input" value="${data ? data.fechaObjetivo : ''}"></div>
-                        </div>
-                        
-                        <label style="font-size:12px; font-weight:800;">Acción de Mitigación</label>
-                        <textarea id="fC_accion" class="custom-textarea">${data ? data.accion : ''}</textarea>
-                        
-                        <label style="font-size:12px; font-weight:800;">Estado</label>
-                        <select id="fC_estado" class="custom-input">
-                            <option ${data?.estado == 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option ${data?.estado == 'En Curso' ? 'selected' : ''}>En Curso</option>
-                            <option ${data?.estado == 'Resuelto' ? 'selected' : ''}>Resuelto</option>
-                        </select>
-                    </div>
-                `,
-                showCancelButton: true, confirmButtonColor: '#00417B', confirmButtonText: 'Guardar',
-                preConfirm: () => ({
-                    id: document.getElementById('fC_id').value,
-                    riesgo: document.getElementById('fC_riesgo').value,
-                    causa: document.getElementById('fC_causa').value,
-                    impacto: document.getElementById('fC_impacto').value,
-                    prioridad: document.getElementById('fC_prioridad').value,
-                    accion: document.getElementById('fC_accion').value,
-                    fechaObjetivo: document.getElementById('fC_fechaObj').value,
-                    estado: document.getElementById('fC_estado').value
-                })
-            }).then(r => {
-                if (r.isConfirmed) {
-                    Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
-                    google.script.run.withSuccessHandler(res => {
-                        if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoC_load(); }
-                    }).formatoC_save(r.value);
-                }
-            });
+        function formatoC_openForm() {
+            document.getElementById('formatoC_list').style.display = 'none';
+            document.getElementById('formatoC_form').style.display = 'block';
+            document.getElementById('breadcrumbActionC').textContent = 'Registrar Riesgo';
+            document.getElementById('formC_main').reset();
+            document.getElementById('fC_id').value = '';
         }
+
+        function formatoC_closeForm() {
+            document.getElementById('formatoC_list').style.display = 'block';
+            document.getElementById('formatoC_form').style.display = 'none';
+        }
+
+        function formatoC_edit(id) {
+            const item = CACHE_RIESGOS.find(x => x.id === id);
+            if (!item) return;
+            formatoC_openForm();
+            document.getElementById('breadcrumbActionC').textContent = 'Editar Riesgo';
+            document.getElementById('fC_id').value = item.id;
+            document.getElementById('fC_riesgo').value = item.riesgo;
+            document.getElementById('fC_area').value = item.area;
+            
+            const selectAei = document.getElementById('fC_aei');
+            google.script.run.withSuccessHandler(aeis => {
+                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                selectAei.value = item.codAei;
+            }).common_getVinculacion(item.area);
+
+            document.getElementById('fC_causa').value = item.causa;
+            document.getElementById('fC_impacto').value = item.impacto;
+            document.getElementById('fC_prioridad').value = item.prioridad;
+            document.getElementById('fC_fechaObj').value = item.fechaObjetivo;
+            document.getElementById('fC_accion').value = item.accion;
+            document.getElementById('fC_estado').value = item.estado;
+        }
+
+        function formatoC_save(e) {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('fC_id').value,
+                riesgo: document.getElementById('fC_riesgo').value,
+                area: document.getElementById('fC_area').value,
+                codAei: document.getElementById('fC_aei').value,
+                causa: document.getElementById('fC_causa').value,
+                impacto: document.getElementById('fC_impacto').value,
+                prioridad: document.getElementById('fC_prioridad').value,
+                fechaObjetivo: document.getElementById('fC_fechaObj').value,
+                accion: document.getElementById('fC_accion').value,
+                estado: document.getElementById('fC_estado').value
+            };
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                    formatoC_closeForm();
+                    formatoC_load();
+                } else { Swal.fire('Error', res.message, 'error'); }
+            }).formatoC_save(data);
+        }
+
         formatoC_load();
     </script>
 </div>

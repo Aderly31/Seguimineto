@@ -1,189 +1,331 @@
 <div id="formatoD_root">
     <style>
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-            padding: 40px;
-            border-radius: 24px;
-            color: white;
+        :root {
+            --uac-blue: #00417B;
+            --uac-gold: #f59e0b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        /* Layout Premium */
+        .breadcrumbs { padding: 10px 0; font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 20px; }
+        .breadcrumbs span:after { content: '/'; margin-left: 8px; }
+        .breadcrumbs span:last-child:after { content: ''; }
+
+        .view-header-clean { margin-bottom: 32px; }
+        .view-header-clean h1 { font-size: 28px; font-weight: 900; color: var(--uac-blue); margin: 0; letter-spacing: -1px; }
+        .view-header-clean p { color: var(--text-muted); margin: 4px 0 0; font-size: 15px; }
+
+        .view-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px; background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px; border-radius: 24px; color: white;
             box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
         }
+        .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
+        .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
 
-        .cap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
+        .btn-primary {
+            background: white; color: #00417B; border: none; padding: 14px 28px;
+            border-radius: 12px; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15); }
 
-        .card-premium {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #f1f5f9;
-            padding: 24px;
-            transition: transform 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-        }
+        /* Premium Table */
+        .premium-table-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow: auto; }
+        .premium-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        .premium-table thead th { background: #f8fafc; padding: 16px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        .premium-table tbody td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+        .premium-table tbody tr:hover { background: #fcfcfd; }
 
-        .card-premium:hover {
-            border-color: #00417B;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-        }
+        .table-status { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .status-prog { background: #f1f5f9; color: #64748b; }
+        .status-ejec { background: #dbeafe; color: #1e40af; }
+        .status-comp { background: #d1fae5; color: #065f46; }
 
-        .custom-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            background: #fcfcfd;
+        .btn-edit-sm {
+            padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 6px;
+            border: 1px solid var(--border-color); background: white; color: var(--text-main);
+            cursor: pointer; transition: all 0.2s;
         }
+        .btn-edit-sm:hover { background: #f1f5f9; border-color: #cbd5e1; }
 
-        .compliance-bar {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f1f5f9;
-        }
+        /* Premium Form */
+        .premium-form-container { background: white; border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
+        .form-content { padding: 40px; }
+        .form-section { margin-bottom: 40px; }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .section-icon { width: 32px; height: 32px; background: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .section-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
 
-        .progress-track {
-            flex: 1;
-            height: 12px;
-            background: #eef2f7;
-            border-radius: 999px;
-            overflow: hidden;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: #475569; }
+        .form-control { padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.2s; background: #fcfcfd; }
+        .form-control:focus { outline: none; border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .req { color: #ef4444; }
 
-        .progress-fill {
-            height: 100%;
-            background: #00417B;
-            border-radius: 999px;
-            transition: width 1s ease;
-        }
+        .form-footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 10px 20px; font-size: 14px; font-weight: 600; color: #4b5563; background: transparent; border: none; cursor: pointer; }
+        .btn-save { padding: 10px 24px; font-size: 14px; font-weight: 600; color: white; background: #2563eb; border-radius: 8px; border: none; cursor: pointer; }
     </style>
 
-    <div class="header-actions">
-        <div>
-            <h2 style="margin:0; font-size:32px; font-weight:950;">Formato D: Capacitaciones</h2>
-            <p style="margin:8px 0 0; opacity:0.9;">Registro y control de formación continua</p>
+    <!-- VISTA LISTADO -->
+    <div id="formatoD_list">
+        <header class="view-header">
+            <div class="view-title">
+                <h1>Formato D: Capacitaciones</h1>
+                <p>Fortalecimiento de capacidades institucionales</p>
+            </div>
+            <button class="btn-primary" onclick="formatoD_openForm()">
+                <i class="fa-solid fa-plus"></i> Nueva Capacitación
+            </button>
+        </header>
+
+        <div class="premium-table-container">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Nombre de Capacitación</th>
+                        <th>Área / PEI</th>
+                        <th>Modalidad / Estado</th>
+                        <th>Participantes</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="formatoD_table_body"></tbody>
+            </table>
         </div>
-        <button
-            style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
-            onclick="modalCap()">+ Registrar Capacitación</button>
     </div>
 
-    <!-- Barra de Cumplimiento -->
-    <div class="compliance-bar">
-        <div>
-            <div style="font-size:14px; font-weight:900; color:#1e293b;">Cumplimiento Institucional</div>
-            <div style="font-size:11px; color:#64748b; font-weight:700;">Meta del periodo: 100%</div>
+    <!-- VISTA FORMULARIO -->
+    <div id="formatoD_form" style="display: none;">
+        <div class="breadcrumbs">
+            <span>Fortalecimiento</span>
+            <span>Formato D</span>
+            <span id="breadcrumbActionD">Nueva Capacitación</span>
         </div>
-        <div class="progress-track">
-            <div id="compFill" class="progress-fill" style="width: 0%"></div>
-        </div>
-        <div id="compText" style="font-size: 24px; font-weight: 950; color: #00417B;">0%</div>
-    </div>
 
-    <div id="gridCap" class="cap-grid"></div>
+        <header class="view-header-clean">
+            <h1 id="formTitleD">Formato D: Formulario de Capacitación</h1>
+            <p>Registro de eventos formativos y evaluación de impacto.</p>
+        </header>
 
-    <script>
-        let CACHE_CAPS = [];
-
-        function formatoD_load() {
-            google.script.run.withSuccessHandler(data => {
-                CACHE_CAPS = data;
-                renderCaps(data);
-
-                // Simular cálculo de cumplimiento
-                const total = data.length;
-                const completados = data.filter(c => c.estado === 'Realizado').length;
-                const perc = total ? Math.round((completados / total) * 100) : 0;
-                document.getElementById('compFill').style.width = perc + '%';
-                document.getElementById('compText').textContent = perc + '%';
-            }).formatoD_get();
-        }
-
-        function renderCaps(items) {
-            const grid = document.getElementById('gridCap');
-            if (!items.length) { grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:#64748b;">No hay capacitaciones.</div>'; return; }
-
-            grid.innerHTML = items.map(c => `
-            <div class="card-premium">
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                    <span style="font-size:11px; font-weight:900; background:#f1f5f9; padding:4px 10px; border-radius:8px; color:#475569;">${c.modalidad}</span>
-                    <span style="font-size:11px; font-weight:900; color:${c.estado === 'Realizado' ? '#10b981' : '#f59e0b'};">${c.estado}</span>
-                </div>
-                <h3 style="margin:0 0 16px; font-size:18px; color:#1e293b; font-weight:950;">${c.nombre}</h3>
-                <div style="font-size:13px; color:#64748b; margin-bottom:8px;"><i class="fa-solid fa-calendar"></i> Fecha: <strong>${c.fecha}</strong></div>
-                <div style="font-size:13px; color:#64748b; margin-bottom:16px;"><i class="fa-solid fa-users"></i> Participantes: <strong>${c.participantes}</strong></div>
-                
-                <button style="width:100%; background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:12px; font-weight:900; cursor:pointer; color:#00417B;" onclick="modalCap('${c.id}')">EDITAR DETALLES</button>
-            </div>`).join('');
-        }
-
-        function modalCap(id = null) {
-            const data = id ? CACHE_CAPS.find(x => x.id === id) : null;
-            Swal.fire({
-                title: data ? 'Editar Capacitación' : 'Nueva Capacitación',
-                html: `
-                    <div style="text-align:left;">
-                        <input type="hidden" id="fD_id" value="${data ? data.id : ''}">
-                        <label style="font-size:12px; font-weight:800;">Nombre de la Capacitación</label>
-                        <input id="fD_nombre" class="custom-input" value="${data ? data.nombre : ''}">
-                        
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                            <div><label style="font-size:12px; font-weight:800;">Fecha</label><input type="date" id="fD_fecha" class="custom-input" value="${data ? data.fecha : ''}"></div>
-                            <div><label style="font-size:12px; font-weight:800;">Participantes</label><input type="number" id="fD_participantes" class="custom-input" value="${data ? data.participantes : ''}"></div>
+        <form id="formD_main" onsubmit="formatoD_save(event)">
+            <input type="hidden" id="fD_id">
+            
+            <div class="premium-form-container">
+                <div class="form-content">
+                    
+                    <!-- Sección 1: Identificación -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <div class="section-title">Identificación y Planificación</div>
                         </div>
-                        
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                            <div>
-                                <label style="font-size:12px; font-weight:800;">Modalidad</label>
-                                <select id="fD_modalidad" class="custom-input">
-                                    <option ${data?.modalidad == 'Virtual' ? 'selected' : ''}>Virtual</option>
-                                    <option ${data?.modalidad == 'Presencial' ? 'selected' : ''}>Presencial</option>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Nombre del Evento <span class="req">*</span></label>
+                            <input type="text" id="fD_nombre" class="form-control" placeholder="Ej. Taller de Transformación Digital" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Área de Trabajo <span class="req">*</span></label>
+                                <select id="fD_area" class="form-control" onchange="handleAreaChangeD(this.value)" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área...</option>
                                 </select>
                             </div>
-                            <div>
-                                <label style="font-size:12px; font-weight:800;">Estado</label>
-                                <select id="fD_estado" class="custom-input">
-                                    <option ${data?.estado == 'Programado' ? 'selected' : ''}>Programado</option>
-                                    <option ${data?.estado == 'Realizado' ? 'selected' : ''}>Realizado</option>
+                            <div class="form-group">
+                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
+                                <select id="fD_aei" class="form-control" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área primero</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha del Evento <span class="req">*</span></label>
+                            <input type="date" id="fD_fecha" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Sección 2: Desarrollo -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-users-gear"></i></div>
+                            <div class="section-title">Desarrollo de Capacitación</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Modalidad <span class="req">*</span></label>
+                                <select id="fD_modalidad" class="form-control" style="appearance: auto;">
+                                    <option value="Presencial">Presencial</option>
+                                    <option value="Virtual">Virtual</option>
+                                    <option value="Híbrida">Híbrida</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>N° de Participantes <span class="req">*</span></label>
+                                <input type="number" id="fD_participantes" class="form-control" min="0" required>
                             </div>
                         </div>
                     </div>
-                `,
-                showCancelButton: true,
-                confirmButtonColor: '#00417B',
-                confirmButtonText: 'Guardar',
-                preConfirm: () => ({
-                    id: document.getElementById('fD_id').value,
-                    nombre: document.getElementById('fD_nombre').value,
-                    fecha: document.getElementById('fD_fecha').value,
-                    participantes: document.getElementById('fD_participantes').value,
-                    modalidad: document.getElementById('fD_modalidad').value,
-                    estado: document.getElementById('fD_estado').value
-                })
-            }).then(r => {
-                if (r.isConfirmed) {
-                    Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
-                    google.script.run.withSuccessHandler(res => {
-                        if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoD_load(); }
-                        else Swal.fire('Error', res.message, 'error');
-                    }).formatoD_save(r.value);
-                }
-            });
+
+                    <!-- Sección 3: Resultados -->
+                    <div class="form-section" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                            <div class="section-title">Evaluación y Evidencia</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Comentarios / Progreso de Evidencia</label>
+                            <textarea id="fD_progreso" class="form-control" rows="2" placeholder="Detalle el estado actual de la evidencia"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado <span class="req">*</span></label>
+                            <select id="fD_estado" class="form-control" style="appearance: auto;">
+                                <option value="Programado">Programado</option>
+                                <option value="En Ejecución">En Ejecución</option>
+                                <option value="Completado">Completado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel" onclick="formatoD_closeForm()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar Capacitación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let CACHE_D = [];
+        let GLOBAL_AREAS_D = [];
+
+        function formatoD_load() {
+            google.script.run.withSuccessHandler(res => {
+                GLOBAL_AREAS_D = res.areas;
+                renderSelectAreasD(res.areas);
+                
+                google.script.run.withSuccessHandler(data => {
+                    CACHE_D = data;
+                    renderD(data);
+                }).formatoD_get();
+            }).common_getAppData();
         }
+
+        function renderSelectAreasD(areas) {
+            const select = document.getElementById('fD_area');
+            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
+                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
+        }
+
+        function handleAreaChangeD(areaId) {
+            const selectAei = document.getElementById('fD_aei');
+            selectAei.innerHTML = '<option value="">Cargando...</option>';
+            google.script.run.withSuccessHandler(aeis => {
+                if (!aeis || aeis.length === 0) {
+                    selectAei.innerHTML = '<option value="" disabled>Sin acciones vinculadas</option>';
+                } else {
+                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                }
+            }).common_getVinculacion(areaId);
+        }
+
+        function renderD(items) {
+            const tbody = document.getElementById('formatoD_table_body');
+            if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
+
+            tbody.innerHTML = items.map(d => {
+                let sCol = 'status-prog';
+                if(d.estado === 'En Ejecución') sCol = 'status-ejec';
+                if(d.estado === 'Completado') sCol = 'status-comp';
+
+                return `
+                <tr>
+                    <td>
+                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${d.nombre}</div>
+                        <div style="font-size:12px; color:#64748b;">Fecha: ${d.fecha}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:13px; font-weight:600;">${d.area}</div>
+                        <div style="font-size:11px; color:#94a3b8;">PEI: ${d.codAei}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${d.modalidad}</div>
+                        <span class="table-status ${sCol}">${d.estado}</span>
+                    </td>
+                    <td style="font-weight:600; font-size:15px; text-align:center;">${d.participantes}</td>
+                    <td>
+                        <button class="btn-edit-sm" onclick="formatoD_edit('${d.id}')">EDITAR</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function formatoD_openForm() {
+            document.getElementById('formatoD_list').style.display = 'none';
+            document.getElementById('formatoD_form').style.display = 'block';
+            document.getElementById('breadcrumbActionD').textContent = 'Nueva Capacitación';
+            document.getElementById('formD_main').reset();
+            document.getElementById('fD_id').value = '';
+        }
+
+        function formatoD_closeForm() {
+            document.getElementById('formatoD_list').style.display = 'block';
+            document.getElementById('formatoD_form').style.display = 'none';
+        }
+
+        function formatoD_edit(id) {
+            const item = CACHE_D.find(x => x.id === id);
+            if (!item) return;
+            formatoD_openForm();
+            document.getElementById('breadcrumbActionD').textContent = 'Editar Capacitación';
+            document.getElementById('fD_id').value = item.id;
+            document.getElementById('fD_nombre').value = item.nombre;
+            document.getElementById('fD_fecha').value = item.fecha;
+            document.getElementById('fD_area').value = item.area;
+            
+            const selectAei = document.getElementById('fD_aei');
+            google.script.run.withSuccessHandler(aeis => {
+                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                selectAei.value = item.codAei;
+            }).common_getVinculacion(item.area);
+
+            document.getElementById('fD_modalidad').value = item.modalidad;
+            document.getElementById('fD_participantes').value = item.participantes;
+            document.getElementById('fD_progreso').value = item.progresoEvidencia;
+            document.getElementById('fD_estado').value = item.estado;
+        }
+
+        function formatoD_save(e) {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('fD_id').value,
+                nombre: document.getElementById('fD_nombre').value,
+                fecha: document.getElementById('fD_fecha').value,
+                area: document.getElementById('fD_area').value,
+                codAei: document.getElementById('fD_aei').value,
+                modalidad: document.getElementById('fD_modalidad').value,
+                participantes: document.getElementById('fD_participantes').value,
+                progresoEvidencia: document.getElementById('fD_progreso').value,
+                estado: document.getElementById('fD_estado').value
+            };
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                    formatoD_closeForm();
+                    formatoD_load();
+                } else { Swal.fire('Error', res.message, 'error'); }
+            }).formatoD_save(data);
+        }
+
         formatoD_load();
     </script>
 </div>

@@ -1,170 +1,322 @@
 <div id="formatoB_root">
-  <style>
-    .header-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-      background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-      padding: 40px;
-      border-radius: 24px;
-      color: white;
-      box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-    }
+    <style>
+        :root {
+            --uac-blue: #00417B;
+            --uac-gold: #f59e0b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+        }
 
-    .grid-act {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 32px;
-    }
+        /* Estilos Base de Layout Premium */
+        .breadcrumbs { padding: 10px 0; font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 20px; }
+        .breadcrumbs span:after { content: '/'; margin-left: 8px; }
+        .breadcrumbs span:last-child:after { content: ''; }
 
-    .card-act {
-      background: white;
-      border-radius: 28px;
-      border: 1px solid #f1f5f9;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-    }
+        .view-header-clean { margin-bottom: 32px; }
+        .view-header-clean h1 { font-size: 28px; font-weight: 900; color: var(--uac-blue); margin: 0; letter-spacing: -1px; }
+        .view-header-clean p { color: var(--text-muted); margin: 4px 0 0; font-size: 15px; }
 
-    .card-act:hover {
-      transform: translateY(-8px);
-      border-color: #00417B;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
+        .view-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px; background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 40px; border-radius: 24px; color: white;
+            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
+        }
+        .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
+        .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
 
-    .card-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
+        .btn-primary {
+            background: white; color: #00417B; border: none; padding: 14px 28px;
+            border-radius: 12px; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15); }
 
-    .card-body {
-      padding: 24px;
-    }
+        /* Premium Table */
+        .premium-table-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow: auto; }
+        .premium-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        .premium-table thead th { background: #f8fafc; padding: 16px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        .premium-table tbody td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+        .premium-table tbody tr:hover { background: #fcfcfd; }
 
-    .card-title {
-      font-weight: 950;
-      font-size: 20px;
-      color: #1e293b;
-      margin: 12px 0;
-    }
+        .table-status { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .status-proceso { background: #dbeafe; color: #1e40af; }
+        .status-completado { background: #d1fae5; color: #065f46; }
 
-    .custom-input,
-    .custom-textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-  </style>
+        .btn-edit-sm {
+            padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 6px;
+            border: 1px solid var(--border-color); background: white; color: var(--text-main);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-edit-sm:hover { background: #f1f5f9; border-color: #cbd5e1; }
 
-  <div class="header-actions">
-    <div>
-      <h2 style="margin:0; font-size:32px;">Formato B: Actividades</h2>
-      <p style="margin:8px 0 0; opacity:0.9;">Seguimiento del progreso institucional</p>
+        /* Premium Form */
+        .premium-form-container { background: white; border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
+        .form-content { padding: 40px; }
+        .form-section { margin-bottom: 40px; }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .section-icon { width: 32px; height: 32px; background: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .section-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: #475569; }
+        .form-control { padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.2s; background: #fcfcfd; }
+        .form-control:focus { outline: none; border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .req { color: #ef4444; }
+
+        .form-footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 10px 20px; font-size: 14px; font-weight: 600; color: #4b5563; background: transparent; border: none; cursor: pointer; }
+        .btn-save { padding: 10px 24px; font-size: 14px; font-weight: 600; color: white; background: #2563eb; border-radius: 8px; border: none; cursor: pointer; }
+    </style>
+
+    <!-- VISTA LISTADO -->
+    <div id="formatoB_list">
+        <header class="view-header">
+            <div class="view-title">
+                <h1>Formato B: Actividades</h1>
+                <p>Planificación y seguimiento del progreso institucional</p>
+            </div>
+            <button class="btn-primary" onclick="formatoB_openForm()">
+                <i class="fa-solid fa-plus"></i> Agregar Actividad
+            </button>
+        </header>
+
+        <div class="premium-table-container">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Identificación de Actividad</th>
+                        <th>Área / PEI</th>
+                        <th>Tipo / Estado</th>
+                        <th>Impacto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="formatoB_table_body"></tbody>
+            </table>
+        </div>
     </div>
-    <button
-      style="background:white; color:#00417B; border:none; padding:14px 24px; border-radius:12px; font-weight:900; cursor:pointer;"
-      onclick="modalActividad()">
-      + Agregar Actividad
-    </button>
-  </div>
 
-  <div id="gridAct" class="grid-act"></div>
+    <!-- VISTA FORMULARIO -->
+    <div id="formatoB_form" style="display: none;">
+        <div class="breadcrumbs">
+            <span>Informe de Gestión</span>
+            <span>Formato B</span>
+            <span id="breadcrumbActionB">Agregar Actividad</span>
+        </div>
 
-  <script>
-    let CACHE_ACTS = [];
+        <header class="view-header-clean">
+            <h1 id="formTitleB">Formato B: Formulario de Actividad</h1>
+            <p>Registro detallado de acciones para el cumplimiento de objetivos.</p>
+        </header>
 
-    function formatoB_load() {
-      google.script.run.withSuccessHandler(data => {
-        CACHE_ACTS = data;
-        renderAct(data);
-      }).formatoB_get();
-    }
-
-    function renderAct(items) {
-      const grid = document.getElementById('gridAct');
-      if (!items.length) { grid.innerHTML = '<div style="padding:40px; text-align:center;">No hay actividades.</div>'; return; }
-
-      grid.innerHTML = items.map(a => `
-            <div class="card-act">
-                <div style="position:relative;">
-                    <img src="${a.imagen}" class="card-img">
-                    <span style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.9); padding:6px 14px; border-radius:20px; font-size:10px; font-weight:900;">${a.estado}</span>
-                </div>
-                <div class="card-body">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:11px; font-weight:900; color:#00417B;">${a.tipo}</span>
-                        <button style="background:#f1f5f9; border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:900; cursor:pointer;" onclick="modalActividad('${a.id}')">EDITAR</button>
-                    </div>
-                    <h3 class="card-title">${a.titulo}</h3>
-                    <p style="font-size:13px; color:#64748b; margin-bottom:16px;">${a.descripcion}</p>
-                    <div style="background:#f8fafc; padding:12px; border-radius:12px; font-size:12px; color:#475569;">
-                        <strong>Impacto:</strong> ${a.impacto}
-                    </div>
-                </div>
-            </div>`).join('');
-    }
-
-    function modalActividad(id = null) {
-      const data = id ? CACHE_ACTS.find(x => x.id === id) : null;
-      Swal.fire({
-        title: data ? 'Editar Actividad' : 'Nueva Actividad',
-        html: `
-                    <div style="text-align:left;">
-                        <input type="hidden" id="fB_id" value="${data ? data.id : ''}">
-                        <label style="font-size:12px; font-weight:800;">Título</label>
-                        <input id="fB_titulo" class="custom-input" value="${data ? data.titulo : ''}">
-                        
-                        <label style="font-size:12px; font-weight:800;">Descripción</label>
-                        <textarea id="fB_desc" class="custom-textarea">${data ? data.descripcion : ''}</textarea>
-                        
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                            <div>
-                                <label style="font-size:12px; font-weight:800;">Categoría</label>
-                                <select id="fB_tipo" class="custom-input">
-                                    <option ${data?.tipo == 'Estratégico' ? 'selected' : ''}>Estratégico</option>
-                                    <option ${data?.tipo == 'Soporte' ? 'selected' : ''}>Soporte</option>
+        <form id="formB_main" onsubmit="formatoB_save(event)">
+            <input type="hidden" id="fB_id">
+            
+            <div class="premium-form-container">
+                <div class="form-content">
+                    
+                    <!-- Sección 1: Identificación y Vinculación -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-link"></i></div>
+                            <div class="section-title">Identificación y Vinculación</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Título de la Actividad <span class="req">*</span></label>
+                            <input type="text" id="fB_titulo" class="form-control" placeholder="Nombre descriptivo de la actividad" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Área de Trabajo <span class="req">*</span></label>
+                                <select id="fB_area" class="form-control" onchange="handleAreaChangeB(this.value)" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área...</option>
                                 </select>
                             </div>
-                            <div>
-                                <label style="font-size:12px; font-weight:800;">Estado</label>
-                                <select id="fB_estado" class="custom-input">
-                                    <option ${data?.estado == 'EN PROGRESO' ? 'selected' : ''}>EN PROGRESO</option>
-                                    <option ${data?.estado == 'COMPLETADO' ? 'selected' : ''}>COMPLETADO</option>
+                            <div class="form-group">
+                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
+                                <select id="fB_aei" class="form-control" required style="appearance: auto;">
+                                    <option value="" disabled selected>Seleccione área primero</option>
                                 </select>
                             </div>
                         </div>
-                        <label style="font-size:12px; font-weight:800;">Impacto</label>
-                        <input id="fB_impacto" class="custom-input" value="${data ? data.impacto : ''}">
                     </div>
-                `,
-        showCancelButton: true,
-        confirmButtonColor: '#00417B',
-        confirmButtonText: 'Guardar',
-        preConfirm: () => ({
-          id: document.getElementById('fB_id').value,
-          titulo: document.getElementById('fB_titulo').value,
-          descripcion: document.getElementById('fB_desc').value,
-          tipo: document.getElementById('fB_tipo').value,
-          estado: document.getElementById('fB_estado').value,
-          impacto: document.getElementById('fB_impacto').value
-        })
-      }).then(r => {
-        if (r.isConfirmed) {
-          Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
-          google.script.run.withSuccessHandler(res => {
-            if (res.success) { Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500 }); formatoB_load(); }
-            else Swal.fire('Error', res.message, 'error');
-          }).formatoB_save(r.value);
+
+                    <!-- Sección 2: Detalles de Ejecución -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-list-check"></i></div>
+                            <div class="section-title">Detalles de Ejecución</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Descripción / Metodología <span class="req">*</span></label>
+                            <textarea id="fB_desc" class="form-control" rows="3" placeholder="Detalle cómo se llevará a cabo la actividad" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Categoría <span class="req">*</span></label>
+                                <select id="fB_tipo" class="form-control" required style="appearance: auto;">
+                                    <option value="Estratégico">Estratégico</option>
+                                    <option value="Soporte">Soporte</option>
+                                    <option value="Académico">Académico</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado Actual <span class="req">*</span></label>
+                                <select id="fB_estado" class="form-control" required style="appearance: auto;">
+                                    <option value="EN PROGRESO">EN PROGRESO</option>
+                                    <option value="COMPLETADO">COMPLETADO</option>
+                                    <option value="SUSPENDIDO">SUSPENDIDO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 3: Impacto Institucional -->
+                    <div class="form-section" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-bullseye"></i></div>
+                            <div class="section-title">Impacto Institucional</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Impacto Esperado / Logrado <span class="req">*</span></label>
+                            <textarea id="fB_impacto" class="form-control" rows="3" placeholder="Beneficios para la comunidad universitaria" required></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel" onclick="formatoB_closeForm()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar Actividad</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let CACHE_ACTS = [];
+        let GLOBAL_AREAS_B = [];
+
+        function formatoB_load() {
+            google.script.run.withSuccessHandler(res => {
+                GLOBAL_AREAS_B = res.areas;
+                renderSelectAreasB(res.areas);
+                
+                google.script.run.withSuccessHandler(data => {
+                    CACHE_ACTS = data;
+                    renderAct(data);
+                }).formatoB_get();
+            }).common_getAppData();
         }
-      });
-    }
-    formatoB_load();
-  </script>
+
+        function renderSelectAreasB(areas) {
+            const select = document.getElementById('fB_area');
+            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
+                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
+        }
+
+        function handleAreaChangeB(areaId) {
+            const selectAei = document.getElementById('fB_aei');
+            selectAei.innerHTML = '<option value="">Cargando...</option>';
+            google.script.run.withSuccessHandler(aeis => {
+                if (!aeis || aeis.length === 0) {
+                    selectAei.innerHTML = '<option value="" disabled>Sin acciones vinculadas</option>';
+                } else {
+                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                }
+            }).common_getVinculacion(areaId);
+        }
+
+        function renderAct(items) {
+            const tbody = document.getElementById('formatoB_table_body');
+            if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
+
+            tbody.innerHTML = items.map(a => {
+                const statusClass = a.estado === 'COMPLETADO' ? 'status-completado' : 'status-proceso';
+                return `
+                <tr>
+                    <td>
+                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${a.titulo}</div>
+                        <div style="font-size:12px; color:#64748b;">ID: ${a.id.substring(0,8)}...</div>
+                    </td>
+                    <td>
+                        <div style="font-size:13px; font-weight:600;">${a.area}</div>
+                        <div style="font-size:11px; color:#94a3b8;">PEI: ${a.codAei}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${a.tipo}</div>
+                        <span class="table-status ${statusClass}">${a.estado}</span>
+                    </td>
+                    <td><div style="font-size:12px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${a.impacto}</div></td>
+                    <td>
+                        <button class="btn-edit-sm" onclick="formatoB_edit('${a.id}')">EDITAR</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function formatoB_openForm() {
+            document.getElementById('formatoB_list').style.display = 'none';
+            document.getElementById('formatoB_form').style.display = 'block';
+            document.getElementById('breadcrumbActionB').textContent = 'Agregar Actividad';
+            document.getElementById('formB_main').reset();
+            document.getElementById('fB_id').value = '';
+        }
+
+        function formatoB_closeForm() {
+            document.getElementById('formatoB_list').style.display = 'block';
+            document.getElementById('formatoB_form').style.display = 'none';
+        }
+
+        function formatoB_edit(id) {
+            const item = CACHE_ACTS.find(x => x.id === id);
+            if (!item) return;
+            formatoB_openForm();
+            document.getElementById('breadcrumbActionB').textContent = 'Editar Actividad';
+            document.getElementById('fB_id').value = item.id;
+            document.getElementById('fB_titulo').value = item.titulo;
+            document.getElementById('fB_desc').value = item.descripcion;
+            document.getElementById('fB_area').value = item.area;
+            
+            const selectAei = document.getElementById('fB_aei');
+            google.script.run.withSuccessHandler(aeis => {
+                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                selectAei.value = item.codAei;
+            }).common_getVinculacion(item.area);
+
+            document.getElementById('fB_tipo').value = item.tipo;
+            document.getElementById('fB_estado').value = item.estado;
+            document.getElementById('fB_impacto').value = item.impacto;
+        }
+
+        function formatoB_save(e) {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('fB_id').value,
+                titulo: document.getElementById('fB_titulo').value,
+                descripcion: document.getElementById('fB_desc').value,
+                area: document.getElementById('fB_area').value,
+                codAei: document.getElementById('fB_aei').value,
+                tipo: document.getElementById('fB_tipo').value,
+                estado: document.getElementById('fB_estado').value,
+                impacto: document.getElementById('fB_impacto').value
+            };
+            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                    formatoB_closeForm();
+                    formatoB_load();
+                } else { Swal.fire('Error', res.message, 'error'); }
+            }).formatoB_save(data);
+        }
+
+        formatoB_load();
+    </script>
 </div>

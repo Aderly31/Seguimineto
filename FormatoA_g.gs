@@ -14,6 +14,9 @@ function formatoA_get() {
       resultado: result,
       avance: avance,
       fuente: it.fuente || 'Manual',
+      detallesFuente: it.detallesfuente || it.detalles_fuente || '',
+      area: it.area || '',
+      codAei: it.codaei || '',
       enlace: it.enlace || it.enlace_url || '',
       estado: it.estado || 'Borrador'
     };
@@ -32,6 +35,9 @@ function formatoA_save(data) {
       metaanual: data.metaAnual,
       resultado: data.resultado,
       fuente: data.fuente,
+      detallesfuente: data.detallesFuente,
+      area: data.area,
+      codaei: data.codAei,
       enlace: data.enlace,
       estado: 'Borrador'
     };
