@@ -4,8 +4,9 @@ function formatoB_get() {
     id: String(it.id || ''),
     titulo: it.titulo || '',
     descripcion: it.descripcion || '',
+    objetivo: it.objetivo || '',
     tipo: it.tipo || it.categoria || 'General',
-    estado: it.estado || 'FINALIZADO',
+    estado: 'FINALIZADO',
     impacto: it.impacto || '',
     fecha: it.fecha || '',
     beneficiarios: it.beneficiarios || '',
@@ -17,14 +18,15 @@ function formatoB_get() {
 function formatoB_save(data) {
   try {
     const isEdit = !!data.id;
-    // Asegúrate que tu Excel tenga estas columnas: id, titulo, descripcion, tipo, estado, impacto
+    // Asegúrate que tu Excel tenga estas columnas: id, titulo, descripcion, objetivo, tipo, estado, impacto
     const rowData = {
       id: data.id || Utilities.getUuid(),
       titulo: data.titulo,
       fecha: data.fecha,
       descripcion: data.descripcion,
-      tipo: data.tipo,
-      estado: data.estado,
+      objetivo: data.objetivo,
+      tipo: 'General',
+      estado: 'FINALIZADO',
       impacto: data.impacto,
       beneficiarios: data.beneficiarios,
       ejeestrategico: data.eje,

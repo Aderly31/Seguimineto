@@ -290,8 +290,8 @@
                     <tr>
                         <th>Identificación de Actividad</th>
                         <th>Eje Estratégico</th>
-                        <th>Tipo / Estado</th>
-                        <th>Impacto</th>
+                        <th>Objetivo Principal</th>
+                        <th>Logro / Resultados</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -325,18 +325,7 @@
                             <div class="section-icon"><i class="fa-solid fa-link"></i></div>
                             <div class="section-title">Identificación y Vinculación</div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Título de la Actividad <span class="req">*</span></label>
-                                <input type="text" id="fB_titulo" class="form-control"
-                                    placeholder="Nombre descriptivo de la actividad" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Fecha de la Actividad <span class="req">*</span></label>
-                                <input type="date" id="fB_fecha" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 20px;">
                             <label>Ejes Estratégicos <span class="req">*</span></label>
                             <select id="fB_eje" class="form-control" required style="appearance: auto;">
                                 <option value="" disabled selected>Seleccione eje...</option>
@@ -349,6 +338,17 @@
                                 <option value="Eje De Egresados Y Empleabilidad">Eje De Egresados Y Empleabilidad</option>
                             </select>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Título de la Actividad <span class="req">*</span></label>
+                                <input type="text" id="fB_titulo" class="form-control"
+                                    placeholder="Nombre descriptivo de la actividad" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de la Actividad <span class="req">*</span></label>
+                                <input type="date" id="fB_fecha" class="form-control" required>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Sección 2: Detalles de Ejecución -->
@@ -358,42 +358,31 @@
                             <div class="section-title">Detalles de Ejecución</div>
                         </div>
                         <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Descripción / Metodología <span class="req">*</span></label>
+                            <label>Descripción breve de la actividad <span class="req">*</span></label>
                             <textarea id="fB_desc" class="form-control" rows="3"
                                 placeholder="Detalle cómo se llevará a cabo la actividad" required></textarea>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Categoría <span class="req">*</span></label>
-                                <select id="fB_tipo" class="form-control" required style="appearance: auto;">
-                                    <option value="Estratégico">Estratégico</option>
-                                    <option value="Soporte">Soporte</option>
-                                    <option value="Académico">Académico</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Estado Actual <span class="req">*</span></label>
-                                <select id="fB_estado" class="form-control" required style="appearance: auto;">
-                                    <option value="FINALIZADO">FINALIZADO</option>
-                                </select>
-                            </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Objetivo principal de la actividad <span class="req">*</span></label>
+                            <textarea id="fB_objetivo" class="form-control" rows="3"
+                                placeholder="Describa el objetivo principal que busca esta actividad" required></textarea>
                         </div>
                     </div>
 
-                    <!-- Sección 3: Impacto Institucional -->
+                    <!-- Sección 3: Logro de la actividad y/o resultados -->
                     <div class="form-section" style="margin-bottom: 0;">
                         <div class="section-header">
                             <div class="section-icon"><i class="fa-solid fa-bullseye"></i></div>
-                            <div class="section-title">Impacto Institucional</div>
+                            <div class="section-title">Logro de la actividad y/o resultados</div>
                         </div>
                         <div class="form-group" style="margin-bottom:20px;">
-                            <label>Impacto Esperado / Logrado <span class="req">*</span></label>
+                            <label>Logro de la actividad y/o resultados <span class="req">*</span></label>
                             <textarea id="fB_impacto" class="form-control" rows="3"
                                 placeholder="Beneficios para la comunidad universitaria" required></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Número de Beneficiarios <span class="req">*</span></label>
-                            <input type="number" id="fB_beneficiarios" class="form-control" placeholder="Cantidad de alumnos, docentes y/o administrativos (solo números)" required>
+                            <label>Número de personas y/o resultados alcanzados <span class="req">*</span></label>
+                            <input type="number" id="fB_beneficiarios" class="form-control" placeholder="Cantidad (solo números)" required>
                         </div>
                     </div>
 
@@ -437,8 +426,7 @@
                         <div style="font-size:13px; font-weight:600;">${a.eje || 'No definido'}</div>
                     </td>
                     <td>
-                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${a.tipo}</div>
-                        <span class="table-status ${statusClass}">${a.estado}</span>
+                        <div style="font-size:12px; font-weight:600; margin-bottom:4px; max-width:200px; white-space:normal;">${a.objetivo || 'Sin objetivo'}</div>
                     </td>
                     <td><div style="font-size:12px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${a.impacto}</div></td>
                     <td>
@@ -469,10 +457,9 @@
             document.getElementById('fB_id').value = item.id;
             document.getElementById('fB_titulo').value = item.titulo;
             document.getElementById('fB_fecha').value = item.fecha || '';
-            document.getElementById('fB_desc').value = item.descripcion;
             document.getElementById('fB_eje').value = item.eje || '';
-            document.getElementById('fB_tipo').value = item.tipo;
-            document.getElementById('fB_estado').value = item.estado;
+            document.getElementById('fB_desc').value = item.descripcion;
+            document.getElementById('fB_objetivo').value = item.objetivo || '';
             document.getElementById('fB_impacto').value = item.impacto;
             document.getElementById('fB_beneficiarios').value = item.beneficiarios || '';
         }
@@ -484,9 +471,8 @@
                 titulo: document.getElementById('fB_titulo').value,
                 fecha: document.getElementById('fB_fecha').value,
                 descripcion: document.getElementById('fB_desc').value,
+                objetivo: document.getElementById('fB_objetivo').value,
                 eje: document.getElementById('fB_eje').value,
-                tipo: document.getElementById('fB_tipo').value,
-                estado: document.getElementById('fB_estado').value,
                 impacto: document.getElementById('fB_impacto').value,
                 beneficiarios: document.getElementById('fB_beneficiarios').value
             };
