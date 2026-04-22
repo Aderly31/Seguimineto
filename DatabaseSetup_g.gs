@@ -56,3 +56,24 @@ function db_init() {
 
   return "Inicialización completa. Verifique su Spreadsheet.";
 }
+
+/**
+ * Función para asegurar que existan las nuevas columnas necesarias.
+ */
+function db_updateSchemaActividades() {
+  const ss = SpreadsheetApp.openById(APP_CONFIG.SPREADSHEET_ID);
+  const sh = ss.getSheetByName(APP_CONFIG.SHEETS.ACTIVIDADES);
+  if (!sh) return "Error: No existe la hoja de Actividades";
+
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const required = ['fecha', 'logro', 'beneficiarios', 'ejeestrategico', 'objetivo'];
+
+  required.forEach(h => {
+    if (!headers.includes(h)) {
+      sh.getRange(1, sh.getLastColumn() + 1).setValue(h)
+        .setFontWeight('bold').setBackground('#f1f5f9');
+    }
+  });
+
+  return "Columnas actualizadas en Actividades.";
+}

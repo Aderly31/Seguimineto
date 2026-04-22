@@ -90,9 +90,9 @@
                 <thead>
                     <tr>
                         <th>Nombre de Capacitación</th>
-                        <th>Área / PEI</th>
+                        <th>Acción PEI (Vinculada)</th>
                         <th>Modalidad / Estado</th>
-                        <th>Participantes</th>
+                        <th>Participantes / Evidencia</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -130,21 +130,13 @@
                             <label>Nombre del Evento <span class="req">*</span></label>
                             <input type="text" id="fD_nombre" class="form-control" placeholder="Ej. Taller de Transformación Digital" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Área de Trabajo <span class="req">*</span></label>
-                                <select id="fD_area" class="form-control" onchange="handleAreaChangeD(this.value)" required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área...</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
-                                <select id="fD_aei" class="form-control" required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área primero</option>
-                                </select>
-                            </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Acción PEI (Vinculada) <span class="req">*</span></label>
+                            <select id="fD_aei" class="form-control" required style="appearance: auto;">
+                                <option value="" disabled selected>Cargando acciones...</option>
+                            </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 20px;">
                             <label>Fecha del Evento <span class="req">*</span></label>
                             <input type="date" id="fD_fecha" class="form-control" required>
                         </div>
@@ -182,13 +174,20 @@
                             <label>Comentarios / Progreso de Evidencia</label>
                             <textarea id="fD_progreso" class="form-control" rows="2" placeholder="Detalle el estado actual de la evidencia"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label>Estado <span class="req">*</span></label>
-                            <select id="fD_estado" class="form-control" style="appearance: auto;">
-                                <option value="Programado">Programado</option>
-                                <option value="En Ejecución">En Ejecución</option>
-                                <option value="Completado">Completado</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Estado <span class="req">*</span></label>
+                                <select id="fD_estado" class="form-control" style="appearance: auto;">
+                                    <option value="Programado">Programado</option>
+                                    <option value="En Ejecución">En Ejecución</option>
+                                    <option value="Completado">Completado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Evidencia (Imagen, PDF, Excel...)</label>
+                                <input type="file" id="fD_file" class="form-control" accept="image/*,.pdf,.xlsx,.xls,.doc,.docx">
+                                <div id="fD_file_info" style="font-size: 11px; color: #2563eb; margin-top: 4px; font-weight: 600;"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -204,12 +203,12 @@
 
     <script>
         let CACHE_D = [];
-        let GLOBAL_AREAS_D = [];
+        let GLOBAL_PEI_D = [];
 
         function formatoD_load() {
             google.script.run.withSuccessHandler(res => {
-                GLOBAL_AREAS_D = res.areas;
-                renderSelectAreasD(res.areas);
+                GLOBAL_PEI_D = res.pei;
+                renderSelectPeiD(res.pei);
                 
                 google.script.run.withSuccessHandler(data => {
                     CACHE_D = data;
@@ -218,23 +217,10 @@
             }).common_getAppData();
         }
 
-        function renderSelectAreasD(areas) {
-            const select = document.getElementById('fD_area');
-            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
-                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
-        }
-
-        function handleAreaChangeD(areaId) {
-            const selectAei = document.getElementById('fD_aei');
-            selectAei.innerHTML = '<option value="">Cargando...</option>';
-            google.script.run.withSuccessHandler(aeis => {
-                if (!aeis || aeis.length === 0) {
-                    selectAei.innerHTML = '<option value="" disabled>Sin acciones vinculadas</option>';
-                } else {
-                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
-                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                }
-            }).common_getVinculacion(areaId);
+        function renderSelectPeiD(pei) {
+            const select = document.getElementById('fD_aei');
+            select.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+                pei.map(p => `<option value="${p.codAei}">[${p.codAei}] ${p.accion}</option>`).join('');
         }
 
         function renderD(items) {
@@ -253,14 +239,18 @@
                         <div style="font-size:12px; color:#64748b;">Fecha: ${d.fecha}</div>
                     </td>
                     <td>
-                        <div style="font-size:13px; font-weight:600;">${d.area}</div>
-                        <div style="font-size:11px; color:#94a3b8;">PEI: ${d.codAei}</div>
+                        <div style="font-size:11px; color:#94a3b8; font-weight:700;">PEI: ${d.codAei}</div>
                     </td>
                     <td>
                         <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${d.modalidad}</div>
                         <span class="table-status ${sCol}">${d.estado}</span>
                     </td>
-                    <td style="font-weight:600; font-size:15px; text-align:center;">${d.participantes}</td>
+                    <td>
+                        <div style="font-weight:600; font-size:14px; margin-bottom:4px;">${d.participantes} part.</div>
+                        ${d.imagen && d.imagen.startsWith('http') 
+                          ? `<a href="${d.imagen}" target="_blank" style="color:#2563eb; font-size:11px; font-weight:800;"><i class="fa-solid fa-paperclip"></i> Evidencia</a>`
+                          : '<span style="color:#94a3b8; font-size:11px;">Sin evidencia</span>'}
+                    </td>
                     <td>
                         <button class="btn-edit-sm" onclick="formatoD_edit('${d.id}')">EDITAR</button>
                     </td>
@@ -274,6 +264,7 @@
             document.getElementById('breadcrumbActionD').textContent = 'Nueva Capacitación';
             document.getElementById('formD_main').reset();
             document.getElementById('fD_id').value = '';
+            document.getElementById('fD_file_info').textContent = '';
         }
 
         function formatoD_closeForm() {
@@ -289,43 +280,64 @@
             document.getElementById('fD_id').value = item.id;
             document.getElementById('fD_nombre').value = item.nombre;
             document.getElementById('fD_fecha').value = item.fecha;
-            document.getElementById('fD_area').value = item.area;
-            
-            const selectAei = document.getElementById('fD_aei');
-            google.script.run.withSuccessHandler(aeis => {
-                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                selectAei.value = item.codAei;
-            }).common_getVinculacion(item.area);
-
+            document.getElementById('fD_aei').value = item.codAei;
             document.getElementById('fD_modalidad').value = item.modalidad;
             document.getElementById('fD_participantes').value = item.participantes;
             document.getElementById('fD_progreso').value = item.progresoEvidencia;
             document.getElementById('fD_estado').value = item.estado;
+            
+            if(item.imagen && item.imagen.startsWith('http')) {
+                document.getElementById('fD_file_info').innerHTML = `<i class="fa-solid fa-check-circle"></i> Evidencia cargada.`;
+            }
         }
 
         function formatoD_save(e) {
             e.preventDefault();
-            const data = {
-                id: document.getElementById('fD_id').value,
-                nombre: document.getElementById('fD_nombre').value,
-                fecha: document.getElementById('fD_fecha').value,
-                area: document.getElementById('fD_area').value,
-                codAei: document.getElementById('fD_aei').value,
-                modalidad: document.getElementById('fD_modalidad').value,
-                participantes: document.getElementById('fD_participantes').value,
-                progresoEvidencia: document.getElementById('fD_progreso').value,
-                estado: document.getElementById('fD_estado').value
+            const btn = e.target.querySelector('.btn-save');
+            const originalText = btn.textContent;
+            const fileInput = document.getElementById('fD_file');
+            const file = fileInput.files[0];
+
+            const executeSave = (fileData = null) => {
+                const data = {
+                    id: document.getElementById('fD_id').value,
+                    nombre: document.getElementById('fD_nombre').value,
+                    fecha: document.getElementById('fD_fecha').value,
+                    codAei: document.getElementById('fD_aei').value,
+                    modalidad: document.getElementById('fD_modalidad').value,
+                    participantes: document.getElementById('fD_participantes').value,
+                    progresoEvidencia: document.getElementById('fD_progreso').value,
+                    estado: document.getElementById('fD_estado').value,
+                    fileData: fileData
+                };
+
+                Swal.fire({ title: 'Guardando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                google.script.run.withSuccessHandler(res => {
+                    if (res.success) {
+                        Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                        formatoD_closeForm();
+                        formatoD_load();
+                    } else { Swal.fire('Error', res.message, 'error'); }
+                    btn.disabled = false; btn.textContent = originalText;
+                }).formatoD_save(data);
             };
-            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
-                    formatoD_closeForm();
-                    formatoD_load();
-                } else { Swal.fire('Error', res.message, 'error'); }
-            }).formatoD_save(data);
+
+            btn.disabled = true; btn.textContent = 'Procesando...';
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    executeSave({
+                        base64: ev.target.result.split(',')[1],
+                        name: file.name,
+                        type: file.type
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else { executeSave(); }
         }
 
         formatoD_load();
+
     </script>
 </div>
