@@ -288,8 +288,10 @@
             <table class="premium-table">
                 <thead>
                     <tr>
+                        <th>Área</th>
                         <th>Actividad</th>
                         <th>Eje Estratégico</th>
+                        <th>Objetivo</th>
                         <th>Logro / Resultados</th>
                         <th>Evidencia</th>
                         <th>Acciones</th>
@@ -367,6 +369,10 @@
                                 <label>Descripción breve <span class="req">*</span></label>
                                 <textarea id="fB_desc" class="form-control" rows="3" placeholder="Detalle cómo se llevará a cabo la actividad" required></textarea>
                             </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Objetivo</label>
+                                <textarea id="fB_objetivo" class="form-control" rows="2" placeholder="Objetivo de la actividad"></textarea>
+                            </div>
                         </div>
 
                         <!-- Bloque 2 -->
@@ -420,12 +426,10 @@
 
         function renderAct(items) {
             const tbody = document.getElementById('formatoB_table_body');
-            if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
-
-            tbody.innerHTML = items.map(a => {
-                const statusClass = a.estado === 'FINALIZADO' ? 'status-finalizado' : 'status-proceso';
-                return `
+            if (!items.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
+            tbody.innerHTML = items.map(a => `
                 <tr>
+                    <td style="font-size:11px; font-weight:800; color:var(--uac-blue);">${a.area || '---'}</td>
                     <td>
                         <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${a.titulo}</div>
                         <div style="font-size:11px; color:#3b82f6; font-weight:600;"><i class="fa-regular fa-calendar"></i> ${a.fecha || 'Sin fecha'}</div>
@@ -433,6 +437,7 @@
                     <td>
                         <div style="font-size:13px; font-weight:600;">${a.eje || 'No definido'}</div>
                     </td>
+                    <td style="font-size:12px;">${a.objetivo || '-'}</td>
                     <td>
                         <div style="font-size:12px; margin-bottom:4px; max-width:200px; white-space:normal; font-weight:600;">${a.logro || '-'}</div>
                         <div style="font-size:11px; color:#64748b;">Resultados: ${a.beneficiarios || '0'}</div>
@@ -445,8 +450,7 @@
                     <td>
                         <button class="btn-edit-sm" onclick="formatoB_edit('${a.id}')">EDITAR</button>
                     </td>
-                </tr>`;
-            }).join('');
+                </tr>`).join('');
         }
 
         function formatoB_openForm() {
@@ -475,6 +479,7 @@
             document.getElementById('fB_desc').value = item.descripcion;
             document.getElementById('fB_beneficiarios').value = item.beneficiarios || '';
             document.getElementById('fB_logro').value = item.logro || '';
+            document.getElementById('fB_objetivo').value = item.objetivo || '';
             
             if(item.imagen && item.imagen.startsWith('http')) {
                 document.getElementById('fB_file_info').innerHTML = `<i class="fa-solid fa-check-circle"></i> Tiene evidencia cargada. Seleccione otro archivo si desea cambiarlo.`;
@@ -500,6 +505,7 @@
                     eje: document.getElementById('fB_eje').value,
                     beneficiarios: document.getElementById('fB_beneficiarios').value,
                     logro: document.getElementById('fB_logro').value,
+                    objetivo: document.getElementById('fB_objetivo').value,
                     fileData: fileData // { base64, name, type }
                 };
 

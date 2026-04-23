@@ -35,6 +35,7 @@ const Auth = (() => {
       email: user.email,
       name: fullName.trim() || user.email,
       rol: user.rol || 'invitado',
+      area: user.area || '',
       ts: Date.now()
     };
   }

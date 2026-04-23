@@ -50,7 +50,8 @@ const SheetService = (() => {
       apellido: norm_(r.apellido),
       estado: r.estado,
       activo: isTruthy_(r.estado),
-      rol: normLower_(r.rol)
+      rol: normLower_(r.rol),
+      area: norm_(r.area || r.dependencia || '')
     }));
   }
 
@@ -68,7 +69,8 @@ const SheetService = (() => {
       apellido: u.apellido,
       estado: u.estado,
       isActive: u.activo,
-      rol: u.rol
+      rol: u.rol,
+      area: u.area
     };
   }
 

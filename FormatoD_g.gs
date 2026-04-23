@@ -30,6 +30,7 @@ function formatoD_get() {
 
 function formatoD_save(data) {
   try {
+    const session = Auth.getSession();
     let fileUrl = '';
     if (data.fileData && data.fileData.base64) {
       fileUrl = uploadFileToDriveD_(data.fileData.base64, data.fileData.name, data.fileData.type);
@@ -44,6 +45,7 @@ function formatoD_save(data) {
       codaei: data.codAei,
       progresoEvidencia: data.progresoEvidencia || '',
       estado: data.estado || 'Programado',
+      area: session.area || '', // ✅ Automático
       fechaCreacion: new Date()
     };
 

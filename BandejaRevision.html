@@ -1,392 +1,217 @@
 <div id="bandeja_root">
-    <div class="bandeja-layout">
-        <!-- Columna 1: Filtros y Lista -->
-        <aside class="bandeja-sidebar-left">
-            <div class="filter-section">
-                <h3>Filtros de Revisión</h3>
-                <div class="filter-group">
-                    <label>Área</label>
-                    <select id="filtrosArea">
-                        <option>Todas las Áreas</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Estado</label>
-                    <select id="filtrosEstado">
-                        <option>Todos los Estados</option>
-                    </select>
-                </div>
-            </div>
+    <style>
+        :root {
+            --uac-blue: #00417B;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
 
-            <div class="inbox-section">
-                <label class="section-label">ENVÍOS RECIENTES</label>
-                <div class="inbox-list" id="inboxList">
-                    <!-- Dinámico -->
-                </div>
+        .bandeja-layout { display: grid; grid-template-columns: 280px 1fr 300px; gap: 24px; }
+        
+        /* Sidebar Left */
+        .sidebar-left { background: white; border-radius: 20px; border: 1px solid var(--border-color); padding: 20px; height: calc(100vh - 120px); overflow-y: auto; }
+        .sidebar-left h3 { font-size: 14px; font-weight: 900; margin-bottom: 16px; color: var(--text-main); text-transform: uppercase; }
+        .area-list { display: flex; flex-direction: column; gap: 8px; }
+        .area-item { 
+            padding: 12px 16px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted);
+            border: 1px solid transparent; transition: all 0.2s;
+        }
+        .area-item:hover { background: #f8fafc; color: var(--uac-blue); }
+        .area-item.active { background: #eff6ff; color: var(--uac-blue); border-color: #bfdbfe; }
+
+        /* Main Content */
+        .main-content { display: flex; flex-direction: column; gap: 24px; }
+        
+        .header-premium { 
+            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
+            padding: 30px; border-radius: 20px; color: white;
+        }
+        .header-premium h1 { font-size: 24px; font-weight: 950; margin: 0; letter-spacing: -1px; }
+        
+        /* Tabs */
+        .tabs-nav { display: flex; gap: 4px; border-bottom: 2px solid var(--border-color); margin-bottom: 16px; }
+        .tab-btn { 
+            padding: 10px 20px; font-weight: 800; font-size: 13px; color: var(--text-muted); 
+            background: none; border: none; cursor: pointer; position: relative;
+        }
+        .tab-btn.active { color: var(--uac-blue); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background: var(--uac-blue); }
+
+        .table-container { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; min-height: 300px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .data-table th { background: #f8fafc; padding: 12px; text-align: left; font-weight: 800; color: #475569; border-bottom: 1px solid var(--border-color); }
+        .data-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        
+        .evidence-link { color: #2563eb; font-weight: 700; text-decoration: none; font-size: 11px; }
+
+        /* Decision Section */
+        .decision-card { background: white; border-radius: 20px; border: 1px solid var(--border-color); padding: 24px; }
+        .decision-card h3 { font-size: 15px; font-weight: 900; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .decision-card textarea { width: 100%; border-radius: 12px; border: 1px solid #cbd5e1; padding: 16px; font-size: 14px; outline: none; margin-bottom: 16px; font-family: inherit; }
+        
+        .btn-group { display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-obs { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .btn-app { background: #00417B; color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+
+        /* Sidebar Right: History */
+        .sidebar-right { background: white; border-radius: 20px; border: 1px solid var(--border-color); padding: 20px; }
+        .history-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9; }
+        .history-item .h-date { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        .history-item .h-status { font-size: 11px; font-weight: 900; display: inline-block; margin: 4px 0; }
+        .history-item .h-comment { font-size: 12px; color: var(--text-muted); font-style: italic; }
+        .st-APROBADO { color: #10b981; }
+        .st-OBSERVADO { color: #ef4444; }
+    </style>
+
+    <div class="bandeja-layout">
+        <aside class="sidebar-left">
+            <h3>Áreas con Reportes</h3>
+            <div id="areaList" class="area-list">
+                <!-- Dinámico -->
             </div>
         </aside>
 
-        <!-- Columna 2: Contenido Principal -->
-        <main class="bandeja-main">
-            <header class="view-header">
-                <div class="view-title">
-                    <h1>Bandeja de Revisión - Planificación</h1>
-                    <p>Revisando: <span id="revNombre">...</span> - <span id="revPeriodo">...</span></p>
-                </div>
-                <div class="header-btns">
-                    <button class="btn-outline"><i class="fa-solid fa-download"></i> Descargar PDF</button>
-                    <button class="btn-outline"><i class="fa-solid fa-history"></i> Historial Completo</button>
-                </div>
+        <main class="main-content">
+            <header class="header-premium">
+                <h1>Bandeja de Revisión Consolidada</h1>
+                <p id="selectedAreaTitle" style="margin: 8px 0 0; font-weight: 500; opacity: 0.9;">Seleccione un área para revisar sus formatos.</p>
             </header>
 
-            <!-- Métricas Resumen -->
-            <div class="rev-summary" id="revSummary">
-                <div class="rev-card">
-                    <label>Total de Envíos</label>
-                    <div class="rev-val">45 <span class="trend">+4 esta semana</span></div>
-                </div>
-                <div class="rev-card">
-                    <label>Pendientes</label>
-                    <div class="rev-val">12 <span class="tag danger">Alta Prioridad</span></div>
-                </div>
-                <div class="rev-card">
-                    <label>Aprobados (Periodo Actual)</label>
-                    <div class="rev-val">28 <span class="trend">62% Completado</span></div>
-                </div>
-            </div>
+            <div id="reviewBody" style="display:none;">
+                <nav class="tabs-nav">
+                    <button class="tab-btn active" onclick="bandeja_switchTab('A')">F. Indicadores</button>
+                    <button class="tab-btn" onclick="bandeja_switchTab('B')">F. Actividades</button>
+                    <button class="tab-btn" onclick="bandeja_switchTab('C')">F. Riesgos</button>
+                    <button class="tab-btn" onclick="bandeja_switchTab('D')">F. Capacitaciones</button>
+                </nav>
 
-            <!-- Datos Institucionales -->
-            <section class="rev-data-section">
-                <div class="section-header">
-                    <h2>Resumen de Datos Institucionales</h2>
-                    <div class="status-indicator">
-                        <span class="dot live"></span> Auto-guardado hace 2m
-                        <span class="dot ok"></span> Conectado
-                    </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead id="tableHeader"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
                 </div>
 
-                <div class="indicators-grid" id="revIndicators">
-                    <!-- Dinámico -->
-                </div>
-
-                <div class="eval-section">
-                    <label>EVALUACIÓN CUALITATIVA DEL ÁREA</label>
-                    <div class="eval-box" id="revEval">
-                        "La facultad ha mostrado un crecimiento constante..."
-                    </div>
-                </div>
-            </section>
-
-            <!-- Decisión -->
-            <section class="rev-decision-section">
-                <div class="section-header">
-                    <i class="fa-solid fa-comment-dots"></i>
-                    <h2>Decisión de Revisión Actual</h2>
-                </div>
-                
-                <div class="form-group">
-                    <label>Observaciones del Revisor</label>
-                    <textarea id="revComments" rows="4" placeholder="Ingrese sus comentarios detallados o motivos de observación aquí..."></textarea>
-                </div>
-
-                <div class="decision-footer">
-                    <button class="btn-outline" onclick="bandeja_viewDetail()"><i class="fa-solid fa-eye"></i> Ver Detalle</button>
+                <section class="decision-card">
+                    <h3><i class="fa-solid fa-comment-dots"></i> Evaluación de la Información</h3>
+                    <textarea id="revComments" rows="3" placeholder="Escriba sus comentarios u observaciones..."></textarea>
                     <div class="btn-group">
-                        <button class="btn-secondary" onclick="bandeja_submit('OBSERVADO')">Observar</button>
-                        <button class="btn-primary" onclick="bandeja_submit('APROBADO')">Aprobar</button>
+                        <button class="btn-obs" onclick="bandeja_submit('OBSERVADO')">Observar</button>
+                        <button class="btn-app" onclick="bandeja_submit('APROBADO')">Aprobar Todo</button>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
 
-        <!-- Columna 3: Timeline -->
-        <aside class="bandeja-sidebar-right">
-            <div class="timeline-section">
-                <h3><i class="fa-solid fa-timeline"></i> Línea de Tiempo</h3>
-                <div class="timeline-list" id="revTimeline">
-                    <!-- Dinámico -->
-                </div>
+        <aside class="sidebar-right">
+            <h3>Historial de Revisiones</h3>
+            <div id="historyList">
+                <p style="font-size:12px; color:#94a3b8; text-align:center; padding-top:20px;">Seleccione un área para ver su historial.</p>
             </div>
         </aside>
     </div>
-</div>
 
-<style>
-    :root {
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.4);
-        --glow-primary: #00417B;
-        --glow-secondary: #002d56;
-        --accent-danger: #ef4444;
-        --accent-warning: #f59e0b;
-        --accent-success: #10b981;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-    }
+    <script>
+        let GLOBAL_DATA = null;
+        let SELECTED_AREA = null;
+        let ACTIVE_TAB = 'A';
 
-    #bandeja_root { 
-        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        margin: -18px; 
-        padding: 32px; 
-        min-height: 100%; 
-        background: #f8fafc;
-    }
-
-    @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .bandeja-layout { display: grid; grid-template-columns: 320px 1fr 340px; gap: 32px; align-items: flex-start; }
-    
-    /* Sidebar Left: Glass */
-    .bandeja-sidebar-left { display: flex; flex-direction: column; gap: 32px; }
-    
-    .filter-section { 
-        background: var(--glass-bg); border: 1px solid var(--glass-border); 
-        border-radius: 24px; padding: 24px; backdrop-filter: blur(12px); 
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    }
-    .filter-section h3 { font-size: 15px; font-weight: 900; color: var(--text-main); margin: 0 0 20px; letter-spacing: -0.5px; }
-    .filter-group { margin-bottom: 20px; }
-    .filter-group label { display: block; font-size: 12px; font-weight: 900; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .filter-group select { 
-        width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; 
-        outline: none; font-size: 14px; background: white; font-weight: 600; cursor: pointer;
-    }
-
-    .inbox-section { 
-        background: var(--glass-bg); border: 1px solid var(--glass-border); 
-        border-radius: 24px; padding: 24px; backdrop-filter: blur(12px);
-    }
-    .section-label { font-size: 11px; font-weight: 950; color: #94a3b8; margin-bottom: 16px; display: block; letter-spacing: 1px; }
-    .inbox-list { display: flex; flex-direction: column; gap: 16px; }
-    
-    .inbox-item { 
-        background: white; border: 1px solid #f1f5f9; border-radius: 20px; padding: 20px; cursor: pointer; 
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden;
-    }
-    .inbox-item:hover { border-color: var(--glow-primary); transform: translateX(6px); box-shadow: 10px 10px 20px -10px rgba(0,0,0,0.05); }
-    .inbox-item.active { border-color: var(--glow-primary); background: rgba(0, 65, 123, 0.05); box-shadow: 0 10px 15px -3px rgba(0, 65, 123, 0.1); }
-    .inbox-item.active::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--glow-primary); }
-
-    .inbox-item .status-pill { 
-        position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 950; padding: 4px 10px; border-radius: 8px; 
-        text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .inbox-item .status-pill.revisión { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
-    .inbox-item .status-pill.pendiente { background: rgba(0, 65, 123, 0.1); color: var(--glow-primary); }
-
-    .inbox-item h4 { font-size: 15px; font-weight: 950; margin: 0 0 6px; color: var(--text-main); letter-spacing: -0.2px; }
-    .inbox-item p { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; font-weight: 700; }
-    .inbox-item .area-tag { font-size: 11px; color: #94a3b8; font-weight: 900; display: flex; align-items: center; gap: 8px; }
-    .inbox-item .area-tag i { color: var(--glow-primary); }
-
-    /* Main Area: Premium Content */
-    .bandeja-main { display: flex; flex-direction: column; gap: 32px; }
-    
-    .view-header { 
-        background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-        padding: 40px; border-radius: 28px; color: white;
-        box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-        display: flex; justify-content: space-between; align-items: flex-end;
-    }
-    .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
-    .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
-    .header-btns { display: flex; gap: 14px; }
-    
-    .btn-outline { 
-        background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); 
-        padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; 
-        color: white; backdrop-filter: blur(10px); transition: all 0.2s; font-size: 13px;
-    }
-    .btn-outline:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
-
-    .rev-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .rev-card { 
-        background: white; border: 1px solid #f1f5f9; border-radius: 24px; padding: 24px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .rev-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-    .rev-card label { font-size: 14px; font-weight: 900; color: var(--text-muted); margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-    .rev-val { font-size: 32px; font-weight: 950; display: flex; align-items: baseline; gap: 12px; color: var(--text-main); letter-spacing: -1.5px; }
-    .rev-val .trend { font-size: 13px; color: var(--accent-success); font-weight: 800; }
-    .rev-val .tag.danger { font-size: 11px; color: var(--accent-danger); background: rgba(239, 68, 68, 0.1); padding: 4px 10px; border-radius: 999px; }
-
-    .rev-data-section { background: white; border: 1px solid #f1f5f9; border-radius: 28px; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-    .section-header h2 { font-size: 20px; font-weight: 950; color: var(--text-main); letter-spacing: -0.5px; }
-    .status-indicator { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 16px; font-weight: 800; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
-    .dot.live { color: #00417B; background: currentColor; }
-    .dot.ok { color: var(--accent-success); background: currentColor; }
-
-    .indicators-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
-    .ind-card { padding: 20px; background: #fcfcfd; border-radius: 16px; border: 1px solid #f1f5f9; transition: all 0.2s; }
-    .ind-card:hover { border-color: #00417B; background: white; }
-    .ind-card label { font-size: 11px; font-weight: 900; color: var(--text-muted); display: block; margin-bottom: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
-    .ind-card .val { font-weight: 950; color: var(--text-main); font-size: 17px; }
-
-    .eval-section label { font-size: 12px; font-weight: 950; color: var(--text-muted); margin-bottom: 16px; display: block; letter-spacing: 1px; text-transform: uppercase; }
-    .eval-box { 
-        background: rgba(0, 65, 123, 0.04); padding: 28px; border-radius: 24px; 
-        font-size: 15px; line-height: 1.7; color: #002d56; font-style: italic; border: 1px solid rgba(0, 65, 123, 0.1);
-        font-weight: 600; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .rev-decision-section { background: white; border: 1px solid #f1f5f9; border-radius: 28px; padding: 40px; box-shadow: 0 40px 60px -20px rgba(0,0,0,0.05); }
-    .rev-decision-section textarea { 
-        width: 100%; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; 
-        outline: none; margin-top: 16px; font-size: 15px; font-weight: 600; background: #fcfcfd; 
-        transition: all 0.2s;
-    }
-    .rev-decision-section textarea:focus { border-color: var(--glow-primary); background: white; box-shadow: 0 0 0 4px rgba(0, 65, 123, 0.1); }
-    
-    .decision-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
-    
-    .btn-primary { background: #00417B; color: white; border: none; padding: 14px 32px; border-radius: 14px; font-weight: 950; cursor: pointer; box-shadow: 0 10px 20px -5px rgba(0, 65, 123, 0.3); transition: all 0.2s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -10px rgba(0, 65, 123, 0.4); }
-    
-    .btn-secondary { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.2); padding: 14px 28px; border-radius: 14px; font-weight: 950; cursor: pointer; transition: all 0.2s; }
-    .btn-secondary:hover { background: rgba(239, 68, 68, 0.15); transform: translateY(-2px); }
-
-    .btn-group { display: flex; gap: 16px; }
-
-    /* Timeline Sidebar Right */
-    .timeline-section { 
-        background: var(--glass-bg); border: 1px solid var(--glass-border); 
-        border-radius: 28px; padding: 24px; backdrop-filter: blur(12px); 
-        height: 100%; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    }
-    .timeline-section h3 { font-size: 15px; font-weight: 950; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 20px; margin: 0 0 24px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
-    .timeline-list { position: relative; padding-left: 20px; }
-    .timeline-list::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: rgba(0, 65, 123, 0.1); }
-    
-    .tl-item { position: relative; margin-bottom: 32px; }
-    .tl-item::before { 
-        content: ""; position: absolute; left: -26px; top: 4px; width: 12px; height: 12px; 
-        border-radius: 50%; background: white; border: 3px solid #cbd5e1; z-index: 2;
-    }
-    .tl-item.blue::before { border-color: #00417B; box-shadow: 0 0 10px rgba(0, 65, 123, 0.4); }
-    .tl-item.orange::before { border-color: var(--accent-warning); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-    
-    .tl-time { font-size: 10px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .tl-title { font-size: 14px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; letter-spacing: -0.2px; }
-    .tl-desc { font-size: 12px; color: var(--text-muted); font-weight: 700; line-height: 1.5; }
-
-    @media (max-width: 1400px) {
-        .bandeja-layout { grid-template-columns: 280px 1fr; }
-        .bandeja-sidebar-right { grid-column: 1 / -1; }
-    }
-
-    @media (max-width: 1100px) {
-        .bandeja-layout { grid-template-columns: 1fr; }
-        .bandeja-sidebar-left { order: 2; }
-        .view-header { flex-direction: column; align-items: flex-start; gap: 24px; padding: 30px; }
-    }
-</style>
-
-<script>
-    let CURRENT_INBOX = [];
-    
-    (function init() {
-        bandeja_load();
-    })();
-
-    function bandeja_load() {
-        google.script.run
-            .withSuccessHandler(data => {
-                CURRENT_INBOX = data.enviosRecientes;
-                renderInbox(data.enviosRecientes);
-                if(data.enviosRecientes.length) bandeja_select(data.enviosRecientes[0].id);
-            })
-            .bandeja_getInbox();
-    }
-
-    function renderInbox(items) {
-        const list = document.getElementById('inboxList');
-        list.innerHTML = items.map(it => `
-            <div class="inbox-item" onclick="bandeja_select('${it.id}')" id="it-${it.id}">
-                <span class="status-pill ${it.estado.toLowerCase().replace(' ', '')}">${it.estado}</span>
-                <h4>${it.titulo}</h4>
-                <p>Enviado: ${it.fecha}</p>
-                <div class="area-tag"><i class="fa-solid fa-building-user"></i> ${it.area}</div>
-            </div>
-        `).join('');
-    }
-
-    function bandeja_select(id) {
-        // Toggle UI Active
-        const items = document.querySelectorAll('.inbox-item');
-        items.forEach(it => it.classList.remove('active'));
-        const el = document.getElementById('it-' + id);
-        if(el) el.classList.add('active');
-
-        google.script.run
-            .withSuccessHandler(data => {
-                renderDetail(data);
-            })
-            .bandeja_getDetails(id);
-    }
-
-    function renderDetail(data) {
-        document.getElementById('revNombre').textContent = data.facultad;
-        document.getElementById('revPeriodo').textContent = data.periodo;
-        document.getElementById('revEval').textContent = `"${data.evaluacionCualitativa}"`;
-
-        const indicators = data.indicadores || [];
-        ind.innerHTML = indicators.map(i => {
-            const val = i.valor && i.valor !== 'undefined%' ? i.valor : '0%';
-            return `
-                <div class="ind-card">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                        <label>INDICADOR: ${i.nombre}</label>
-                        <span style="font-size:10px; color:#94a3b8; font-weight:900;">ID: ${i.id}</span>
-                    </div>
-                    <div class="val">${val}</div>
-                    <div style="height:6px; background:#f1f5f9; border-radius:999px; margin-top:10px; overflow:hidden;">
-                        <div style="height:100%; width:${val}; background:#00417B; border-radius:999px;"></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        const tl = document.getElementById('revTimeline');
-        tl.innerHTML = data.timeline.map(t => `
-            <div class="tl-item ${t.color}">
-                <div class="tl-time">${t.fecha}</div>
-                <div class="tl-title">${t.titulo}</div>
-                <div class="tl-desc">${t.desc}</div>
-            </div>
-        `).join('');
-    }
-
-    function bandeja_submit(status) {
-        const comments = document.getElementById('revComments').value;
-        if(status === 'OBSERVADO' && !comments) {
-          return Swal.fire('Atención', 'Para observar un envío es obligatorio ingresar un comentario.', 'warning');
+        function bandeja_load() {
+            google.script.run.withSuccessHandler(res => {
+                GLOBAL_DATA = res;
+                renderAreaList(res.areas);
+                if(res.areas.length) bandeja_selectArea(res.areas[0]);
+            }).bandeja_getInbox();
         }
 
-        Swal.fire({
-            title: `¿Confirmar ${status}?`,
-            text: `Se notificará al área encargada.`,
-            icon: 'question',
-            showCancelButton: true
-        }).then(res => {
-            if(res.isConfirmed) {
-                Swal.fire({ title: 'Procesando...', didOpen: () => Swal.showLoading() });
-                google.script.run
-                    .withSuccessHandler(res => {
-                        Swal.fire('Éxito', res.message, 'success');
-                        bandeja_load();
-                        document.getElementById('revComments').value = '';
-                    })
-                    .bandeja_updateStatus('ACTUAL', status, comments);
-            }
-        });
-    }
+        function renderAreaList(areas) {
+            const list = document.getElementById('areaList');
+            if(!areas.length) { list.innerHTML = '<p style="font-size:12px; color:#94a3b8;">No hay envíos pendientes.</p>'; return; }
+            list.innerHTML = areas.map(a => `<div class="area-item" onclick="bandeja_selectArea('${a}')" id="area-${a.replace(/\s/g, '_')}">${a}</div>`).join('');
+        }
 
-    function bandeja_viewDetail() {
-        Swal.fire('Ver Detalle', 'Cargando visualización completa del informe...', 'info');
-    }
-</script>
+        function bandeja_selectArea(area) {
+            SELECTED_AREA = area;
+            document.querySelectorAll('.area-item').forEach(el => el.classList.remove('active'));
+            const activeEl = document.getElementById('area-' + area.replace(/\s/g, '_'));
+            if(activeEl) activeEl.classList.add('active');
+
+            document.getElementById('selectedAreaTitle').textContent = 'Revisando: ' + area;
+            document.getElementById('reviewBody').style.display = 'block';
+            
+            bandeja_switchTab(ACTIVE_TAB);
+            loadHistory(area);
+        }
+
+        function bandeja_switchTab(tab) {
+            ACTIVE_TAB = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event?.target?.classList?.add('active');
+
+            const items = GLOBAL_DATA.formatos[tab].filter(d => d.area === SELECTED_AREA);
+            renderTable(tab, items);
+        }
+
+        function renderTable(tab, items) {
+            const head = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+
+            if (tab === 'A') {
+                head.innerHTML = '<tr><th>Indicador</th><th>Meta/Avance</th><th>Estado</th></tr>';
+                body.innerHTML = items.map(d => `<tr><td><b>${d.nombre}</b></td><td>${d.resultado}/${d.metaAnual} (${d.avance}%)</td><td>${d.estado}</td></tr>`).join('');
+            } else if (tab === 'B') {
+                head.innerHTML = '<tr><th>Actividad</th><th>Eje</th><th>Logro</th></tr>';
+                body.innerHTML = items.map(d => `<tr><td><b>${d.titulo}</b><br>${d.fecha}</td><td>${d.eje}</td><td>${d.logro || '-'}</td></tr>`).join('');
+            } else if (tab === 'C') {
+                head.innerHTML = '<tr><th>Riesgo</th><th>Prioridad</th><th>Estado</th></tr>';
+                body.innerHTML = items.map(d => `<tr><td><b>${d.riesgo}</b></td><td>${d.prioridad}</td><td>${d.estado}</td></tr>`).join('');
+            } else if (tab === 'D') {
+                head.innerHTML = '<tr><th>Capacitación</th><th>Modalidad</th><th>Estado</th></tr>';
+                body.innerHTML = items.map(d => `<tr><td><b>${d.nombre}</b><br>${d.fecha}</td><td>${d.modalidad}</td><td>${d.estado}</td></tr>`).join('');
+            }
+
+            if(!items.length) body.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px; color:#94a3b8;">No hay datos para este formato.</td></tr>';
+        }
+
+        function bandeja_submit(status) {
+            const comments = document.getElementById('revComments').value;
+            if(status === 'OBSERVADO' && !comments) {
+                return Swal.fire('Atención', 'Debe ingresar un comentario para observar el reporte.', 'warning');
+            }
+
+            Swal.fire({
+                title: `¿Confirmar ${status}?`,
+                text: `Se notificará al área de ${SELECTED_AREA}.`,
+                icon: 'question',
+                showCancelButton: true
+            }).then(res => {
+                if(res.isConfirmed) {
+                    Swal.fire({ title: 'Guardando revisión...', didOpen: () => Swal.showLoading() });
+                    google.script.run.withSuccessHandler(resp => {
+                        Swal.fire('Éxito', resp.message, 'success');
+                        document.getElementById('revComments').value = '';
+                        loadHistory(SELECTED_AREA);
+                    }).bandeja_updateStatus(SELECTED_AREA, status, comments);
+                }
+            });
+        }
+
+        function loadHistory(area) {
+            const list = document.getElementById('historyList');
+            google.script.run.withSuccessHandler(logs => {
+                if(!logs.length) { list.innerHTML = '<p style="font-size:12px; color:#94a3b8; text-align:center;">Sin revisiones previas.</p>'; return; }
+                list.innerHTML = logs.map(l => `
+                    <div class="history-item">
+                        <div class="h-date">${new Date(l.timestamp).toLocaleString()}</div>
+                        <div class="h-status st-${l.decision}">${l.decision}</div>
+                        <div class="h-comment">${l.comentarios || 'Sin comentarios.'}</div>
+                    </div>
+                `).join('');
+            }).bandeja_getHistory(area);
+        }
+
+        bandeja_load();
+    </script>
+</div>
+

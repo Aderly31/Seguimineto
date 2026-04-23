@@ -25,9 +25,8 @@ function formatoA_get() {
 
 function formatoA_save(data) {
   try {
+    const session = Auth.getSession();
     const isEdit = !!data.id;
-    // Las claves (keys) deben coincidir EXACTAMENTE con el encabezado que pusiste en el Excel
-    // Asumiremos que tus encabezados en Excel son: id, nombre, responsable, metaanual, resultado, fuente, enlace, estado
     const rowData = {
       id: data.id || Utilities.getUuid(),
       nombre: data.nombre,
@@ -36,7 +35,7 @@ function formatoA_save(data) {
       resultado: data.resultado,
       fuente: data.fuente,
       detallesfuente: data.detallesFuente,
-      area: data.area,
+      area: session.area || data.area || '', // ✅ Automático de sesión
       codaei: data.codAei,
       enlace: data.enlace,
       estado: 'Borrador'

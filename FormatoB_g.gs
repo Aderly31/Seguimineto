@@ -10,16 +10,18 @@ function formatoB_get() {
     tipo: it.tipo || it.categoria || 'General',
     estado: 'FINALIZADO',
     impacto: it.impacto || '',
-    fecha: it.fecha || '',
+    fecha: it.fecha instanceof Date ? Utilities.formatDate(it.fecha, Session.getScriptTimeZone(), 'yyyy-MM-dd') : (it.fecha || ''),
     beneficiarios: it.beneficiarios || '',
     logro: it.logro || '',
     eje: it.ejeestrategico || it.eje || '',
-    imagen: it.imagen || it.imagenurl || ''
+    imagen: it.imagen || it.imagenurl || '',
+    area: it.area || ''
   }));
 }
 
 function formatoB_save(data) {
   try {
+    const session = Auth.getSession();
     const isEdit = !!data.id;
     let fileUrl = '';
 
@@ -40,6 +42,7 @@ function formatoB_save(data) {
       impacto: data.impacto || '',
       beneficiarios: data.beneficiarios || '',
       ejeestrategico: data.eje,
+      area: session.area || '' // ✅ Captura automática
     };
 
     // Si se subió un archivo, actualizar el campo imagen (url)

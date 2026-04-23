@@ -30,6 +30,7 @@ function formatoC_get() {
 
 function formatoC_save(data) {
   try {
+    const session = Auth.getSession();
     const rowData = {
       id: data.id || Utilities.getUuid(),
       riesgo: data.riesgo,
@@ -38,7 +39,7 @@ function formatoC_save(data) {
       prioridad: data.prioridad,
       accion: data.accion,
       estado: data.estado || 'Pendiente',
-      area: data.area,
+      area: session.area || data.area || '', // ✅ Automático
       codaei: data.codAei,
       fechaObjetivo: data.fechaObjetivo,
       fechaCreacion: new Date()
