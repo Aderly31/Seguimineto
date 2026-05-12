@@ -1,109 +1,131 @@
-<div id="validacion_root">
+<div id="validacionenvio_root">
     <style>
-        .view-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 32px;
-            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-            padding: 40px;
-            border-radius: 24px;
-            color: white;
+        .va-container { animation: fadeIn 0.4s ease; }
+        
+        /* Banner Header */
+        .va-header { 
+            background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
+            padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
             box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
         }
+        .va-header h1 { font-size: 28px; font-weight: 950; margin: 0; letter-spacing: -1px; }
+        .va-header p { margin: 6px 0 0; opacity: 0.9; font-size: 14px; }
 
-        .val-card {
-            background: white;
-            border-radius: 24px;
-            padding: 32px;
-            margin-bottom: 24px;
-            border: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        /* Validation Cards */
+        .va-grid { display: grid; gap: 16px; margin-bottom: 40px; }
+        .va-card { 
+            background: white; border-radius: 20px; padding: 24px; border: 1px solid var(--line);
+            display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
         }
+        .va-card.ok { border-left: 6px solid #10b981; }
+        .va-card.warn { border-left: 6px solid #f59e0b; }
+        
+        .va-info h3 { margin: 0 0 4px; font-size: 16px; font-weight: 900; color: #1e293b; }
+        .va-status { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 
-        .val-card.ok {
-            border-left: 6px solid #10b981;
+        /* Final Action Box */
+        .va-footer-box { 
+            background: #f8fafc; border-radius: 28px; border: 1px solid #e2e8f0; padding: 40px; text-align: center;
+            max-width: 700px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
-
-        .val-card.warn {
-            border-left: 6px solid #f59e0b;
+        .va-footer-box h2 { margin: 0 0 12px; font-size: 22px; font-weight: 950; color: #0f172a; }
+        .va-footer-box p { font-size: 14px; color: #64748b; margin-bottom: 32px; font-weight: 500; }
+        
+        .btn-va-submit { 
+            background: var(--c-primary); color: white; border: none; padding: 18px 48px; border-radius: 16px; 
+            font-weight: 950; font-size: 16px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 10px 25px rgba(0, 65, 123, 0.2);
         }
-
-        .btn-submit-final {
-            background: #00417B;
-            color: white;
-            border: none;
-            padding: 18px 36px;
-            border-radius: 16px;
-            font-weight: 950;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            box-shadow: 0 10px 20px -5px rgba(0, 65, 123, 0.3);
-        }
-
-        .btn-submit-final:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -5px rgba(0, 65, 123, 0.4);
-        }
+        .btn-va-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0, 65, 123, 0.3); }
+        .btn-va-submit:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
     </style>
 
-    <header class="view-header">
-        <div>
-            <h1 style="margin:0; font-size:32px; font-weight:950;">Validación de Envío</h1>
-            <p style="margin:8px 0 0; opacity:0.9;">Revisa que todos tus formatos estén completos antes de enviar a
-                Planificación.</p>
-        </div>
-    </header>
+    <div class="va-container">
+        <header class="va-header">
+            <h1>Validación de Reporte Semestral</h1>
+            <p>Revise el estado de sus formatos antes de realizar el envío oficial a Planificación.</p>
+        </header>
 
-    <div id="valContent">Cargando validaciones...</div>
+        <div id="va_list_content" class="va-grid">
+            <!-- Dinámico -->
+            <div style="padding:40px; text-align:center; color:var(--muted); font-weight:800;">Analizando formatos...</div>
+        </div>
+
+        <div id="va_footer_action" class="va-footer-box" style="display:none;">
+            <h2>Confirmación de Envío</h2>
+            <p>Al confirmar, los datos de su unidad pasarán a la Bandeja de Revisión Institucional. <br><b>Esta acción bloqueará nuevas ediciones para el presente semestre.</b></p>
+            <button id="va_submit_btn" class="btn-va-submit" onclick="va_submitFinal()">
+                <i class="fa-solid fa-paper-plane mr-2"></i> Enviar a Planificación
+            </button>
+        </div>
+    </div>
 
     <script>
-        function loadValidacion() {
-            google.script.run.withSuccessHandler(data => {
-                const list = document.getElementById('valContent');
-                let html = data.map(f => `
-                    <div class="val-card ${f.listo ? 'ok' : 'warn'}">
-                        <div>
-                            <h3 style="margin:0 0 8px; font-size:18px; color:#1e293b;">${f.titulo}</h3>
-                            <span style="font-size:13px; font-weight:800; color:${f.listo ? '#10b981' : '#f59e0b'};">
-                                ${f.listo ? '<i class="fa-solid fa-check"></i> Completo' : '<i class="fa-solid fa-triangle-exclamation"></i> Faltan registros'}
-                            </span>
-                        </div>
-                        <div style="font-size:14px; font-weight:900; color:#64748b;">${f.cantidad} Registros</div>
-                    </div>
-                `).join('');
+        /**
+         * Lógica del Módulo: Validación y Envío
+         */
+        function validacionenvio_init() {
+            va_load();
+        }
 
-                const todoListo = data.every(d => d.listo);
-                html += `
-                    <div style="margin-top:40px; background:#f8fafc; padding:32px; border-radius:24px; border:1px solid #e2e8f0; text-align:center;">
-                        <h2 style="margin:0 0 16px; color:#1e293b;">Confirmación Final</h2>
-                        <p style="margin:0 0 24px; color:#64748b;">Al confirmar, tus datos pasarán a la bandeja de revisión y no podrás editarlos.</p>
-                        <button class="btn-submit-final" onclick="submitFinal()" ${!todoListo ? 'disabled style="background:#cbd5e1; cursor:not-allowed;"' : ''}>
-                            <i class="fa-solid fa-paper-plane"></i> Enviar a Planificación
-                        </button>
-                    </div>
-                `;
-                list.innerHTML = html;
+        function va_load() {
+            ui_showLoading("Validando requisitos...");
+            google.script.run.withSuccessHandler(data => {
+                ui_hideLoading();
+                va_render(data);
             }).validacion_get();
         }
 
-        function submitFinal() {
+        function va_render(data) {
+            const list = document.getElementById('va_list_content');
+            const footer = document.getElementById('va_footer_action');
+            const btn = document.getElementById('va_submit_btn');
+            
+            list.innerHTML = data.map(f => `
+                <div class="va-card ${f.listo ? 'ok' : 'warn'}">
+                    <div class="va-info">
+                        <h3>${f.titulo}</h3>
+                        <div class="va-status" style="color:${f.listo ? '#10b981' : '#f59e0b'};">
+                            ${f.listo ? '<i class="fa-solid fa-circle-check"></i> Formato Completo' : '<i class="fa-solid fa-circle-exclamation"></i> Requiere más registros'}
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:24px; font-weight:950; color:#1e293b;">${f.cantidad}</div>
+                        <div style="font-size:10px; font-weight:900; color:var(--muted); text-transform:uppercase;">Registros</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            const todoListo = data.every(d => d.listo);
+            footer.style.display = 'block';
+            btn.disabled = !todoListo;
+            
+            if(!todoListo) {
+                btn.innerHTML = '<i class="fa-solid fa-lock mr-2"></i> Requisitos Incompletos';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Enviar a Planificación';
+            }
+        }
+
+        function va_submitFinal() {
             Swal.fire({
-                title: '¿Confirmar envío?',
-                icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, Enviar'
+                title: '¿Confirmar envío oficial?',
+                text: 'Su reporte será enviado para revisión de Planificación.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00417B',
+                confirmButtonText: 'Sí, Enviar ahora'
             }).then(r => {
-                if (r.isConfirmed) {
-                    Swal.fire({ title: 'Enviando...', didOpen: () => Swal.showLoading() });
+                if(r.isConfirmed) {
+                    ui_showLoading("Procesando envío final...");
                     google.script.run.withSuccessHandler(res => {
-                        Swal.fire('Éxito', res.message, 'success');
+                        ui_hideLoading();
+                        Swal.fire('¡Éxito!', res.message, 'success').then(() => {
+                            window.location.reload(); // Recargar para aplicar bloqueos
+                        });
                     }).validacion_submit();
                 }
             });
         }
-        loadValidacion();
     </script>
 </div>

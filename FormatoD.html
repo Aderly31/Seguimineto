@@ -1,330 +1,283 @@
-<div id="formatoD_root">
+<div id="formatod_root">
     <style>
-        :root {
-            --uac-blue: #00417B;
-            --uac-gold: #f59e0b;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+        .fd-container { animation: fadeIn 0.4s ease; }
+        
+        .fd-header { 
+            background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
+            padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,65,123,0.15);
         }
+        .fd-header h1 { font-size: 26px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
+        .fd-header p { margin: 4px 0 0; opacity: 0.9; font-size: 14px; font-weight: 500; }
 
-        /* Layout Premium */
-        .breadcrumbs { padding: 10px 0; font-size: 12px; color: var(--text-muted); display: flex; gap: 8px; margin-bottom: 20px; }
-        .breadcrumbs span:after { content: '/'; margin-left: 8px; }
-        .breadcrumbs span:last-child:after { content: ''; }
-
-        .view-header-clean { margin-bottom: 32px; }
-        .view-header-clean h1 { font-size: 28px; font-weight: 900; color: var(--uac-blue); margin: 0; letter-spacing: -1px; }
-        .view-header-clean p { color: var(--text-muted); margin: 4px 0 0; font-size: 15px; }
-
-        .view-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 32px; background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-            padding: 40px; border-radius: 24px; color: white;
-            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-        }
-        .view-title h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
-        .view-title p { color: rgba(255, 255, 255, 0.9); margin: 8px 0 0; font-weight: 500; font-size: 16px; }
-
-        .btn-primary {
-            background: white; color: #00417B; border: none; padding: 14px 28px;
-            border-radius: 12px; font-weight: 900; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: all 0.2s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15); }
-
-        /* Premium Table */
-        .premium-table-container { background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow: auto; }
-        .premium-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .premium-table thead th { background: #f8fafc; padding: 16px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        .premium-table tbody td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
-        .premium-table tbody tr:hover { background: #fcfcfd; }
-
-        .table-status { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .status-prog { background: #f1f5f9; color: #64748b; }
-        .status-ejec { background: #dbeafe; color: #1e40af; }
-        .status-comp { background: #d1fae5; color: #065f46; }
-
-        .btn-edit-sm {
-            padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 6px;
-            border: 1px solid var(--border-color); background: white; color: var(--text-main);
-            cursor: pointer; transition: all 0.2s;
-        }
-        .btn-edit-sm:hover { background: #f1f5f9; border-color: #cbd5e1; }
-
-        /* Premium Form */
-        .premium-form-container { background: white; border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
-        .form-content { padding: 40px; }
-        .form-section { margin-bottom: 40px; }
-        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-        .section-icon { width: 32px; height: 32px; background: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .section-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 13px; font-weight: 700; color: #475569; }
-        .form-control { padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.2s; background: #fcfcfd; }
-        .form-control:focus { outline: none; border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .req { color: #ef4444; }
-
-        .form-footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; }
-        .btn-cancel { padding: 10px 20px; font-size: 14px; font-weight: 600; color: #4b5563; background: transparent; border: none; cursor: pointer; }
-        .btn-save { padding: 10px 24px; font-size: 14px; font-weight: 600; color: white; background: #2563eb; border-radius: 8px; border: none; cursor: pointer; }
+        .fd-card { background: white; border-radius: 24px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .fd-table th { background: #f8fafc; padding: 16px; text-align: left; font-weight: 900; color: #475569; border-bottom: 1px solid var(--line); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .fd-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        
+        .fd-form-card { max-width: 850px; margin: 0 auto; background: white; border-radius: 32px; border: 1px solid var(--line); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
+        .fd-form-header { padding: 32px 40px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 20px; background: #fcfcfd; border-radius: 32px 32px 0 0; }
+        .fd-form-body { padding: 40px; }
+        .fd-form-footer { padding: 24px 40px; background: #f8fafc; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 16px; border-radius: 0 0 32px 32px; }
+        
+        .field-label { display: block; font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .field-input { width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid #cbd5e1; font-size: 14px; transition: all 0.2s; outline: none; background: #fff; }
+        .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); background: #fff; }
+        
+        .btn-plus { background: white; color: var(--c-primary); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
     </style>
 
-    <!-- VISTA LISTADO -->
-    <div id="formatoD_list">
-        <header class="view-header">
-            <div class="view-title">
-                <h1>Formato D: Capacitaciones</h1>
-                <p>Fortalecimiento de capacidades institucionales</p>
+    <div class="fd-container">
+        <!-- List View -->
+        <div id="fd_list_view">
+            <header class="fd-header">
+                <div>
+                    <h1>Formato D: Capacitaciones</h1>
+                    <p>Gestión de eventos formativos y fortalecimiento de capacidades</p>
+                </div>
+                <button class="btn-plus" onclick="fd_openForm()">
+                    <i class="fa-solid fa-graduation-cap"></i> Nueva Capacitación
+                </button>
+            </header>
+
+            <div class="fd-card">
+                <div class="fd-table-wrap">
+                    <table class="fd-table">
+                        <thead>
+                            <tr>
+                                <th>Área / Evento</th>
+                                <th>Acción PEI (AEI)</th>
+                                <th>Modalidad / Estado</th>
+                                <th>Participantes / Evidencia</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fd_table_body">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <button class="btn-primary" onclick="formatoD_openForm()">
-                <i class="fa-solid fa-plus"></i> Nueva Capacitación
-            </button>
-        </header>
-
-        <div class="premium-table-container">
-            <table class="premium-table">
-                <thead>
-                    <tr>
-                        <th>Área</th>
-                        <th>Nombre de Capacitación</th>
-                        <th>Acción PEI (Vinculada)</th>
-                        <th>Modalidad / Estado</th>
-                        <th>Participantes / Evidencia</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="formatoD_table_body"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- VISTA FORMULARIO -->
-    <div id="formatoD_form" style="display: none;">
-        <div class="breadcrumbs">
-            <span>Fortalecimiento</span>
-            <span>Formato D</span>
-            <span id="breadcrumbActionD">Nueva Capacitación</span>
         </div>
 
-        <header class="view-header-clean">
-            <h1 id="formTitleD">Formato D: Formulario de Capacitación</h1>
-            <p>Registro de eventos formativos y evaluación de impacto.</p>
-        </header>
-
-        <form id="formD_main" onsubmit="formatoD_save(event)">
-            <input type="hidden" id="fD_id">
-            
-            <div class="premium-form-container">
-                <div class="form-content">
-                    
-                    <!-- Sección 1: Identificación -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                            <div class="section-title">Identificación y Planificación</div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Nombre del Evento <span class="req">*</span></label>
-                            <input type="text" id="fD_nombre" class="form-control" placeholder="Ej. Taller de Transformación Digital" required>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Acción PEI (Vinculada) <span class="req">*</span></label>
-                            <select id="fD_aei" class="form-control" required style="appearance: auto;">
-                                <option value="" disabled selected>Cargando acciones...</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Fecha del Evento <span class="req">*</span></label>
-                            <input type="date" id="fD_fecha" class="form-control" required>
-                        </div>
+        <!-- Form View -->
+        <div id="fd_form_view" style="display:none;">
+            <div class="fd-form-card">
+                <div class="fd-form-header">
+                    <div style="background:var(--c-primary); color:white; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-users-gear"></i>
                     </div>
+                    <div>
+                        <h2 id="fd_form_title" style="margin:0; font-size:18px; font-weight:950;">Registro de Capacitación</h2>
+                        <p style="margin:2px 0 0; font-size:12px; color:var(--muted);">Documente los detalles del evento formativo</p>
+                    </div>
+                </div>
 
-                    <!-- Sección 2: Desarrollo -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-users-gear"></i></div>
-                            <div class="section-title">Desarrollo de Capacitación</div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Modalidad <span class="req">*</span></label>
-                                <select id="fD_modalidad" class="form-control" style="appearance: auto;">
+                <form id="fd_form_element" onsubmit="fd_save(event)">
+                    <input type="hidden" id="fd_id">
+                    <div class="fd-form-body">
+                        <div class="form-grid">
+                            <div class="form-col-full">
+                                <label class="field-label">Nombre de la Capacitación *</label>
+                                <input type="text" id="fd_nombre" class="field-input" required placeholder="Ej: Taller de Excel Avanzado">
+                            </div>
+                            
+                            <div class="form-col-full">
+                                <label class="field-label">Acción PEI (Vinculada) *</label>
+                                <select id="fd_aei" class="field-input" required>
+                                    <option value="" disabled selected>Seleccione acción PEI...</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Fecha del Evento *</label>
+                                <input type="date" id="fd_fecha" class="field-input" required>
+                            </div>
+
+                            <div>
+                                <label class="field-label">Modalidad *</label>
+                                <select id="fd_modalidad" class="field-input" required>
                                     <option value="Presencial">Presencial</option>
                                     <option value="Virtual">Virtual</option>
                                     <option value="Híbrida">Híbrida</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>N° de Participantes <span class="req">*</span></label>
-                                <input type="number" id="fD_participantes" class="form-control" min="0" required>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Sección 3: Resultados -->
-                    <div class="form-section" style="margin-bottom: 0;">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-check-to-slot"></i></div>
-                            <div class="section-title">Evaluación y Evidencia</div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Comentarios / Progreso de Evidencia</label>
-                            <textarea id="fD_progreso" class="form-control" rows="2" placeholder="Detalle el estado actual de la evidencia"></textarea>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Estado <span class="req">*</span></label>
-                                <select id="fD_estado" class="form-control" style="appearance: auto;">
+                            <div>
+                                <label class="field-label">N° de Participantes *</label>
+                                <input type="number" id="fd_participantes" class="field-input" required min="0">
+                            </div>
+
+                            <div>
+                                <label class="field-label">Estado actual *</label>
+                                <select id="fd_estado" class="field-input" required>
                                     <option value="Programado">Programado</option>
                                     <option value="En Ejecución">En Ejecución</option>
                                     <option value="Completado">Completado</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Evidencia (Imagen, PDF, Excel...)</label>
-                                <input type="file" id="fD_file" class="form-control" accept="image/*,.pdf,.xlsx,.xls,.doc,.docx">
-                                <div id="fD_file_info" style="font-size: 11px; color: #2563eb; margin-top: 4px; font-weight: 600;"></div>
+
+                            <div class="form-col-full">
+                                <label class="field-label">Progreso de Evidencia / Comentarios</label>
+                                <textarea id="fd_progreso" class="field-input" rows="2" placeholder="Describa el estado de la documentación..."></textarea>
+                            </div>
+
+                            <div class="form-col-full">
+                                <label class="field-label">Cargar Evidencia (Opcional)</label>
+                                <input type="file" id="fd_file" class="field-input" accept="image/*,.pdf,.xlsx,.doc">
+                                <div id="fd_file_info" class="text-[10px] mt-1 font-bold text-blue-600"></div>
                             </div>
                         </div>
                     </div>
 
-                </div>
-
-                <div class="form-footer">
-                    <button type="button" class="btn-cancel" onclick="formatoD_closeForm()">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar Capacitación</button>
-                </div>
+                    <div class="fa-form-footer">
+                        <button type="button" class="btn-obs" onclick="fd_closeForm()">Cancelar</button>
+                        <button type="submit" class="btn-app">Guardar Capacitación</button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
     <script>
-        let CACHE_D = [];
-        let GLOBAL_PEI_D = [];
+        /**
+         * Lógica del Módulo: Formato D
+         */
+        window.FD_STATE = {
+            data: [],
+            pei: []
+        };
 
-        function formatoD_load() {
+        function formatod_init() {
+            fd_load();
+        }
+
+        function fd_load() {
+            ui_showLoading("Cargando capacitaciones...");
             google.script.run.withSuccessHandler(res => {
-                GLOBAL_PEI_D = res.pei;
-                renderSelectPeiD(res.pei);
+                window.FD_STATE.pei = res.pei;
+                fd_renderSelectPei(res.pei);
                 
                 google.script.run.withSuccessHandler(data => {
-                    CACHE_D = data;
-                    renderD(data);
+                    ui_hideLoading();
+                    window.FD_STATE.data = data;
+                    fd_renderTable(data);
                 }).formatoD_get();
             }).common_getAppData();
         }
 
-        function renderSelectPeiD(pei) {
-            const select = document.getElementById('fD_aei');
-            select.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+        function fd_renderSelectPei(pei) {
+            const sel = document.getElementById('fd_aei');
+            if(!sel) return;
+            sel.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' + 
                 pei.map(p => `<option value="${p.codAei}">[${p.codAei}] ${p.accion}</option>`).join('');
         }
 
-        function renderD(items) {
-            const tbody = document.getElementById('formatoD_table_body');
-            if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">No hay registros.</td></tr>'; return; }
+        function fd_renderTable(items) {
+            const tbody = document.getElementById('fd_table_body');
+            if(!items.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay capacitaciones registradas.</td></tr>';
+                return;
+            }
 
-            tbody.innerHTML = items.map(d => {
-                let sCol = 'status-prog';
-                if(d.estado === 'En Ejecución') sCol = 'status-ejec';
-                if(d.estado === 'Completado') sCol = 'status-comp';
-
+            tbody.innerHTML = items.map(it => {
+                let badgeClass = 'badge-obs';
+                if(it.estado === 'En Ejecución') badgeClass = 'badge-primary';
+                if(it.estado === 'Completado') badgeClass = 'badge-success';
+                
                 return `
-                <tr>
-                    <td style="font-size:11px; font-weight:800; color:var(--uac-blue);">${d.area || '---'}</td>
-                    <td>
-                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${d.nombre}</div>
-                        <div style="font-size:12px; color:#64748b;">Fecha: ${d.fecha}</div>
-                    </td>
-                    <td>
-                        <div style="font-size:11px; color:#94a3b8; font-weight:700;">PEI: ${d.codAei}</div>
-                    </td>
-                    <td>
-                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${d.modalidad}</div>
-                        <span class="table-status ${sCol}">${d.estado}</span>
-                    </td>
-                    <td>
-                        <div style="font-weight:600; font-size:14px; margin-bottom:4px;">${d.participantes} part.</div>
-                        ${d.imagen && d.imagen.startsWith('http') 
-                          ? `<a href="${d.imagen}" target="_blank" style="color:#2563eb; font-size:11px; font-weight:800;"><i class="fa-solid fa-paperclip"></i> Evidencia</a>`
-                          : '<span style="color:#94a3b8; font-size:11px;">Sin evidencia</span>'}
-                    </td>
-                    <td>
-                        <button class="btn-edit-sm" onclick="formatoD_edit('${d.id}')">EDITAR</button>
-                    </td>
-                </tr>`;
+                    <tr>
+                        <td>
+                            <div class="text-[10px] font-black text-primary uppercase mb-1">${it.area || '---'}</div>
+                            <div class="font-black text-slate-800">${it.nombre}</div>
+                            <div class="text-[11px] text-muted font-bold"><i class="fa-regular fa-calendar mr-1"></i> ${it.fecha || '-'}</div>
+                        </td>
+                        <td><div class="text-xs font-bold text-slate-600 max-w-[200px]">PEI: ${it.codAei || 'Sin vincular'}</div></td>
+                        <td>
+                            <div class="text-xs font-bold text-slate-700 mb-1">${it.modalidad}</div>
+                            <span class="badge ${badgeClass}">${it.estado}</span>
+                        </td>
+                        <td>
+                            <div class="text-xs font-black text-slate-700 mb-1">${it.participantes} Participantes</div>
+                            ${it.imagen && it.imagen.startsWith('http') 
+                              ? `<a href="${it.imagen}" target="_blank" class="flex items-center gap-1 text-[11px] font-black text-blue-600"><i class="fa-solid fa-paperclip"></i> Ver evidencia</a>`
+                              : '<span class="badge badge-obs" style="font-size:9px;">Sin evidencia</span>'}
+                        </td>
+                        <td class="text-right">
+                            <button class="btn-icon" onclick="fd_edit('${it.id}')" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             }).join('');
         }
 
-        function formatoD_openForm() {
-            document.getElementById('formatoD_list').style.display = 'none';
-            document.getElementById('formatoD_form').style.display = 'block';
-            document.getElementById('breadcrumbActionD').textContent = 'Nueva Capacitación';
-            document.getElementById('formD_main').reset();
-            document.getElementById('fD_id').value = '';
-            document.getElementById('fD_file_info').textContent = '';
+        function fd_openForm() {
+            document.getElementById('fd_list_view').style.display = 'none';
+            document.getElementById('fd_form_view').style.display = 'block';
+            document.getElementById('fd_form_element').reset();
+            document.getElementById('fd_id').value = '';
+            document.getElementById('fd_file_info').textContent = '';
+            document.getElementById('fd_form_title').textContent = 'Nueva Capacitación';
         }
 
-        function formatoD_closeForm() {
-            document.getElementById('formatoD_list').style.display = 'block';
-            document.getElementById('formatoD_form').style.display = 'none';
+        function fd_closeForm() {
+            document.getElementById('fd_list_view').style.display = 'block';
+            document.getElementById('fd_form_view').style.display = 'none';
         }
 
-        function formatoD_edit(id) {
-            const item = CACHE_D.find(x => x.id === id);
-            if (!item) return;
-            formatoD_openForm();
-            document.getElementById('breadcrumbActionD').textContent = 'Editar Capacitación';
-            document.getElementById('fD_id').value = item.id;
-            document.getElementById('fD_nombre').value = item.nombre;
-            document.getElementById('fD_fecha').value = item.fecha;
-            document.getElementById('fD_aei').value = item.codAei;
-            document.getElementById('fD_modalidad').value = item.modalidad;
-            document.getElementById('fD_participantes').value = item.participantes;
-            document.getElementById('fD_progreso').value = item.progresoEvidencia;
-            document.getElementById('fD_estado').value = item.estado;
+        function fd_edit(id) {
+            const it = window.FD_STATE.data.find(x => x.id === id);
+            if(!it) return;
             
-            if(item.imagen && item.imagen.startsWith('http')) {
-                document.getElementById('fD_file_info').innerHTML = `<i class="fa-solid fa-check-circle"></i> Evidencia cargada.`;
+            fd_openForm();
+            document.getElementById('fd_form_title').textContent = 'Editar Capacitación';
+            document.getElementById('fd_id').value = it.id;
+            document.getElementById('fd_nombre').value = it.nombre;
+            document.getElementById('fd_fecha').value = it.fecha || '';
+            document.getElementById('fd_aei').value = it.codAei;
+            document.getElementById('fd_modalidad').value = it.modalidad;
+            document.getElementById('fd_participantes').value = it.participantes;
+            document.getElementById('fd_progreso').value = it.progresoEvidencia;
+            document.getElementById('fd_estado').value = it.estado;
+            
+            if(it.imagen && it.imagen.startsWith('http')) {
+                document.getElementById('fd_file_info').innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Evidencia cargada previamente.`;
             }
         }
 
-        function formatoD_save(e) {
+        function fd_save(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('.btn-save');
-            const originalText = btn.textContent;
-            const fileInput = document.getElementById('fD_file');
+            const fileInput = document.getElementById('fd_file');
             const file = fileInput.files[0];
 
             const executeSave = (fileData = null) => {
                 const data = {
-                    id: document.getElementById('fD_id').value,
-                    nombre: document.getElementById('fD_nombre').value,
-                    fecha: document.getElementById('fD_fecha').value,
-                    codAei: document.getElementById('fD_aei').value,
-                    modalidad: document.getElementById('fD_modalidad').value,
-                    participantes: document.getElementById('fD_participantes').value,
-                    progresoEvidencia: document.getElementById('fD_progreso').value,
-                    estado: document.getElementById('fD_estado').value,
+                    id: document.getElementById('fd_id').value,
+                    nombre: document.getElementById('fd_nombre').value,
+                    fecha: document.getElementById('fd_fecha').value,
+                    codAei: document.getElementById('fd_aei').value,
+                    modalidad: document.getElementById('fd_modalidad').value,
+                    participantes: document.getElementById('fd_participantes').value,
+                    progresoEvidencia: document.getElementById('fd_progreso').value,
+                    estado: document.getElementById('fd_estado').value,
                     fileData: fileData
                 };
 
-                Swal.fire({ title: 'Guardando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                ui_showLoading("Guardando capacitación...");
                 google.script.run.withSuccessHandler(res => {
+                    ui_hideLoading();
                     if (res.success) {
-                        Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
-                        formatoD_closeForm();
-                        formatoD_load();
-                    } else { Swal.fire('Error', res.message, 'error'); }
-                    btn.disabled = false; btn.textContent = originalText;
+                        Swal.fire('Éxito', 'Capacitación guardada correctamente', 'success');
+                        fd_closeForm();
+                        fd_load();
+                    } else { 
+                        Swal.fire('Error', res.message, 'error'); 
+                    }
                 }).formatoD_save(data);
             };
-
-            btn.disabled = true; btn.textContent = 'Procesando...';
 
             if (file) {
                 const reader = new FileReader();
@@ -336,10 +289,9 @@
                     });
                 };
                 reader.readAsDataURL(file);
-            } else { executeSave(); }
+            } else {
+                executeSave();
+            }
         }
-
-        formatoD_load();
-
     </script>
 </div>

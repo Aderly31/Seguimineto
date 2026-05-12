@@ -1,502 +1,301 @@
-<div class="u-wrap">
-    <div class="u-head">
-        <div>
-            <h2 class="u-title">Usuarios</h2>
-            <div class="u-sub">Registrar, consultar, modificar y eliminar usuarios (solo admin)</div>
-        </div>
+<div id="usuarios_root">
+    <style>
+        .u-container { animation: fadeIn 0.4s ease; }
+        
+        /* Banner Header */
+        .u-header { 
+            background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
+            padding: 32px; border-radius: 24px; color: white; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,65,123,0.15);
+        }
+        .u-header h1 { font-size: 24px; font-weight: 950; margin: 0; letter-spacing: -1px; }
+        .u-header p { margin: 4px 0 0; opacity: 0.8; font-size: 14px; }
 
-        <div class="u-actions">
-            <div class="u-search">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input id="q" type="text" placeholder="Buscar por email, nombre, rol..." oninput="render()">
+        /* Actions Bar */
+        .u-toolbar { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+        .u-search-box { 
+            flex: 1; display: flex; align-items: center; gap: 10px; 
+            background: #f1f5f9; border-radius: 14px; padding: 10px 16px; border: 1px solid var(--line);
+        }
+        .u-search-box input { border: 0; background: transparent; outline: none; width: 100%; font-size: 14px; font-weight: 600; }
+        
+        /* Table Card */
+        .u-card { background: white; border-radius: 20px; border: 1px solid var(--line); overflow: hidden; }
+        .u-table-wrap { overflow-x: auto; }
+        .u-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .u-table th { background: #f8fafc; padding: 14px; text-align: left; font-weight: 800; color: #475569; border-bottom: 1px solid var(--line); }
+        .u-table td { padding: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        
+        /* Badges */
+        .u-badge { padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 900; text-transform: uppercase; border: 1px solid #e2e8f0; }
+        .u-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .u-dot-on { background: #10b981; box-shadow: 0 0 6px #10b981; }
+        .u-dot-off { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+        /* Modal Premium */
+        .u-modal { position: fixed; inset: 0; display: none; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .u-modal.show { display: flex; }
+        .u-modal-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); }
+        .u-modal-card { 
+            position: relative; width: 100%; max-width: 600px; background: white; border-radius: 28px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+        .u-modal-header { padding: 30px; border-bottom: 1px solid var(--line); background: #fcfcfd; display: flex; justify-content: space-between; align-items: center; }
+        .u-modal-body { padding: 30px; }
+        .u-modal-footer { padding: 20px 30px; background: #f8fafc; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 12px; }
+
+        .field-group { margin-bottom: 20px; }
+        .field-label { display: block; font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+        .field-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; transition: all 0.2s; }
+        .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); }
+
+        .btn-plus { background: white; color: var(--c-primary); border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    </style>
+
+    <div class="u-container">
+        <header class="u-header">
+            <div>
+                <h1>Gestión de Usuarios</h1>
+                <p>Control de accesos, roles y permisos del sistema</p>
             </div>
-
-            <button class="u-btn u-btn-primary" onclick="openCreate()">
-                <i class="fa-solid fa-user-plus"></i> Nuevo
+            <button class="btn-plus" onclick="u_openCreate()">
+                <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
             </button>
+        </header>
 
-            <button class="u-btn" onclick="loadUsers()">
-                <i class="fa-solid fa-rotate"></i> Actualizar
+        <div class="u-toolbar">
+            <div class="u-search-box">
+                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                <input id="u_q" type="text" placeholder="Buscar por email, nombre o rol..." oninput="u_render()">
+            </div>
+            <button class="btn-icon" onclick="u_load()" title="Actualizar">
+                <i class="fa-solid fa-rotate"></i>
             </button>
+        </div>
+
+        <div class="u-card">
+            <div class="u-table-wrap">
+                <table class="u-table">
+                    <thead>
+                        <tr>
+                            <th>Email Institucional</th>
+                            <th>Nombre Completo</th>
+                            <th>Rol / Nivel</th>
+                            <th>Estado</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="u_tbody">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="u-card">
-        <div class="u-table-wrap">
-            <table class="u-table">
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th class="u-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
-        </div>
-
-        <div id="empty" class="u-empty" style="display:none;">
-            No hay usuarios para mostrar.
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="u-modal" id="modal" aria-hidden="true">
-        <div class="u-modal-backdrop" onclick="closeModal()"></div>
-
-        <div class="u-modal-card" role="dialog" aria-modal="true">
-            <div class="u-modal-top">
+    <!-- Modal Form -->
+    <div id="u_modal" class="u-modal">
+        <div class="u-modal-overlay" onclick="u_closeModal()"></div>
+        <div class="u-modal-card">
+            <div class="u-modal-header">
                 <div>
-                    <div class="u-modal-title" id="mTitle">Nuevo usuario</div>
-                    <div class="u-modal-sub">Completa los datos</div>
+                    <h3 id="u_mTitle" style="margin:0; font-size:18px; font-weight:950;">Usuario</h3>
+                    <p style="margin:2px 0 0; font-size:12px; color:var(--muted);">Administre las credenciales de acceso</p>
                 </div>
-                <button class="u-icon" onclick="closeModal()" aria-label="Cerrar">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button class="btn-icon" onclick="u_closeModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <div class="u-form">
-                <div class="u-grid">
-                    <label class="u-field">
-                        <span>Email *</span>
-                        <input id="f_email" type="email" placeholder="usuario@uandina.edu.pe">
-                    </label>
-
-                    <label class="u-field">
-                        <span>Rol *</span>
-                        <select id="f_rol">
-                            <option value="">Cargando roles...</option>
-                        </select>
-                    </label>
-
-                    <label class="u-field">
-                        <span>Nombre</span>
-                        <input id="f_nombre" type="text" placeholder="Nombre">
-                    </label>
-
-                    <label class="u-field">
-                        <span>Apellido</span>
-                        <input id="f_apellido" type="text" placeholder="Apellido">
-                    </label>
-
-                    <label class="u-field">
-                        <span>Name (opcional)</span>
-                        <input id="f_name" type="text" placeholder="name">
-                    </label>
-
-                    <label class="u-field u-switch">
-                        <span>Activo</span>
-                        <div class="u-switch-row">
-                            <input id="f_activo" type="checkbox" checked>
-                            <span class="u-pill" id="pill">Activo</span>
+            <div class="u-modal-body">
+                <form id="u_form">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="field-group" style="grid-column: span 2;">
+                            <label class="field-label">Email *</label>
+                            <input id="uf_email" type="email" class="field-input" placeholder="ejemplo@uandina.edu.pe" required>
                         </div>
-                    </label>
-                </div>
-
-                <div class="u-form-actions">
-                    <button class="u-btn" onclick="closeModal()">Cancelar</button>
-                    <button class="u-btn u-btn-primary" onclick="save()">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar
-                    </button>
-                </div>
+                        <div class="field-group">
+                            <label class="field-label">Nombre *</label>
+                            <input id="uf_nombre" type="text" class="field-input" placeholder="Nombres" required>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Apellido *</label>
+                            <input id="uf_apellido" type="text" class="field-input" placeholder="Apellidos" required>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Rol de Sistema *</label>
+                            <select id="uf_rol" class="field-input" required>
+                                <option value="">Cargando roles...</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Estado de Cuenta</label>
+                            <div style="display:flex; align-items:center; gap:10px; padding:10px 0;">
+                                <input id="uf_activo" type="checkbox" checked style="width:20px; height:20px; cursor:pointer;">
+                                <span id="uf_status_text" style="font-size:14px; font-weight:700; color:var(--c-primary);">Cuenta Activa</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="u-modal-footer">
+                <button class="btn-obs" onclick="u_closeModal()">Cancelar</button>
+                <button class="btn-app" onclick="u_save()">Guardar Usuario</button>
             </div>
         </div>
     </div>
-</div>
 
-<!-- SweetAlert2 fallback si por alguna razón no está en Main -->
-<script>
-    (function () {
-        if (!window.Swal) {
-            const s = document.createElement('script');
-            s.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
-            document.head.appendChild(s);
-        }
-    })();
-</script>
-
-<style>
-    :root {
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.4);
-        --glow-primary: #00417B;
-        --glow-secondary: #002d56;
-        --accent-success: #10b981;
-        --accent-danger: #ef4444;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-    }
-
-    .u-wrap { 
-        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex; flex-direction: column; gap: 32px; 
-    }
-
-    @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Premium Header */
-    .u-head { 
-        background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-        padding: 40px; border-radius: 24px; color: white;
-        box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-        display: flex; flex-direction: column; gap: 24px;
-    }
-
-    .u-title { margin: 0; font-size: 32px; font-weight: 950; color: white; letter-spacing: -1.5px; }
-    .u-sub { color: rgba(255, 255, 255, 0.9); font-size: 14px; font-weight: 500; }
-
-    .u-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
-
-    .u-search { 
-        flex: 1; min-width: 280px; display: flex; align-items: center; gap: 12px; 
-        background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); 
-        border-radius: 14px; padding: 12px 16px; backdrop-filter: blur(10px);
-    }
-    .u-search i { color: rgba(255, 255, 255, 0.8); }
-    .u-search input { 
-        border: 0; outline: none; width: 100%; font-size: 14px; background: transparent; color: white; font-weight: 600;
-    }
-    .u-search input::placeholder { color: rgba(255, 255, 255, 0.6); }
-
-    .u-btn { 
-        border: 1px solid #e2e8f0; background: white; border-radius: 12px; 
-        padding: 12px 20px; cursor: pointer; font-weight: 900; display: inline-flex; 
-        align-items: center; gap: 10px; transition: all 0.2s; color: var(--text-main); font-size: 14px;
-    }
-    .u-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-
-    .u-btn-primary { 
-        background: white; border-color: white; color: #00417B; 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .u-btn-primary i { color: #00417B; }
-
-    /* User List Glass */
-    .u-card { 
-        background: white; border: 1px solid #f1f5f9; border-radius: 28px; 
-        overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        transition: all 0.3s ease;
-    }
-    .u-card:hover { border-color: #00417B; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-
-    .u-table-wrap { width: 100%; overflow: auto; }
-    .u-table { width: 100%; border-collapse: collapse; min-width: 800px; }
-
-    .u-table thead th { 
-        text-align: left; background: #fcfcfd; padding: 20px; font-size: 11px; 
-        color: var(--text-muted); border-bottom: 1px solid #f1f5f9; white-space: nowrap; 
-        font-weight: 950; text-transform: uppercase; letter-spacing: 1px;
-    }
-
-    .u-table td { padding: 20px; border-bottom: 1px solid #f8fafc; font-size: 14px; vertical-align: middle; color: var(--text-main); font-weight: 700; }
-    .u-table tr:hover { background: #fafbff; }
-
-    .u-right { text-align: right; }
-    .u-empty { padding: 40px; color: var(--text-muted); font-size: 15px; text-align: center; font-weight: 800; }
-
-    /* Badges */
-    .u-badge { 
-        display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; 
-        padding: 6px 14px; font-weight: 800; font-size: 12px; border: 1px solid #e2e8f0; background: white;
-    }
-    .u-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px currentColor; }
-    .u-dot.on { color: var(--accent-success); background: currentColor; }
-    .u-dot.off { color: var(--accent-danger); background: currentColor; }
-
-    .u-row-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .u-mini { 
-        border: 1px solid #e2e8f0; background: white; border-radius: 10px; 
-        padding: 8px 14px; cursor: pointer; font-weight: 800; font-size: 12px; 
-        display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; color: var(--text-main);
-    }
-    .u-mini:hover { border-color: var(--glow-primary); color: var(--glow-primary); transform: translateY(-1px); }
-    .u-mini.danger:hover { border-color: var(--accent-danger); color: var(--accent-danger); }
-
-    /* Glass Modal */
-    .u-modal { position: fixed; inset: 0; display: none; z-index: 9999; }
-    .u-modal.show { display: grid; place-items: center; }
-
-    .u-modal-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); }
-
-    .u-modal-card { 
-        position: relative; width: min(800px, calc(100% - 32px)); 
-        background: white; border-radius: 32px; border: 1px solid #f1f5f9; 
-        box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.2); overflow: hidden;
-        animation: modalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes modalIn {
-        from { opacity: 0; transform: scale(0.95) translateY(20px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .u-modal-top { 
-        display: flex; justify-content: space-between; align-items: flex-start; 
-        gap: 16px; padding: 32px; background: #fcfcfd; border-bottom: 1px solid #f1f5f9;
-    }
-    .u-modal-title { font-weight: 950; color: var(--text-main); font-size: 24px; letter-spacing: -0.5px; }
-    .u-modal-sub { color: var(--text-muted); font-size: 14px; margin-top: 4px; font-weight: 600; }
-
-    .u-icon { 
-        border: 1px solid #e2e8f0; background: white; border-radius: 12px; 
-        padding: 10px; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
-    }
-    .u-icon:hover { color: var(--text-main); border-color: var(--text-main); }
-
-    .u-form { padding: 32px; }
-    .u-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-
-    .u-field { display: flex; flex-direction: column; gap: 10px; }
-    .u-field span { font-size: 13px; color: var(--text-muted); font-weight: 800; letter-spacing: 0.5px; }
-    .u-field input, .u-field select { 
-        border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; 
-        font-size: 15px; outline: none; background: #fcfcfd; transition: all 0.2s;
-    }
-    .u-field input:focus, .u-field select:focus { border-color: var(--glow-primary); background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
-
-    .u-switch .u-switch-row { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
-    .u-pill { 
-        display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 999px; 
-        border: 1px solid #e2e8f0; font-weight: 900; font-size: 12px; color: var(--glow-primary); background: #fafbff;
-    }
-
-    .u-form-actions { margin-top: 40px; display: flex; gap: 16px; justify-content: flex-end; }
-
-    @media (min-width: 900px) {
-        .u-head { flex-direction: row; align-items: center; justify-content: space-between; }
-        .u-grid { grid-template-columns: 1fr 1fr; }
-    }
-</style>
-
-<script>
-    let USERS = [];
-    let ROLES = [];
-    let EDITING_EMAIL = null;
-
-    function swalLoading(title) {
-        Swal.fire({
-            title: title || 'Procesando...',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
-    }
-
-    function safeText(v) { return (v === null || v === undefined) ? '' : String(v); }
-
-    function badgeActivo(activo) {
-        const on = !!activo;
-        return `
-      <span class="u-badge">
-        <span class="u-dot ${on ? 'on' : 'off'}"></span>
-        ${on ? 'Activo' : 'Inactivo'}
-      </span>
-    `;
-    }
-
-    function loadRoles(selected) {
-        google.script.run
-            .withSuccessHandler(list => {
-                ROLES = Array.isArray(list) ? list : [];
-                const sel = document.getElementById('f_rol');
-                sel.innerHTML = '<option value="">Seleccione rol</option>';
-
-                ROLES.forEach(r => {
-                    const opt = document.createElement('option');
-                    opt.value = r;
-                    opt.textContent = r;
-                    sel.appendChild(opt);
-                });
-
-                if (selected) sel.value = selected;
-            })
-            .withFailureHandler(err => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error cargando roles',
-                    text: err?.message || String(err)
-                });
-            })
-            .usuarios_roles_listar();
-    }
-
-    function readForm() {
-        return {
-            email: document.getElementById('f_email').value.trim(),
-            rol: document.getElementById('f_rol').value,
-            nombre: document.getElementById('f_nombre').value.trim(),
-            apellido: document.getElementById('f_apellido').value.trim(),
-            name: document.getElementById('f_name').value.trim(),
-            estado: document.getElementById('f_activo').checked
+    <script>
+        /**
+         * Lógica del Módulo: Usuarios
+         */
+        window.U_STATE = {
+            users: [],
+            roles: [],
+            isEdit: false
         };
-    }
 
-    function fillForm(u) {
-        document.getElementById('f_email').value = safeText(u?.email);
-        document.getElementById('f_nombre').value = safeText(u?.nombre || u?.name);
-        document.getElementById('f_apellido').value = safeText(u?.apellido);
-        document.getElementById('f_name').value = safeText(u?.name);
-
-        const activo = !!u?.activo;
-        document.getElementById('f_activo').checked = activo;
-        document.getElementById('pill').textContent = activo ? 'Activo' : 'Inactivo';
-
-        document.getElementById('f_email').disabled = !!EDITING_EMAIL;
-    }
-
-    function openModal(title) {
-        document.getElementById('mTitle').textContent = title || 'Usuario';
-        document.getElementById('modal').classList.add('show');
-        document.getElementById('modal').setAttribute('aria-hidden', 'false');
-    }
-
-    function closeModal() {
-        document.getElementById('modal').classList.remove('show');
-        document.getElementById('modal').setAttribute('aria-hidden', 'true');
-    }
-
-    document.addEventListener('change', (e) => {
-        if (e.target && e.target.id === 'f_activo') {
-            document.getElementById('pill').textContent = e.target.checked ? 'Activo' : 'Inactivo';
+        function usuarios_init() {
+            u_load();
         }
-    });
 
-    function loadUsers() {
-        swalLoading('Cargando usuarios...');
-        google.script.run
-            .withSuccessHandler(list => {
-                USERS = Array.isArray(list) ? list : [];
-                Swal.close();
-                render();
-            })
-            .withFailureHandler(err => {
-                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
-            })
-            .usuarios_listar();
-    }
+        function u_load() {
+            ui_showLoading("Cargando directorio...");
+            google.script.run.withSuccessHandler(list => {
+                ui_hideLoading();
+                window.U_STATE.users = list;
+                u_render();
+                u_loadRoles();
+            }).usuarios_listar();
+        }
 
-    function render() {
-        const q = (document.getElementById('q').value || '').toLowerCase().trim();
-        const filtered = USERS.filter(u => {
-            const s = [u.email, u.nombre, u.apellido, u.name, u.rol]
-                .map(x => (x || '').toString().toLowerCase()).join(' ');
-            return !q || s.includes(q);
-        });
+        function u_loadRoles() {
+            google.script.run.withSuccessHandler(list => {
+                window.U_STATE.roles = list;
+                const sel = document.getElementById('uf_rol');
+                sel.innerHTML = '<option value="">Seleccione rol</option>' + 
+                    list.map(r => `<option value="${r}">${r.toUpperCase()}</option>`).join('');
+            }).usuarios_roles_listar();
+        }
 
-        document.getElementById('empty').style.display = filtered.length ? 'none' : 'block';
+        function u_render() {
+            const q = document.getElementById('u_q').value.toLowerCase();
+            const tbody = document.getElementById('u_tbody');
+            
+            const filtered = window.U_STATE.users.filter(u => {
+                const searchStr = `${u.email} ${u.nombre} ${u.apellido} ${u.rol}`.toLowerCase();
+                return !q || searchStr.includes(q);
+            });
 
-        const tbody = document.getElementById('tbody');
-        tbody.innerHTML = '';
+            if(!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No se encontraron usuarios.</td></tr>';
+                return;
+            }
 
-        filtered.forEach(u => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-        <td><strong>${safeText(u.email)}</strong></td>
-        <td>${safeText(u.nombre || u.name)}</td>
-        <td>${safeText(u.apellido)}</td>
-        <td><span class="u-badge">${safeText(u.rol)}</span></td>
-        <td>${badgeActivo(u.activo)}</td>
-        <td class="u-right">
-          <div class="u-row-actions">
-            <button class="u-mini" onclick="openEdit('${encodeURIComponent(u.email)}')">
-              <i class="fa-solid fa-pen"></i> Editar
-            </button>
-            <button class="u-mini danger" onclick="delUser('${encodeURIComponent(u.email)}')">
-              <i class="fa-solid fa-trash"></i> Eliminar
-            </button>
-          </div>
-        </td>
-      `;
-            tbody.appendChild(tr);
-        });
-    }
+            tbody.innerHTML = filtered.map(u => `
+                <tr>
+                    <td><div class="font-black text-primary">${u.email}</div></td>
+                    <td><div class="font-bold text-slate-700">${u.nombre} ${u.apellido}</div></td>
+                    <td><span class="u-badge">${u.rol.toUpperCase()}</span></td>
+                    <td>
+                        <div class="flex items-center">
+                            <span class="u-dot ${u.activo ? 'u-dot-on' : 'u-dot-off'}"></span>
+                            <span class="text-xs font-bold ${u.activo ? 'text-green-600' : 'text-red-600'}">${u.activo ? 'ACTIVO' : 'INACTIVO'}</span>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="flex justify-end gap-2">
+                            <button class="btn-icon" onclick="u_openEdit('${encodeURIComponent(u.email)}')" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn-icon text-red-500" onclick="u_delete('${encodeURIComponent(u.email)}')" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
-    function openCreate() {
-        EDITING_EMAIL = null;
-        fillForm({ email: '', rol: '', nombre: '', apellido: '', name: '', activo: true });
-        loadRoles('');
-        openModal('Nuevo usuario');
-    }
+        function u_openModal(title) {
+            document.getElementById('u_mTitle').textContent = title;
+            document.getElementById('u_modal').classList.add('show');
+        }
 
-    function openEdit(emailEnc) {
-        const email = decodeURIComponent(emailEnc);
-        swalLoading('Cargando usuario...');
-        google.script.run
-            .withSuccessHandler(u => {
-                Swal.close();
-                if (!u) {
-                    Swal.fire({ icon: 'warning', title: 'No encontrado', text: 'El usuario no existe.' });
-                    return;
+        function u_closeModal() {
+            document.getElementById('u_modal').classList.remove('show');
+        }
+
+        function u_openCreate() {
+            window.U_STATE.isEdit = false;
+            document.getElementById('u_form').reset();
+            document.getElementById('uf_email').disabled = false;
+            u_openModal("Nuevo Usuario");
+        }
+
+        function u_openEdit(emailEnc) {
+            const email = decodeURIComponent(emailEnc);
+            const user = window.U_STATE.users.find(u => u.email === email);
+            if(!user) return;
+
+            window.U_STATE.isEdit = true;
+            document.getElementById('uf_email').value = user.email;
+            document.getElementById('uf_email').disabled = true;
+            document.getElementById('uf_nombre').value = user.nombre;
+            document.getElementById('uf_apellido').value = user.apellido;
+            document.getElementById('uf_rol').value = user.rol;
+            document.getElementById('uf_activo').checked = user.activo;
+            
+            u_openModal("Editar Usuario");
+        }
+
+        function u_save() {
+            const data = {
+                email: document.getElementById('uf_email').value,
+                nombre: document.getElementById('uf_nombre').value,
+                apellido: document.getElementById('uf_apellido').value,
+                rol: document.getElementById('uf_rol').value,
+                estado: document.getElementById('uf_activo').checked
+            };
+
+            if(!data.email || !data.rol) return Swal.fire("Atención", "Email y Rol son obligatorios", "warning");
+
+            ui_showLoading("Guardando...");
+            google.script.run.withSuccessHandler(res => {
+                ui_hideLoading();
+                if(res.ok) {
+                    Swal.fire("Éxito", "Usuario guardado correctamente", "success");
+                    u_closeModal();
+                    u_load();
                 }
-                EDITING_EMAIL = u.email;
-                fillForm(u);
-                loadRoles(u.rol);
-                openModal('Editar usuario');
-            })
-            .withFailureHandler(err => {
-                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
-            })
-            .usuarios_get(email);
-    }
-
-    function save() {
-        const payload = readForm();
-
-        if (!payload.email) {
-            Swal.fire({ icon: 'warning', title: 'Falta email', text: 'El email es obligatorio.' });
-            return;
-        }
-        if (!payload.rol) {
-            Swal.fire({ icon: 'warning', title: 'Falta rol', text: 'El rol es obligatorio.' });
-            return;
+            }).usuarios_save(data);
         }
 
-        swalLoading('Guardando...');
-        google.script.run
-            .withSuccessHandler(res => {
-                Swal.close();
-                closeModal();
-                const action = res?.action === 'created' ? 'creado' : 'actualizado';
-                Swal.fire({ icon: 'success', title: `Usuario ${action}`, timer: 900, showConfirmButton: false });
-                loadUsers();
-            })
-            .withFailureHandler(err => {
-                Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
-            })
-            .usuarios_save(payload);
-    }
-
-    function delUser(emailEnc) {
-        const email = decodeURIComponent(emailEnc);
-
-        Swal.fire({
-            title: '¿Eliminar usuario?',
-            text: email,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then(r => {
-            if (!r.isConfirmed) return;
-
-            swalLoading('Eliminando...');
-            google.script.run
-                .withSuccessHandler(() => {
-                    Swal.close();
-                    Swal.fire({ icon: 'success', title: 'Eliminado', timer: 900, showConfirmButton: false });
-                    loadUsers();
-                })
-                .withFailureHandler(err => {
-                    Swal.fire({ icon: 'error', title: 'Error', text: err?.message || String(err) });
-                })
-                .usuarios_delete(email);
-        });
-    }
-
-    // Init
-    loadUsers();
-</script>
+        function u_delete(emailEnc) {
+            const email = decodeURIComponent(emailEnc);
+            Swal.fire({
+                title: "¿Eliminar usuario?",
+                text: `Esta acción no se puede deshacer para ${email}`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#ef4444",
+                confirmButtonText: "Eliminar definitivamente"
+            }).then(r => {
+                if(r.isConfirmed) {
+                    ui_showLoading("Eliminando...");
+                    google.script.run.withSuccessHandler(() => {
+                        ui_hideLoading();
+                        Swal.fire("Eliminado", "El usuario ha sido removido", "success");
+                        u_load();
+                    }).usuarios_delete(email);
+                }
+            });
+        }
+        
+        document.getElementById('uf_activo').onchange = (e) => {
+            document.getElementById('uf_status_text').textContent = e.target.checked ? 'Cuenta Activa' : 'Cuenta Suspendida';
+            document.getElementById('uf_status_text').style.color = e.target.checked ? 'var(--c-primary)' : 'var(--accent-danger)';
+        };
+    </script>
+</div>

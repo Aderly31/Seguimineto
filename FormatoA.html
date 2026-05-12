@@ -1,763 +1,283 @@
-<div id="formatoA_root">
+<div id="formatoa_root">
     <style>
-        :root {
-            --glow-primary: #00417B;
-            --uac-blue: #0056b3;
-            --uac-light-blue: #e7f1ff;
-            --accent-success: #10b981;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #dee2e6;
-            --bg-light: #f8f9fa;
+        .fa-container { animation: fadeIn 0.4s ease; }
+        
+        .fa-header { 
+            background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
+            padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,65,123,0.15);
         }
+        .fa-header h1 { font-size: 26px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
+        .fa-header p { margin: 4px 0 0; opacity: 0.9; font-size: 14px; font-weight: 500; }
 
-        #formatoA_root {
-            animation: slideUpFade 0.6s ease;
-            padding-bottom: 40px;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
+        .fa-card { background: white; border-radius: 24px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .fa-table th { background: #f8fafc; padding: 16px; text-align: left; font-weight: 900; color: #475569; border-bottom: 1px solid var(--line); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .fa-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        
+        .prog-bar { height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-top: 6px; width: 120px; }
+        .prog-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
 
-        @keyframes slideUpFade {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Breadcrumbs */
-        .breadcrumbs {
-            display: flex;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-
-        .breadcrumbs span:not(:last-child)::after {
-            content: "/";
-            margin-left: 8px;
-        }
-
-        /* Header */
-        .view-header-clean {
-            margin-bottom: 32px;
-        }
-
-        .view-header-clean h1 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #111827;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .view-header-clean p {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin: 0;
-        }
-
-        /* Grid */
-        .grid-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 24px;
-        }
-
-        /* Form Layout */
-        .premium-form-container {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .form-content {
-            padding: 40px;
-        }
-
-        .form-section {
-            margin-bottom: 40px;
-        }
-
-        .form-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            background: var(--uac-blue);
-            color: white;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .form-group label .req {
-            color: #ef4444;
-            margin-left: 2px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-prefix {
-            position: absolute;
-            left: 12px;
-            color: var(--text-muted);
-            font-size: 14px;
-            pointer-events: none;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            color: #111827;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: white;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--uac-blue);
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
-        }
-
-        .form-control::placeholder {
-            color: #9ca3af;
-        }
-
-        .form-control-prefixed {
-            padding-left: 60px;
-        }
-
-        /* File Upload */
-        .file-upload-area {
-            border: 2px dashed #d1d5db;
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            background: #f9fafb;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .file-upload-area:hover {
-            background: #f3f4f6;
-            border-color: var(--uac-blue);
-        }
-
-        .upload-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--uac-light-blue);
-            color: var(--uac-blue);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-        }
-
-        .upload-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-
-        .upload-subtext {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Footer Alert */
-        .footer-alert {
-            max-width: 900px;
-            margin: 24px auto 0;
-            background: #eff6ff;
-            border: 1px solid #dbeafe;
-            border-radius: 12px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-        }
-
-        .alert-icon-blue {
-            color: #2563eb;
-            font-size: 18px;
-            margin-top: 2px;
-        }
-
-        .alert-text {
-            font-size: 13px;
-            color: #1e40af;
-            line-height: 1.5;
-        }
-
-        .alert-text a {
-            font-weight: 700;
-            color: #1d4ed8;
-            text-decoration: underline;
-        }
-
-        /* Actions */
-        .form-footer {
-            padding: 24px 40px;
-            background: #f9fafb;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .btn-cancel {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #4b5563;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-save {
-            padding: 10px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-            background: #2563eb;
-            border: 1px solid #1d4ed8;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .btn-save:hover {
-            background: #1d4ed8;
-        }
-
-        /* Cards and Table */
-        .card-premium {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-
-        .card-premium:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Premium Table */
-        .premium-table-container {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: auto;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .premium-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        .premium-table thead th {
-            background: #f8fafc;
-            padding: 16px;
-            font-weight: 700;
-            color: #475569;
-            border-bottom: 2px solid #e2e8f0;
-            white-space: nowrap;
-        }
-
-        .premium-table tbody td {
-            padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #1e293b;
-            vertical-align: middle;
-        }
-
-        .premium-table tbody tr:hover {
-            background: #fcfcfd;
-        }
-
-        /* Status Badge Table */
-        .table-status {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .table-status.borrador {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        .table-status.completado {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        /* Progress Mini */
-        .progress-mini-container {
-            width: 100px;
-        }
-
-        .progress-mini-bar {
-            height: 6px;
-            background: #f1f5f9;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-
-        .progress-mini-fill {
-            height: 100%;
-            border-radius: 999px;
-        }
-
-        /* Tooltip style text */
-        .text-truncate-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            max-width: 250px;
-        }
-
-        /* Existing View Header compatibility */
-        .view-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 32px;
-            background: linear-gradient(135deg, #00417B 0%, #002d56 100%);
-            padding: 40px;
-            border-radius: 24px;
-            color: white;
-            box-shadow: 0 20px 40px -12px rgba(0, 65, 123, 0.3);
-        }
-
-        .view-title h1 {
-            font-size: 32px;
-            font-weight: 950;
-            margin: 0;
-            letter-spacing: -1.5px;
-        }
-
-        .view-title p {
-            color: rgba(255, 255, 255, 0.9);
-            margin: 8px 0 0;
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        .btn-primary {
-            background: white;
-            color: #00417B;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15);
-        }
+        .fa-form-card { max-width: 850px; margin: 0 auto; background: white; border-radius: 32px; border: 1px solid var(--line); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
+        .fa-form-header { padding: 32px 40px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 20px; background: #fcfcfd; border-radius: 32px 32px 0 0; }
+        .fa-form-body { padding: 40px; }
+        .fa-form-footer { padding: 24px 40px; background: #f8fafc; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 16px; border-radius: 0 0 32px 32px; }
+        
+        .field-label { display: block; font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .field-input { width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid #cbd5e1; font-size: 14px; transition: all 0.2s; outline: none; background: #fff; }
+        .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); background: #fff; }
+        
+        .btn-plus { background: white; color: var(--c-primary); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
     </style>
 
-    <!-- VISTA LISTADO -->
-    <div id="formatoA_list">
-        <header class="view-header">
-            <div class="view-title">
-                <h1>Formato A: Indicadores</h1>
-                <p>Captura y monitoreo de datos institucionales semestrales</p>
-            </div>
-            <button class="btn-primary" onclick="formatoA_openForm()">
-                <i class="fa-solid fa-plus"></i> Agregar Indicador
-            </button>
-        </header>
-        </header>
-
-        <div class="premium-table-container">
-            <table class="premium-table">
-                <thead>
-                    <tr>
-                        <th>Identificación del Indicador</th>
-                        <th>Responsable</th>
-                        <th>Meta Anual</th>
-                        <th>Resultado</th>
-                        <th>Avance</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="formatoA_table_body">
-                    <!-- Dinámico -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- VISTA FORMULARIO (Oculta por defecto) -->
-    <div id="formatoA_form" style="display: none;">
-        <div class="breadcrumbs">
-            <span>Informe de Gestión</span>
-            <span>Formato A</span>
-            <span id="breadcrumbAction">Agregar Indicador</span>
-        </div>
-
-        <header class="view-header-clean">
-            <h1 id="formTitleA">Formato A: Formulario de Indicador</h1>
-            <p>Registro de datos institucionales semestrales para ciclos de reporte.</p>
-        </header>
-
-        <form id="formA_main" onsubmit="formatoA_save(event)">
-            <input type="hidden" id="fA_id">
-
-            <div class="premium-form-container">
-                <div class="form-content">
-
-                    <!-- Sección 1: Información General -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-info"></i></div>
-                            <div class="section-title">Información General</div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label>Nombre del Indicador <span class="req">*</span></label>
-                            <input type="text" id="fA_nombre" class="form-control"
-                                placeholder="Ej. Tasa de Graduación de Estudiantes de Pregrado" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Área de Trabajo <span class="req">*</span></label>
-                                <select id="fA_area" class="form-control" onchange="handleAreaChange(this.value)"
-                                    required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área...</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Acción PEI (Vinculada) <span class="req">*</span></label>
-                                <select id="fA_aei" class="form-control" required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione área primero</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sección 2: Métricas -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-chart-simple"></i></div>
-                            <div class="section-title">Métricas de Desempeño</div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Meta Anual <span class="req">*</span></label>
-                                <input type="number" step="0.01" id="fA_meta" class="form-control" placeholder="0.00"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label>Resultado del Semestre <span class="req">*</span></label>
-                                <input type="number" step="0.01" id="fA_resultado" class="form-control"
-                                    placeholder="0.00" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sección 3: Procedencia -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-database"></i></div>
-                            <div class="section-title">Procedencia de Datos</div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Fuente del Dato <span class="req">*</span></label>
-                                <select id="fA_fuente" class="form-control" required style="appearance: auto;">
-                                    <option value="" disabled selected>Seleccione una fuente</option>
-                                    <option value="SGA">SGA</option>
-                                    <option value="ERP">ERP Financiero</option>
-                                    <option value="Manual">Manual</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Detalles de la Fuente</label>
-                                <input type="text" id="fA_detalles_fuente" class="form-control"
-                                    placeholder="Nombre de base de datos u oficina">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sección 4: Evidencias -->
-                    <div class="form-section">
-                        <div class="section-header">
-                            <div class="section-icon"><i class="fa-solid fa-link"></i></div>
-                            <div class="section-title">Evidencias</div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 24px;">
-                            <label>Enlace (URL)</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">https://</span>
-                                <input type="text" id="fA_enlace" class="form-control form-control-prefixed"
-                                    placeholder="almacenamiento-nube.com/documento-evidencia">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Subir Archivo</label>
-                            <div class="file-upload-area">
-                                <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                                <div class="upload-text">Arrastre el archivo aquí o haga clic para subir</div>
-                                <div class="upload-subtext">PDF, JPG, PNG o XLSX (Máx 10MB)</div>
-                            </div>
-                        </div>
-                    </div>
-
+    <div class="fa-container">
+        <!-- List View -->
+        <div id="fa_list_view">
+            <header class="fa-header">
+                <div>
+                    <h1>Formato A: Indicadores</h1>
+                    <p>Monitoreo semestral de metas institucionales</p>
                 </div>
+                <button class="btn-plus" onclick="fa_openForm()">
+                    <i class="fa-solid fa-circle-plus"></i> Nuevo Indicador
+                </button>
+            </header>
 
-                <div class="form-footer">
-                    <button type="button" class="btn-cancel" onclick="formatoA_closeForm()">Cancelar</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar Borrador
-                    </button>
+            <div class="fa-card">
+                <div class="fa-table-wrap">
+                    <table class="fa-table">
+                        <thead>
+                            <tr>
+                                <th>Indicador / Responsable</th>
+                                <th>Meta Anual</th>
+                                <th>Resultado</th>
+                                <th>Avance</th>
+                                <th>Estado</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fa_table_body">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div class="footer-alert">
-            <div class="alert-icon-blue"><i class="fa-solid fa-circle-info"></i></div>
-            <div class="alert-text">
-                ¿Necesita ayuda? Consulte la <a href="#">Guía de Indicadores Institucionales</a> para más detalles sobre
-                campos obligatorios y requisitos de evidencia.
+        <!-- Form View -->
+        <div id="fa_form_view" style="display:none;">
+            <div class="fa-form-card">
+                <div class="fa-form-header">
+                    <div style="background:var(--c-primary); color:white; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h2 id="fa_form_title" style="margin:0; font-size:18px; font-weight:950;">Registro de Indicador</h2>
+                        <p style="margin:2px 0 0; font-size:12px; color:var(--muted);">Complete los campos para el reporte semestral</p>
+                    </div>
+                </div>
+
+                <form id="fa_form_element" onsubmit="fa_save(event)">
+                    <input type="hidden" id="fa_id">
+                    <div class="fa-form-body">
+                        <div class="form-grid">
+                            <div class="form-col-full">
+                                <label class="field-label">Nombre del Indicador *</label>
+                                <input type="text" id="fa_nombre" class="field-input" required placeholder="Ej: Tasa de retención estudiantil">
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Área *</label>
+                                <select id="fa_area" class="field-input" required onchange="fa_handleAreaChange(this.value)">
+                                    <option value="">Seleccione área...</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Acción PEI (AEI) *</label>
+                                <select id="fa_aei" class="field-input" required>
+                                    <option value="">Seleccione AEI...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="field-label">Meta Anual *</label>
+                                <input type="number" step="0.01" id="fa_meta" class="field-input" required placeholder="0.00">
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Resultado Semestral *</label>
+                                <input type="number" step="0.01" id="fa_resultado" class="field-input" required placeholder="0.00">
+                            </div>
+
+                            <div>
+                                <label class="field-label">Fuente de Información</label>
+                                <input type="text" id="fa_fuente" class="field-input" placeholder="Ej: Sistema Académico">
+                            </div>
+
+                            <div>
+                                <label class="field-label">Enlace de Evidencia (URL)</label>
+                                <input type="url" id="fa_enlace" class="field-input" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fa-form-footer">
+                        <button type="button" class="btn-obs" onclick="fa_closeForm()">Cancelar</button>
+                        <button type="submit" class="btn-app">Guardar Indicador</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        let CACHE_IND = [];
-        let GLOBAL_AREAS = [];
+        /**
+         * Lógica del Módulo: Formato A
+         */
+        window.FA_STATE = {
+            data: [],
+            areas: []
+        };
 
-        function formatoA_load() {
-            // Carga inicial de datos maestros y registros
+        function formatoa_init() {
+            fa_load();
+        }
+
+        function fa_load() {
+            ui_showLoading("Cargando indicadores...");
             google.script.run.withSuccessHandler(res => {
-                GLOBAL_AREAS = res.areas;
-                renderSelectAreas(res.areas);
-
-                // Carga los indicadores después de las áreas
+                window.FA_STATE.areas = res.areas;
+                fa_renderSelectAreas(res.areas);
+                
                 google.script.run.withSuccessHandler(data => {
-                    CACHE_IND = data;
-                    renderIndicadores(data);
+                    ui_hideLoading();
+                    window.FA_STATE.data = data;
+                    fa_renderTable(data);
                 }).formatoA_get();
             }).common_getAppData();
         }
 
-        function renderSelectAreas(areas) {
-            const select = document.getElementById('fA_area');
-            select.innerHTML = '<option value="" disabled selected>Seleccione área...</option>' +
+        function fa_renderSelectAreas(areas) {
+            const sel = document.getElementById('fa_area');
+            if(!sel) return;
+            sel.innerHTML = '<option value="">Seleccione área...</option>' + 
                 areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
         }
 
-        function handleAreaChange(areaId) {
-            const selectAei = document.getElementById('fA_aei');
-            selectAei.innerHTML = '<option value="">Cargando vinculación...</option>';
-
+        function fa_handleAreaChange(areaId) {
+            const sel = document.getElementById('fa_aei');
+            sel.innerHTML = '<option value="">Cargando vinculación...</option>';
             google.script.run.withSuccessHandler(aeis => {
-                if (!aeis || aeis.length === 0) {
-                    selectAei.innerHTML = '<option value="" disabled>Sin acciones PEI vinculadas</option>';
+                if(!aeis || !aeis.length) {
+                    sel.innerHTML = '<option value="">Sin vinculación PEI</option>';
                 } else {
-                    selectAei.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' +
+                    sel.innerHTML = '<option value="">Seleccione AEI...</option>' + 
                         aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
                 }
             }).common_getVinculacion(areaId);
         }
 
-        function renderIndicadores(items) {
-            const tbody = document.getElementById('formatoA_table_body');
-            if (!items.length) {
-                tbody.innerHTML = '<tr><td colspan="7" style="padding:40px; text-align:center;">No se encontraron registros.</td></tr>';
+        function fa_renderTable(items) {
+            const tbody = document.getElementById('fa_table_body');
+            if(!items.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-10 text-muted">No hay indicadores registrados.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = items.map(it => {
-                const avanceCol = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
-                const statusClass = String(it.estado || 'borrador').toLowerCase();
+                const color = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
+                let badgeClass = 'badge-primary';
+                if(it.estado === 'Borrador') badgeClass = 'badge-obs';
+                if(it.estado === 'Enviado') badgeClass = 'badge-success';
 
                 return `
-                <tr>
-                    <td>
-                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">${it.nombre}</div>
-                        <div style="font-size:12px; color:#64748b;">ID: ${it.id.substring(0, 8)}...</div>
-                    </td>
-                    <td>
-                        <div style="font-size:13px; font-weight:500;">${it.responsable}</div>
-                        <div style="font-size:11px; color:#94a3b8;">${it.fuente || 'Manual'}</div>
-                    </td>
-                    <td style="font-weight:600;">${it.metaAnual}</td>
-                    <td style="font-weight:600;">${it.resultado}</td>
-                    <td>
-                        <div class="progress-mini-container">
-                            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:2px;">
-                                <span>${it.avance}%</span>
+                    <tr>
+                        <td>
+                            <div class="font-black text-slate-800">${it.nombre}</div>
+                            <div class="text-[11px] text-muted font-bold">${it.responsable || 'Sin responsable'}</div>
+                        </td>
+                        <td class="font-bold text-slate-700">${it.metaAnual}</td>
+                        <td class="font-bold text-slate-700">${it.resultado}</td>
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black text-slate-500">${it.avance}%</span>
+                                <div class="prog-bar">
+                                    <div class="prog-fill" style="width:${it.avance}%; background:${color}"></div>
+                                </div>
                             </div>
-                            <div class="progress-mini-bar">
-                                <div class="progress-mini-fill" style="width: ${it.avance}%; background: ${avanceCol};"></div>
+                        </td>
+                        <td><span class="badge ${badgeClass}">${it.estado}</span></td>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-2">
+                                <button class="btn-icon" onclick="fa_edit('${it.id}')" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                ${it.enlace ? `<a href="${it.enlace}" target="_blank" class="btn-icon" style="color:var(--c-primary)"><i class="fa-solid fa-link"></i></a>` : ''}
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="table-status ${statusClass}">${it.estado}</span>
-                    </td>
-                    <td>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn-edit-sm" onclick="formatoA_edit('${it.id}')" title="Editar este registro">
-                                <i class="fa-solid fa-pen-to-square"></i> Editar
-                            </button>
-                            ${it.enlace ? `
-                                <a href="${it.enlace}" target="_blank" class="btn-edit-sm" style="text-decoration:none;" title="Ver evidencia">
-                                    <i class="fa-solid fa-link"></i>
-                                </a>
-                            ` : ''}
-                        </div>
-                    </td>
-                </tr>`;
+                        </td>
+                    </tr>
+                `;
             }).join('');
         }
 
-        function formatoA_openForm() {
-            document.getElementById('formatoA_list').style.display = 'none';
-            document.getElementById('formatoA_form').style.display = 'block';
-            document.getElementById('formTitleA').textContent = 'Formato A: Formulario de Indicador';
-            document.getElementById('breadcrumbAction').textContent = 'Agregar Indicador';
-            document.getElementById('formA_main').reset();
-            document.getElementById('fA_id').value = '';
+        function fa_openForm() {
+            document.getElementById('fa_list_view').style.display = 'none';
+            document.getElementById('fa_form_view').style.display = 'block';
+            document.getElementById('fa_form_element').reset();
+            document.getElementById('fa_id').value = '';
+            document.getElementById('fa_form_title').textContent = 'Nuevo Indicador';
         }
 
-        function formatoA_closeForm() {
-            document.getElementById('formatoA_list').style.display = 'block';
-            document.getElementById('formatoA_form').style.display = 'none';
+        function fa_closeForm() {
+            document.getElementById('fa_list_view').style.display = 'block';
+            document.getElementById('fa_form_view').style.display = 'none';
         }
 
-        function formatoA_edit(id) {
-            const item = CACHE_IND.find(x => x.id === id);
-            if (!item) return;
-            formatoA_openForm();
-            document.getElementById('breadcrumbAction').textContent = 'Editar Indicador';
-            document.getElementById('fA_id').value = item.id;
-            document.getElementById('fA_nombre').value = item.nombre;
-            document.getElementById('fA_responsable').value = item.responsable;
-            document.getElementById('fA_area').value = item.area;
-
-            // Carga las acciones PEI para el área del registro y luego setea el valor
-            const selectAei = document.getElementById('fA_aei');
-            google.script.run.withSuccessHandler(aeis => {
-                selectAei.innerHTML = aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                selectAei.value = item.codAei;
-            }).common_getVinculacion(item.area);
-
-            document.getElementById('fA_fuente').value = item.fuente;
-            document.getElementById('fA_detalles_fuente').value = item.detallesFuente || '';
-            document.getElementById('fA_meta').value = item.metaAnual;
-            document.getElementById('fA_resultado').value = item.resultado;
-            document.getElementById('fA_enlace').value = item.enlace;
+        function fa_edit(id) {
+            const it = window.FA_STATE.data.find(x => x.id === id);
+            if(!it) return;
+            
+            fa_openForm();
+            document.getElementById('fa_form_title').textContent = 'Editar Indicador';
+            document.getElementById('fa_id').value = it.id;
+            document.getElementById('fa_nombre').value = it.nombre;
+            document.getElementById('fa_area').value = it.area;
+            document.getElementById('fa_meta').value = it.metaAnual;
+            document.getElementById('fa_resultado').value = it.resultado;
+            document.getElementById('fa_fuente').value = it.fuente;
+            document.getElementById('fa_enlace').value = it.enlace;
+            
+            // Cargar AEI
+            fa_handleAreaChange(it.area);
+            setTimeout(() => { document.getElementById('fa_aei').value = it.codAei; }, 800);
         }
 
-        function formatoA_save(e) {
+        function fa_save(e) {
             e.preventDefault();
             const data = {
-                id: document.getElementById('fA_id').value,
-                nombre: document.getElementById('fA_nombre').value,
-                responsable: document.getElementById('fA_responsable').value,
-                area: document.getElementById('fA_area').value,
-                codAei: document.getElementById('fA_aei').value,
-                fuente: document.getElementById('fA_fuente').value,
-                detallesFuente: document.getElementById('fA_detalles_fuente').value,
-                metaAnual: Number(document.getElementById('fA_meta').value),
-                resultado: Number(document.getElementById('fA_resultado').value),
-                enlace: document.getElementById('fA_enlace').value
+                id: document.getElementById('fa_id').value,
+                nombre: document.getElementById('fa_nombre').value,
+                area: document.getElementById('fa_area').value,
+                codAei: document.getElementById('fa_aei').value,
+                metaAnual: Number(document.getElementById('fa_meta').value),
+                resultado: Number(document.getElementById('fa_resultado').value),
+                fuente: document.getElementById('fa_fuente').value,
+                enlace: document.getElementById('fa_enlace').value
             };
-            Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+
+            ui_showLoading("Guardando indicador...");
             google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
-                    formatoA_closeForm();
-                    formatoA_load();
-                } else { Swal.fire('Error', res.message, 'error'); }
+                ui_hideLoading();
+                if(res.success) {
+                    Swal.fire('Éxito', 'Indicador guardado correctamente', 'success');
+                    fa_closeForm();
+                    fa_load();
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
             }).formatoA_save(data);
         }
-
-        formatoA_load();
     </script>
 </div>

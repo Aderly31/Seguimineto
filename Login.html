@@ -8,41 +8,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <?!= include_('Estilos'); ?>
+
     <style>
-        :root {
-            --primary: #00417B;
-            --cyan: #00CEFE;
-            --pink: #EE2A6E;
-            --yellow: #FFDF43;
-            --orange: #FF6139;
-            --violet: #A255FF;
-
-            --text: #23364d;
-            --muted: #7a8ca5;
-            --line: #d9e2ec;
-            --white: #ffffff;
-
-            --shadow: 0 18px 50px rgba(0, 0, 0, .22);
-            --radius-xl: 24px;
-            --radius-lg: 18px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
         body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            min-height: 100svh;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-            color: var(--text);
-            background: url("<?= loginBgUrl ?>") center/cover no-repeat fixed;
+            background: url("<?= config.LOGIN_BG ?>") center/cover no-repeat fixed;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -81,7 +51,7 @@
             background:
                 radial-gradient(circle at 20% 18%, rgba(255, 255, 255, .12), transparent 18%),
                 radial-gradient(circle at 75% 15%, rgba(0, 206, 254, .18), transparent 16%),
-                linear-gradient(180deg, #0b56a7 0%, var(--primary) 46%, #1178dc 100%);
+                linear-gradient(180deg, #0b56a7 0%, var(--c-primary) 46%, #1178dc 100%);
         }
 
         .leftPanel::before,
@@ -145,9 +115,6 @@
             height: auto;
             display: block;
             object-fit: contain;
-            background: transparent !important;
-            border: none;
-            box-shadow: none;
         }
 
         .appTitle {
@@ -193,21 +160,10 @@
             display: inline-block;
         }
 
-        .pill:nth-child(1) i {
-            background: var(--cyan);
-        }
-
-        .pill:nth-child(2) i {
-            background: var(--pink);
-        }
-
-        .pill:nth-child(3) i {
-            background: var(--yellow);
-        }
-
-        .pill:nth-child(4) i {
-            background: var(--violet);
-        }
+        .pill:nth-child(1) i { background: var(--c-cyan); }
+        .pill:nth-child(2) i { background: var(--c-pink); }
+        .pill:nth-child(3) i { background: var(--c-yellow); }
+        .pill:nth-child(4) i { background: var(--c-purple); }
 
         .leftFooter {
             position: absolute;
@@ -267,7 +223,7 @@
 
         .checkRow input {
             margin-top: 2px;
-            accent-color: var(--primary);
+            accent-color: var(--c-primary);
             flex: 0 0 auto;
         }
 
@@ -293,7 +249,7 @@
         .btnPrimary {
             color: white;
             cursor: pointer;
-            background: linear-gradient(90deg, #1b8cff 0%, var(--primary) 58%, var(--violet) 100%);
+            background: linear-gradient(90deg, #1b8cff 0%, var(--c-primary) 58%, var(--c-purple) 100%);
             box-shadow: 0 10px 24px rgba(0, 65, 123, .25);
         }
 
@@ -348,94 +304,28 @@
             display: inline-block;
         }
 
-        .accentDots span:nth-child(1) {
-            background: var(--cyan);
-        }
-
-        .accentDots span:nth-child(2) {
-            background: var(--pink);
-        }
-
-        .accentDots span:nth-child(3) {
-            background: var(--yellow);
-        }
-
-        .accentDots span:nth-child(4) {
-            background: var(--orange);
-        }
-
-        .accentDots span:nth-child(5) {
-            background: var(--violet);
-        }
+        .accentDots span:nth-child(1) { background: var(--c-cyan); }
+        .accentDots span:nth-child(2) { background: var(--c-pink); }
+        .accentDots span:nth-child(3) { background: var(--c-yellow); }
+        .accentDots span:nth-child(4) { background: var(--c-orange); }
+        .accentDots span:nth-child(5) { background: var(--c-purple); }
 
         /* ========= MOBILE MOCKUP STYLE ========= */
         @media (max-width: 920px) {
-            body {
-                padding: 16px;
-                align-items: center;
-            }
+            body { padding: 16px; align-items: center; }
+            .wrap { width: min(430px, 100%); grid-template-columns: 1fr; border-radius: 24px; overflow: hidden; background: #fff; box-shadow: 0 20px 42px rgba(0, 0, 0, .28); }
+            .leftPanel { min-height: 250px; padding: 26px 24px 72px; display: flex; align-items: flex-start; justify-content: center; }
+            .brandTop { width: 100%; height: auto; align-items: center; justify-content: flex-start; text-align: center; }
+            .welcome { display: none; }
+            .logoWrap { margin-top: 4px; margin-bottom: 8px; }
+            .logoWrap img { max-width: 68px; max-height: 68px; }
+            .appTitle { font-size: 26px; margin: 0; font-weight: 500; }
+            .tagline, .pillRow, .leftFooter, .waveDivider { display: none; }
 
-            .wrap {
-                width: min(430px, 100%);
-                grid-template-columns: 1fr;
-                border-radius: 24px;
-                overflow: hidden;
-                background: #fff;
-                box-shadow: 0 20px 42px rgba(0, 0, 0, .28);
-            }
-
-            .leftPanel {
-                min-height: 250px;
-                padding: 26px 24px 72px;
-                display: flex;
-                align-items: flex-start;
-                justify-content: center;
-            }
-
-            .brandTop {
-                width: 100%;
-                height: auto;
-                align-items: center;
-                justify-content: flex-start;
-                text-align: center;
-            }
-
-            .welcome {
-                display: none;
-            }
-
-            .logoWrap {
-                margin-top: 4px;
-                margin-bottom: 8px;
-            }
-
-            .logoWrap img {
-                max-width: 68px;
-                max-height: 68px;
-            }
-
-            .appTitle {
-                font-size: 26px;
-                margin: 0;
-                font-weight: 500;
-            }
-
-            .tagline,
-            .pillRow,
-            .leftFooter,
-            .waveDivider {
-                display: none;
-            }
-
-            /* Nubes/ondas en la parte baja del bloque azul */
             .leftPanel::after {
                 content: "";
                 position: absolute;
-                left: 0;
-                right: 0;
-                bottom: -1px;
-                height: 78px;
-                width: 100%;
+                left: 0; right: 0; bottom: -1px; height: 78px; width: 100%;
                 background:
                     radial-gradient(circle at 8% 100%, rgba(255, 255, 255, .95) 0 24px, transparent 25px),
                     radial-gradient(circle at 18% 100%, rgba(255, 255, 255, .82) 0 26px, transparent 27px),
@@ -449,116 +339,31 @@
                 z-index: 3;
             }
 
-            .rightPanel {
-                min-height: auto;
-                padding: 28px 24px 26px;
-                background: #fff;
-            }
-
-            .formWrap {
-                width: 100%;
-                max-width: 100%;
-            }
-
-            .formTitle {
-                font-size: 18px;
-                font-weight: 500;
-                margin: 0 0 16px;
-            }
-
-            .formText {
-                font-size: 13px;
-                margin: 0 0 18px;
-                color: #7a8596;
-            }
-
-            .checkRow {
-                margin: 0 0 18px;
-                font-size: 11px;
-            }
-
-            .actions {
-                flex-direction: row;
-                justify-content: center;
-                gap: 12px;
-                margin-bottom: 18px;
-            }
-
-            .btnPrimary,
-            .btnGhost {
-                min-width: 120px;
-                padding: 11px 20px;
-                font-size: 13px;
-            }
-
-            .infoCard {
-                border-radius: 14px;
-                padding: 14px;
-            }
-
-            .infoCard h3 {
-                text-align: center;
-                margin-bottom: 8px;
-            }
-
-            .infoCard ul {
-                font-size: 12px;
-                line-height: 1.5;
-            }
+            .rightPanel { min-height: auto; padding: 28px 24px 26px; background: #fff; }
+            .formWrap { width: 100%; max-width: 100%; }
+            .formTitle { font-size: 18px; font-weight: 500; margin: 0 0 16px; }
+            .formText { font-size: 13px; margin: 0 0 18px; color: #7a8596; }
+            .checkRow { margin: 0 0 18px; font-size: 11px; }
+            .actions { flex-direction: row; justify-content: center; gap: 12px; margin-bottom: 18px; }
+            .btnPrimary, .btnGhost { min-width: 120px; padding: 11px 20px; font-size: 13px; }
+            .infoCard { border-radius: 14px; padding: 14px; }
+            .infoCard h3 { text-align: center; margin-bottom: 8px; }
+            .infoCard ul { font-size: 12px; line-height: 1.5; }
         }
 
         @media (max-width: 520px) {
-            body {
-                padding: 10px;
-            }
-
-            .wrap {
-                width: min(390px, 100%);
-                border-radius: 22px;
-            }
-
-            .leftPanel {
-                min-height: 220px;
-                padding: 22px 18px 68px;
-            }
-
-            .logoWrap img {
-                max-width: 60px;
-                max-height: 60px;
-            }
-
-            .appTitle {
-                font-size: 22px;
-            }
-
-            .rightPanel {
-                padding: 24px 18px 22px;
-            }
-
-            .formTitle {
-                font-size: 17px;
-            }
-
-            .formText {
-                font-size: 12px;
-            }
-
-            .actions {
-                flex-wrap: wrap;
-            }
-
-            .btnPrimary,
-            .btnGhost {
-                width: 100%;
-            }
-
-            .checkRow {
-                align-items: flex-start;
-            }
-
-            .accentDots {
-                justify-content: center;
-            }
+            body { padding: 10px; }
+            .wrap { width: min(390px, 100%); border-radius: 22px; }
+            .leftPanel { min-height: 220px; padding: 22px 18px 68px; }
+            .logoWrap img { max-width: 60px; max-height: 60px; }
+            .appTitle { font-size: 22px; }
+            .rightPanel { padding: 24px 18px 22px; }
+            .formTitle { font-size: 17px; }
+            .formText { font-size: 12px; }
+            .actions { flex-wrap: wrap; }
+            .btnPrimary, .btnGhost { width: 100%; }
+            .checkRow { align-items: flex-start; }
+            .accentDots { justify-content: center; }
         }
     </style>
 </head>
@@ -600,20 +405,14 @@
 
             <div class="brandTop">
                 <p class="welcome">Bienvenido a</p>
-
                 <div class="logoWrap">
-                    <img src="<?= logoUrl ?>" alt="Logo UAC">
+                    <img src="<?= config.LOGO ?>" alt="Logo UAC">
                 </div>
-
-                <h1 class="appTitle">
-                    <?= appName ?>
-                </h1>
-
+                <h1 class="appTitle"><?= config.NAME ?></h1>
                 <p class="tagline">
                     Plataforma de la <b>Unidad de Transformación Digital</b> para gestionar acceso,
                     validación de usuarios y navegación según rol institucional.
                 </p>
-
                 <div class="pillRow" aria-hidden="true">
                     <span class="pill"><i></i>Yachay</span>
                     <span class="pill"><i></i>Munay</span>
@@ -651,7 +450,7 @@
                     <h3>Indicaciones</h3>
                     <ul>
                         <li>Usa tu cuenta institucional en el navegador.</li>
-                        <li>El acceso depende del rol configurado en la hoja <b>usuarios</b>.</li>
+                        <li>El acceso depende del rol configurado en la hoja <b>Usuarios</b>.</li>
                         <li>Si no estás registrado, solicita tu habilitación al administrador.</li>
                     </ul>
                     <div class="accentDots" aria-hidden="true">
@@ -676,7 +475,7 @@
 
             google.script.run
                 .withSuccessHandler(() => {
-                    const url = "<?= appUrl ?>?page=home&login=1&t=" + Date.now();
+                    const url = "<?= ScriptApp.getService().getUrl() ?>";
                     window.top.location.replace(url);
                 })
                 .withFailureHandler(err => {

@@ -1,0 +1,406 @@
+<script>
+    /**
+     * ===============================================================
+     * NÚCLEO LÓGICO SPA PRO + UI PREMIUM (Core v2)
+     * ===============================================================
+     */
+    window.AppState = {
+        session: null,
+        currentView: 'view-home',
+        modules: {}, // Caché de vistas cargadas
+        pop: { el: null, title: null, list: null, hideTimer: null, isOver: false }
+    };
+
+    /**
+     * CARGA INICIAL
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+        ui_showLoading("Iniciando sistema...");
+        initPopover();
+        
+        google.script.run.withSuccessHandler(data => {
+            ui_hideLoading();
+            window.AppState.session = data;
+            
+            if (data.access) {
+                renderDynamicSidebar(data.menu);
+                // Iniciar Home por defecto
+                navTo('home');
+                
+                // OPTIMIZACIÓN: Pre-cargar módulos en segundo plano tras 2 segundos
+                setTimeout(() => preloadAllModules(data.menu), 2000);
+            } else {
+                window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>?page=no-access";
+            }
+        })
+        .withFailureHandler(err => ui_showError("Error de conexión: " + err))
+        .getAppPermissions();
+    });
+
+    /**
+     * RENDERIZADO DE MENÚ PREMIUM (JERÁRQUICO)
+     */
+    function renderDynamicSidebar(menuTree) {
+        const menuRoot = document.getElementById('menu');
+        if (!menuRoot) return;
+        menuRoot.innerHTML = '';
+
+        menuTree.forEach(node => {
+            const isParent = node.children && node.children.length > 0;
+            const urlKey = node.urlKey || node.id;
+            const title = node.title || node.nombre;
+
+            if (isParent) {
+                // Estructura de Acordeón (Carpeta)
+                const item = document.createElement('div');
+                item.className = 'menu-item';
+                item.setAttribute('data-parent', urlKey);
+                item.setAttribute('data-title', title);
+
+                item.innerHTML = `
+                    <button class="menu-btn" type="button" 
+                            data-kind="parent" data-key="${urlKey}" data-title="${title}"
+                            onmouseenter="onMenuHoverEnter(event)" onmouseleave="onMenuHoverLeave(event)"
+                            onclick="toggleAccordion('${urlKey}')">
+                        <div class="menu-left">
+                            <i class="fa-solid ${node.icon || 'fa-folder'}"></i>
+                            <span class="menu-text">${title}</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="submenu"></div>
+                `;
+
+                const submenu = item.querySelector('.submenu');
+                node.children.forEach(ch => {
+                    const chKey = ch.urlKey || ch.id;
+                    const chTitle = ch.title || ch.nombre;
+                    const a = document.createElement('a');
+                    a.href = "javascript:void(0)";
+                    a.setAttribute('data-key', chKey);
+                    a.onclick = (e) => navTo(chKey, a);
+                    a.innerHTML = `<i class="fa-solid ${ch.icon || 'fa-file-lines'}"></i> <span class="menu-text">${chTitle}</span>`;
+                    submenu.appendChild(a);
+                });
+                menuRoot.appendChild(item);
+            } else {
+                // Enlace Directo
+                const a = document.createElement('a');
+                a.className = 'menu-link';
+                a.href = "javascript:void(0)";
+                a.setAttribute('data-key', urlKey);
+                a.setAttribute('data-title', title);
+                a.setAttribute('data-kind', 'leaf');
+                a.onmouseenter = onMenuHoverEnter;
+                a.onmouseleave = onMenuHoverLeave;
+                a.onclick = (e) => navTo(urlKey, a);
+
+                const icon = node.icon || (urlKey === 'home' ? 'fa-house' : 'fa-users');
+                a.innerHTML = `
+                    <div class="menu-left">
+                        <i class="fa-solid ${icon}"></i>
+                        <span class="menu-text">${title}</span>
+                    </div>
+                `;
+                menuRoot.appendChild(a);
+            }
+        });
+        
+        // Restaurar estados de acordeón
+        restoreAccordions();
+    }
+
+    /**
+     * PRE-CARGA DE MÓDULOS (Background)
+     */
+    function preloadAllModules(menuTree) {
+        console.log("Iniciando pre-carga de módulos...");
+        const keys = [];
+        const extractKeys = (nodes) => {
+            nodes.forEach(n => {
+                if (n.children && n.children.length > 0) extractKeys(n.children);
+                else if (n.urlKey && n.urlKey !== 'home') keys.push(n.urlKey);
+            });
+        };
+        extractKeys(menuTree);
+
+        // Cargar uno por uno con delay para no saturar
+        keys.forEach((key, index) => {
+            setTimeout(() => {
+                const fullId = 'view-' + key;
+                if (document.getElementById(fullId)) return; // Ya existe
+                
+                google.script.run.withSuccessHandler(res => {
+                    if (res && res.success && !document.getElementById(fullId)) {
+                        const container = document.getElementById('mainContent');
+                        const v = document.createElement('div');
+                        v.id = fullId;
+                        v.className = 'view-section';
+                        v.style.display = 'none';
+                        v.innerHTML = res.html;
+                        container.appendChild(v);
+                        console.log("Módulo pre-cargado:", key);
+                    }
+                }).getPageData(key);
+            }, 500 * (index + 1));
+        });
+    }
+
+    /**
+     * NAVEGACIÓN SPA CON PERSISTENCIA EXTREMA (Disk Cache)
+     */
+    window.navTo = function(viewId, linkElement) {
+        if (!viewId) return;
+        const key = String(viewId).toLowerCase().trim();
+        const fullId = 'view-' + key;
+        const appVer = "<?= config.VERSION ?>";
+
+        hideSidebarMobile();
+        closePopover(true);
+
+        // 1. Mostrar localmente si ya existe en el DOM (Memoria)
+        const localView = document.getElementById(fullId);
+        if (localView) {
+            switchView(key, localView, linkElement);
+            return;
+        }
+
+        // 2. Intentar cargar desde localStorage (Disco)
+        const cachedModule = localStorage.getItem('CORE_CACHE_' + key);
+        const cachedVer = localStorage.getItem('CORE_VER');
+
+        if (cachedModule && cachedVer === appVer) {
+            const container = document.getElementById('mainContent');
+            const v = document.createElement('div');
+            v.id = fullId;
+            v.className = 'view-section';
+            v.style.display = 'none';
+            v.innerHTML = cachedModule;
+            container.appendChild(v);
+            switchView(key, v, linkElement);
+            executeScripts(v);
+            return;
+        }
+
+        // 3. Si no hay nada en caché, cargar del servidor (Red)
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.classList.add('active');
+        
+        google.script.run
+            .withSuccessHandler(res => {
+                if (loader) loader.classList.remove('active');
+                if (!res || !res.success) return ui_showError(res?.message || "Error.");
+
+                const container = document.getElementById('mainContent');
+                const newView = document.createElement('div');
+                newView.id = fullId;
+                newView.className = 'view-section';
+                newView.style.display = 'none';
+                newView.innerHTML = res.html;
+                container.appendChild(newView);
+
+                // Guardar en disco para la próxima vez
+                localStorage.setItem('CORE_CACHE_' + key, res.html);
+                localStorage.setItem('CORE_VER', appVer);
+
+                switchView(key, newView, linkElement, res.title);
+                executeScripts(newView);
+            })
+            .withFailureHandler(err => {
+                if (loader) loader.classList.remove('active');
+                ui_showError("Sin conexión.");
+            })
+            .getPageData(key);
+    };
+
+    function switchView(key, element, link, forcedTitle) {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.view-section').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        // Mostrar la seleccionada
+        element.style.display = 'block';
+        window.AppState.currentView = element.id;
+
+        // Actualizar Título en Topbar
+        let title = "Inicio";
+        if (forcedTitle) {
+            title = forcedTitle;
+        } else if (link) {
+            // Limpiar iconos del texto
+            title = link.innerText.trim();
+        }
+        
+        const topTitleEl = document.getElementById('topbarTitle');
+        if (topTitleEl) topTitleEl.innerText = title;
+
+        updateMenuActiveState(key);
+
+        // Ejecutar Inicialización del Módulo (Init Pattern)
+        const initFunc = key + '_init';
+        if (typeof window[initFunc] === 'function') {
+            try {
+                window[initFunc]();
+            } catch(e) {
+                console.error("Error en init de " + key + ":", e);
+            }
+        }
+        
+        const scrollDiv = document.getElementById('contentScroll');
+        if (scrollDiv) scrollDiv.scrollTop = 0;
+    }
+
+    /**
+     * LÓGICA DE UI (SIDEBAR / POPOVER)
+     */
+    function isMobile() { return window.innerWidth <= 900; }
+
+    function toggleSidebar() {
+        const app = document.getElementById('appRoot');
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('overlay');
+
+        if (isMobile()) {
+            sb.classList.toggle('open');
+            ov.classList.toggle('show');
+        } else {
+            app.classList.toggle('sidebar-collapsed');
+            closePopover(true);
+        }
+    }
+
+    function hideSidebarMobile() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('show');
+    }
+
+    function toggleAccordion(key) {
+        if (document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
+        const el = document.querySelector(`.menu-item[data-parent="${key}"]`);
+        if (el) {
+            el.classList.toggle('open');
+            localStorage.setItem('core_acc_' + key, el.classList.contains('open') ? '1' : '0');
+        }
+    }
+
+    function restoreAccordions() {
+        document.querySelectorAll('.menu-item[data-parent]').forEach(el => {
+            const key = el.getAttribute('data-parent');
+            if (localStorage.getItem('core_acc_' + key) === '1') el.classList.add('open');
+        });
+    }
+
+    function filterMenu() {
+        const q = document.getElementById('menuSearch').value.toLowerCase();
+        document.querySelectorAll('.menu-link, .menu-item').forEach(el => {
+            const txt = (el.getAttribute('data-title') || el.innerText).toLowerCase();
+            const hasMatch = txt.includes(q);
+            el.style.display = hasMatch ? '' : 'none';
+            if (hasMatch && q.length > 2 && el.classList.contains('menu-item')) el.classList.add('open');
+        });
+    }
+
+    // POPOVER LOGIC
+    function initPopover() {
+        const p = window.AppState.pop;
+        p.el = document.getElementById('sbPopover');
+        p.title = document.getElementById('popTitle');
+        p.list = document.getElementById('popList');
+    }
+
+    function onMenuHoverEnter(ev) {
+        if (isMobile() || !document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
+        const target = ev.currentTarget;
+        const p = window.AppState.pop;
+
+        if (p.hideTimer) clearTimeout(p.hideTimer);
+
+        const kind = target.getAttribute('data-kind');
+        const title = target.getAttribute('data-title');
+        const key = target.getAttribute('data-key');
+
+        let html = '';
+        if (kind === 'parent') {
+            const parent = target.closest('.menu-item');
+            html = parent.querySelector('.submenu').innerHTML;
+        } else {
+            html = `<a href="javascript:void(0)" onclick="navTo('${key}')"><i class="fa-solid fa-arrow-right"></i><span>Abrir</span></a>`;
+        }
+
+        p.title.innerText = title;
+        p.list.innerHTML = html;
+        // Re-vincular clicks en el popover
+        p.list.querySelectorAll('a').forEach(a => {
+            const k = a.getAttribute('data-key') || key;
+            a.onclick = () => navTo(k, a);
+        });
+
+        p.el.style.display = 'block';
+        const r = target.getBoundingClientRect();
+        p.el.style.left = (r.right + 10) + 'px';
+        p.el.style.top = r.top + 'px';
+    }
+
+    function onMenuHoverLeave() {
+        scheduleHidePopover();
+    }
+    function popoverEnter() { window.AppState.pop.isOver = true; }
+    function popoverLeave() { window.AppState.pop.isOver = false; scheduleHidePopover(); }
+    
+    function scheduleHidePopover() {
+        const p = window.AppState.pop;
+        if (p.hideTimer) clearTimeout(p.hideTimer);
+        p.hideTimer = setTimeout(() => {
+            if (!p.isOver) p.el.style.display = 'none';
+        }, 200);
+    }
+
+    function closePopover(force) {
+        if (force) window.AppState.pop.el.style.display = 'none';
+    }
+
+    /**
+     * UTILIDADES
+     */
+    function executeScripts(container) {
+        container.querySelectorAll('script').forEach(old => {
+            const newS = document.createElement('script');
+            Array.from(old.attributes).forEach(a => newS.setAttribute(a.name, a.value));
+            newS.appendChild(document.createTextNode(old.innerHTML));
+            old.parentNode.replaceChild(newS, old);
+        });
+    }
+
+    function updateMenuActiveState(key) {
+        document.querySelectorAll('.menu-link, .submenu a').forEach(el => el.classList.remove('active'));
+        const target = document.querySelector(`[data-key="${key}"]`);
+        if (target) target.classList.add('active');
+    }
+
+    function logoutSystem() {
+        Swal.fire({
+            title: '¿Cerrar sesión?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Salir',
+            confirmButtonColor: '#00417B'
+        }).then(r => {
+            if (r.isConfirmed) {
+                google.script.run.withSuccessHandler(() => {
+                    // Limpiar caché local por seguridad
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith('CORE_CACHE_')) localStorage.removeItem(key);
+                    });
+                    // Recargar URL base
+                    window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>";
+                }).auth_logout();
+            }
+        });
+    }
+
+    function ui_showLoading(m) { Swal.fire({ title: m, allowOutsideClick: false, didOpen: () => Swal.showLoading() }); }
+    function ui_hideLoading() { Swal.close(); }
+    function ui_showError(m) { Swal.fire({ icon: 'error', title: 'Error', text: m }); }
+
+</script>

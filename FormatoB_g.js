@@ -10,12 +10,11 @@ function formatoB_get() {
     tipo: it.tipo || it.categoria || 'General',
     estado: 'FINALIZADO',
     impacto: it.impacto || '',
-    fecha: it.fecha instanceof Date ? Utilities.formatDate(it.fecha, Session.getScriptTimeZone(), 'yyyy-MM-dd') : (it.fecha || ''),
+    fecha: it.fecha || '',
     beneficiarios: it.beneficiarios || '',
     logro: it.logro || '',
     eje: it.ejeestrategico || it.eje || '',
-    imagen: it.imagen || it.imagenurl || '',
-    area: it.area || ''
+    imagen: it.imagen || it.imagenurl || ''
   }));
 }
 
