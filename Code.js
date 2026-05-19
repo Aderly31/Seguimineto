@@ -1,8 +1,9 @@
 /**
  * ===============================================================
- * 2. FUNCIONES DE ARRANQUE (WEB APP)
+ * NÚCLEO DEL SERVIDOR (Core v2)
  * ===============================================================
  */
+
 function doGet(e) {
   const page = String(e?.parameter?.page || '').toLowerCase().trim();
 
@@ -44,7 +45,6 @@ function include(filename) {
   try {
     const template = HtmlService.createTemplateFromFile(filename);
     template.config = APP_CONFIG;
-    // Pasar sesión si existe para que los módulos puedan usarla
     try { template.session = Auth.getSession(); } catch(e){}
     return template.evaluate().getContent();
   } catch (e) {
@@ -52,7 +52,6 @@ function include(filename) {
   }
 }
 
-// Alias para compatibilidad con diseños anteriores
 function include_(filename) { return include(filename); }
 
 /**
@@ -63,27 +62,22 @@ function getPageData(pageKey) {
   const cacheKey = 'PAGE_HTML_' + pageKey.toLowerCase();
 
   try {
-    // 1. Intentar recuperar HTML de la caché del servidor
     const cachedHtml = cache.get(cacheKey);
     if (cachedHtml) {
       return { success: true, html: cachedHtml, title: "Cargado desde caché", cached: true };
     }
 
-    // 2. Si no hay caché, validar sesión
     const session = Auth.getSession();
     if (!session) throw new Error("Sesión expirada");
 
     const filename = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
     const html = include(filename);
     
-    const routes = SheetService.getRoutesForRole(session.rol).routes;
+    const { routes } = SheetService.getRoutesForRole(session.rol);
     const title = (routes[pageKey.toLowerCase()] ? routes[pageKey.toLowerCase()].title : filename);
 
     const result = { success: true, html: html, title: title };
-
-    // 3. Cachear HTML por 10 minutos para velocidad extrema
     cache.put(cacheKey, html, 600);
-
     return result;
   } catch (e) {
     return { success: false, message: e.message };
@@ -98,11 +92,9 @@ function getAppPermissions() {
   const cacheKey = 'USER_PERMS_' + Session.getActiveUser().getEmail();
   
   try {
-    // 1. Intentar recuperar de caché (Evita lectura de Sheets)
     const cached = cache.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
-    // 2. Si no hay caché, validar sesión y leer Sheets
     const session = Auth.getSession();
     if (!session) return { access: false, message: "Sesión no válida" };
 
@@ -124,9 +116,7 @@ function getAppPermissions() {
       routes: routes 
     };
 
-    // 3. Guardar en caché por 15 minutos (900 seg)
     cache.put(cacheKey, JSON.stringify(result), 900);
-    
     return result;
   } catch (e) {
     return { access: false, error: e.message };
@@ -139,32 +129,3 @@ function getAppPermissions() {
 function getSS() {
   return SpreadsheetApp.openById(APP_CONFIG.SPREADSHEET_ID);
 }
-
-/**
- * Obtener datos dinámicos para el banner de inicio
- */
-function getHomeBanners() {
-  try {
-    const sh = getSS().getSheetByName(APP_CONFIG.SHEETS.BANNER_HOME);
-    if (!sh) return [];
-    const values = sh.getDataRange().getValues();
-    if (values.length < 2) return [];
-    
-    const headers = values[0];
-    return values.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]);
-      return obj;
-    });
-  } catch (e) {
-    return [];
-  }
-}
-
-/**
- * Función requerida por Home.html para listar banners
- */
-function bannerhome_list() {
-  return getHomeBanners();
-}
-

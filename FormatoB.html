@@ -1,7 +1,6 @@
 <div id="formatob_root">
     <style>
         .fb-container { animation: fadeIn 0.4s ease; }
-        
         .fb-header { 
             background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
             padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
@@ -20,15 +19,10 @@
         .fb-form-body { padding: 40px; }
         .fb-form-footer { padding: 24px 40px; background: #f8fafc; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 16px; border-radius: 0 0 32px 32px; }
         
-        .field-label { display: block; font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .field-input { width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid #cbd5e1; font-size: 14px; transition: all 0.2s; outline: none; background: #fff; }
-        .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); background: #fff; }
-        
         .section-box { padding: 24px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
         .section-box h4 { margin: 0 0 16px 0; font-size: 13px; font-weight: 950; color: var(--c-primary); text-transform: uppercase; letter-spacing: 0.5px; }
 
         .btn-plus { background: white; color: var(--c-primary); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
     </style>
 
     <div class="fb-container">
@@ -39,7 +33,7 @@
                     <h1>Formato B: Actividades</h1>
                     <p>Seguimiento de logros y ejecución de actividades</p>
                 </div>
-                <button class="btn-plus" onclick="fb_openForm()">
+                <button class="btn-plus" onclick="FormatoBModule.openForm()">
                     <i class="fa-solid fa-calendar-plus"></i> Nueva Actividad
                 </button>
             </header>
@@ -77,7 +71,7 @@
                     </div>
                 </div>
 
-                <form id="fb_form_element" onsubmit="fb_save(event)">
+                <form id="fb_form_element" onsubmit="FormatoBModule.save(event)">
                     <input type="hidden" id="fb_id">
                     <div class="fb-form-body">
                         <div class="form-grid">
@@ -140,8 +134,8 @@
                         </div>
                     </div>
 
-                    <div class="fa-form-footer">
-                        <button type="button" class="btn-obs" onclick="fb_closeForm()">Cancelar</button>
+                    <div class="fb-form-footer">
+                        <button type="button" class="btn-obs" onclick="FormatoBModule.closeForm()">Cancelar</button>
                         <button type="submit" class="btn-app">Guardar Actividad</button>
                     </div>
                 </form>
@@ -151,137 +145,140 @@
 
     <script>
         /**
-         * Lógica del Módulo: Formato B
+         * FormatoBModule (Core v2 Modular)
          */
-        window.FB_STATE = {
-            data: []
-        };
-
-        function formatob_init() {
-            fb_load();
-        }
-
-        function fb_load() {
-            ui_showLoading("Cargando actividades...");
-            google.script.run.withSuccessHandler(data => {
-                ui_hideLoading();
-                window.FB_STATE.data = data;
-                fb_renderTable(data);
-            }).formatoB_get();
-        }
-
-        function fb_renderTable(items) {
-            const tbody = document.getElementById('fb_table_body');
-            if(!items.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay actividades registradas.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = items.map(it => `
-                <tr>
-                    <td>
-                        <div class="text-[10px] font-black text-primary uppercase mb-1">${it.area || '---'}</div>
-                        <div class="font-black text-slate-800">${it.titulo}</div>
-                        <div class="text-[11px] text-muted font-bold"><i class="fa-regular fa-calendar mr-1"></i> ${it.fecha || '-'}</div>
-                    </td>
-                    <td><div class="text-xs font-black text-slate-600 max-w-[200px] leading-relaxed">${it.eje || 'No definido'}</div></td>
-                    <td>
-                        <div class="text-xs font-bold text-slate-700 truncate max-w-[250px]">${it.logro || '-'}</div>
-                        <div class="text-[10px] text-muted font-black">Beneficiarios: ${it.beneficiarios || '0'}</div>
-                    </td>
-                    <td>
-                        ${it.imagen && it.imagen.startsWith('http') 
-                          ? `<a href="${it.imagen}" target="_blank" class="flex items-center gap-1 text-[11px] font-black text-blue-600"><i class="fa-solid fa-paperclip"></i> Ver archivo</a>`
-                          : '<span class="badge badge-obs" style="font-size:9px;">Sin evidencia</span>'}
-                    </td>
-                    <td class="text-right">
-                        <button class="btn-icon" onclick="fb_edit('${it.id}')" title="Editar">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function fb_openForm() {
-            document.getElementById('fb_list_view').style.display = 'none';
-            document.getElementById('fb_form_view').style.display = 'block';
-            document.getElementById('fb_form_element').reset();
-            document.getElementById('fb_id').value = '';
-            document.getElementById('fb_file_info').textContent = '';
-            document.getElementById('fb_form_title').textContent = 'Nueva Actividad';
-        }
-
-        function fb_closeForm() {
-            document.getElementById('fb_list_view').style.display = 'block';
-            document.getElementById('fb_form_view').style.display = 'none';
-        }
-
-        function fb_edit(id) {
-            const it = window.FB_STATE.data.find(x => x.id === id);
-            if(!it) return;
-            
-            fb_openForm();
-            document.getElementById('fb_form_title').textContent = 'Editar Actividad';
-            document.getElementById('fb_id').value = it.id;
-            document.getElementById('fb_titulo').value = it.titulo;
-            document.getElementById('fb_fecha').value = it.fecha || '';
-            document.getElementById('fb_eje').value = it.eje || '';
-            document.getElementById('fb_desc').value = it.descripcion;
-            document.getElementById('fb_beneficiarios').value = it.beneficiarios || '';
-            document.getElementById('fb_logro').value = it.logro || '';
-            document.getElementById('fb_objetivo').value = it.objetivo || '';
-            
-            if(it.imagen && it.imagen.startsWith('http')) {
-                document.getElementById('fb_file_info').innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Evidencia cargada previamente.`;
-            }
-        }
-
-        function fb_save(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('.btn-app');
-            const fileInput = document.getElementById('fb_file');
-            const file = fileInput.files[0];
-
-            const executeSave = (fileData = null) => {
-                const data = {
-                    id: document.getElementById('fb_id').value,
-                    titulo: document.getElementById('fb_titulo').value,
-                    fecha: document.getElementById('fb_fecha').value,
-                    descripcion: document.getElementById('fb_desc').value,
-                    eje: document.getElementById('fb_eje').value,
-                    beneficiarios: document.getElementById('fb_beneficiarios').value,
-                    logro: document.getElementById('fb_logro').value,
-                    objetivo: document.getElementById('fb_objetivo').value,
-                    fileData: fileData
-                };
-
-                ui_showLoading("Guardando actividad...");
-                google.script.run.withSuccessHandler(res => {
-                    ui_hideLoading();
-                    if (res.success) {
-                        Swal.fire('Éxito', 'Actividad guardada correctamente', 'success');
-                        fb_closeForm();
-                        fb_load();
-                    } else { 
-                        Swal.fire('Error', res.message, 'error'); 
-                    }
-                }).formatoB_save(data);
+        window.FormatoBModule = (() => {
+            const state = {
+                data: []
             };
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    executeSave({
-                        base64: ev.target.result.split(',')[1],
-                        name: file.name,
-                        type: file.type
-                    });
+            const init = () => {
+                load();
+            };
+
+            const load = () => {
+                ui_showLoading("Cargando actividades...");
+                google.script.run.withSuccessHandler(data => {
+                    ui_hideLoading();
+                    state.data = data;
+                    renderTable(data);
+                }).formatoB_get();
+            };
+
+            const renderTable = (items) => {
+                const tbody = document.getElementById('fb_table_body');
+                if(!items.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay actividades registradas.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = items.map(it => `
+                    <tr>
+                        <td>
+                            <div class="text-[10px] font-black text-primary uppercase mb-1">${it.area || '---'}</div>
+                            <div class="font-black text-slate-800">${it.titulo}</div>
+                            <div class="text-[11px] text-muted font-bold"><i class="fa-regular fa-calendar mr-1"></i> ${it.fecha || '-'}</div>
+                        </td>
+                        <td><div class="text-xs font-black text-slate-600 max-w-[200px] leading-relaxed">${it.eje || 'No definido'}</div></td>
+                        <td>
+                            <div class="text-xs font-bold text-slate-700 truncate max-w-[250px]">${it.logro || '-'}</div>
+                            <div class="text-[10px] text-muted font-black">Beneficiarios: ${it.beneficiarios || '0'}</div>
+                        </td>
+                        <td>
+                            ${it.imagen && it.imagen.startsWith('http') 
+                              ? `<a href="${it.imagen}" target="_blank" class="flex items-center gap-1 text-[11px] font-black text-blue-600"><i class="fa-solid fa-paperclip"></i> Ver archivo</a>`
+                              : '<span class="badge badge-obs" style="font-size:9px;">Sin evidencia</span>'}
+                        </td>
+                        <td class="text-right">
+                            <button class="btn-icon" onclick="FormatoBModule.edit('${it.id}')" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            };
+
+            const openForm = () => {
+                document.getElementById('fb_list_view').style.display = 'none';
+                document.getElementById('fb_form_view').style.display = 'block';
+                document.getElementById('fb_form_element').reset();
+                document.getElementById('fb_id').value = '';
+                document.getElementById('fb_file_info').textContent = '';
+                document.getElementById('fb_form_title').textContent = 'Nueva Actividad';
+            };
+
+            const closeForm = () => {
+                document.getElementById('fb_list_view').style.display = 'block';
+                document.getElementById('fb_form_view').style.display = 'none';
+            };
+
+            const edit = (id) => {
+                const it = state.data.find(x => x.id === id);
+                if(!it) return;
+                
+                openForm();
+                document.getElementById('fb_form_title').textContent = 'Editar Actividad';
+                document.getElementById('fb_id').value = it.id;
+                document.getElementById('fb_titulo').value = it.titulo;
+                document.getElementById('fb_fecha').value = it.fecha || '';
+                document.getElementById('fb_eje').value = it.eje || '';
+                document.getElementById('fb_desc').value = it.descripcion;
+                document.getElementById('fb_beneficiarios').value = it.beneficiarios || '';
+                document.getElementById('fb_logro').value = it.logro || '';
+                document.getElementById('fb_objetivo').value = it.objetivo || '';
+                
+                if(it.imagen && it.imagen.startsWith('http')) {
+                    document.getElementById('fb_file_info').innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Evidencia cargada previamente.`;
+                }
+            };
+
+            const save = (e) => {
+                e.preventDefault();
+                const fileInput = document.getElementById('fb_file');
+                const file = fileInput.files[0];
+
+                const executeSave = (fileData = null) => {
+                    const data = {
+                        id: document.getElementById('fb_id').value,
+                        titulo: document.getElementById('fb_titulo').value,
+                        fecha: document.getElementById('fb_fecha').value,
+                        descripcion: document.getElementById('fb_desc').value,
+                        eje: document.getElementById('fb_eje').value,
+                        beneficiarios: document.getElementById('fb_beneficiarios').value,
+                        logro: document.getElementById('fb_logro').value,
+                        objetivo: document.getElementById('fb_objetivo').value,
+                        fileData: fileData
+                    };
+
+                    ui_showLoading("Guardando actividad...");
+                    google.script.run.withSuccessHandler(res => {
+                        ui_hideLoading();
+                        if (res.success) {
+                            Swal.fire('Éxito', 'Actividad guardada correctamente', 'success');
+                            closeForm();
+                            load();
+                        } else { 
+                            Swal.fire('Error', res.message, 'error'); 
+                        }
+                    }).formatoB_save(data);
                 };
-                reader.readAsDataURL(file);
-            } else {
-                executeSave();
-            }
-        }
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        executeSave({
+                            base64: ev.target.result.split(',')[1],
+                            name: file.name,
+                            type: file.type
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    executeSave();
+                }
+            };
+
+            return { init, openForm, closeForm, edit, save };
+        })();
     </script>
 </div>

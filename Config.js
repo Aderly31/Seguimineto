@@ -29,9 +29,9 @@ const APP_CONFIG = {
   },
 
   // 3. Branding y Seguridad
-  NAME: 'Recoleccion de Informacion',
+  NAME: 'Sistema de Seguimiento',
   LOGO: 'https://i.postimg.cc/RVgcXF3f/logo_uac_blanco.png',
   LOGIN_BG: 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg',
   DOMAIN: 'uandina.edu.pe',
-  VERSION: '2.1.1' 
+  VERSION: '2.2.0' 
 };

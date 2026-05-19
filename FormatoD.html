@@ -1,7 +1,6 @@
 <div id="formatod_root">
     <style>
         .fd-container { animation: fadeIn 0.4s ease; }
-        
         .fd-header { 
             background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
             padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
@@ -25,7 +24,6 @@
         .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); background: #fff; }
         
         .btn-plus { background: white; color: var(--c-primary); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
     </style>
 
     <div class="fd-container">
@@ -36,7 +34,7 @@
                     <h1>Formato D: Capacitaciones</h1>
                     <p>Gestión de eventos formativos y fortalecimiento de capacidades</p>
                 </div>
-                <button class="btn-plus" onclick="fd_openForm()">
+                <button class="btn-plus" onclick="FormatoDModule.openForm()">
                     <i class="fa-solid fa-graduation-cap"></i> Nueva Capacitación
                 </button>
             </header>
@@ -74,7 +72,7 @@
                     </div>
                 </div>
 
-                <form id="fd_form_element" onsubmit="fd_save(event)">
+                <form id="fd_form_element" onsubmit="FormatoDModule.save(event)">
                     <input type="hidden" id="fd_id">
                     <div class="fd-form-body">
                         <div class="form-grid">
@@ -132,7 +130,7 @@
                     </div>
 
                     <div class="fa-form-footer">
-                        <button type="button" class="btn-obs" onclick="fd_closeForm()">Cancelar</button>
+                        <button type="button" class="btn-obs" onclick="FormatoDModule.closeForm()">Cancelar</button>
                         <button type="submit" class="btn-app">Guardar Capacitación</button>
                     </div>
                 </form>
@@ -142,156 +140,160 @@
 
     <script>
         /**
-         * Lógica del Módulo: Formato D
+         * FormatoDModule (Core v2 Modular)
          */
-        window.FD_STATE = {
-            data: [],
-            pei: []
-        };
-
-        function formatod_init() {
-            fd_load();
-        }
-
-        function fd_load() {
-            ui_showLoading("Cargando capacitaciones...");
-            google.script.run.withSuccessHandler(res => {
-                window.FD_STATE.pei = res.pei;
-                fd_renderSelectPei(res.pei);
-                
-                google.script.run.withSuccessHandler(data => {
-                    ui_hideLoading();
-                    window.FD_STATE.data = data;
-                    fd_renderTable(data);
-                }).formatoD_get();
-            }).common_getAppData();
-        }
-
-        function fd_renderSelectPei(pei) {
-            const sel = document.getElementById('fd_aei');
-            if(!sel) return;
-            sel.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' + 
-                pei.map(p => `<option value="${p.codAei}">[${p.codAei}] ${p.accion}</option>`).join('');
-        }
-
-        function fd_renderTable(items) {
-            const tbody = document.getElementById('fd_table_body');
-            if(!items.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay capacitaciones registradas.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = items.map(it => {
-                let badgeClass = 'badge-obs';
-                if(it.estado === 'En Ejecución') badgeClass = 'badge-primary';
-                if(it.estado === 'Completado') badgeClass = 'badge-success';
-                
-                return `
-                    <tr>
-                        <td>
-                            <div class="text-[10px] font-black text-primary uppercase mb-1">${it.area || '---'}</div>
-                            <div class="font-black text-slate-800">${it.nombre}</div>
-                            <div class="text-[11px] text-muted font-bold"><i class="fa-regular fa-calendar mr-1"></i> ${it.fecha || '-'}</div>
-                        </td>
-                        <td><div class="text-xs font-bold text-slate-600 max-w-[200px]">PEI: ${it.codAei || 'Sin vincular'}</div></td>
-                        <td>
-                            <div class="text-xs font-bold text-slate-700 mb-1">${it.modalidad}</div>
-                            <span class="badge ${badgeClass}">${it.estado}</span>
-                        </td>
-                        <td>
-                            <div class="text-xs font-black text-slate-700 mb-1">${it.participantes} Participantes</div>
-                            ${it.imagen && it.imagen.startsWith('http') 
-                              ? `<a href="${it.imagen}" target="_blank" class="flex items-center gap-1 text-[11px] font-black text-blue-600"><i class="fa-solid fa-paperclip"></i> Ver evidencia</a>`
-                              : '<span class="badge badge-obs" style="font-size:9px;">Sin evidencia</span>'}
-                        </td>
-                        <td class="text-right">
-                            <button class="btn-icon" onclick="fd_edit('${it.id}')" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function fd_openForm() {
-            document.getElementById('fd_list_view').style.display = 'none';
-            document.getElementById('fd_form_view').style.display = 'block';
-            document.getElementById('fd_form_element').reset();
-            document.getElementById('fd_id').value = '';
-            document.getElementById('fd_file_info').textContent = '';
-            document.getElementById('fd_form_title').textContent = 'Nueva Capacitación';
-        }
-
-        function fd_closeForm() {
-            document.getElementById('fd_list_view').style.display = 'block';
-            document.getElementById('fd_form_view').style.display = 'none';
-        }
-
-        function fd_edit(id) {
-            const it = window.FD_STATE.data.find(x => x.id === id);
-            if(!it) return;
-            
-            fd_openForm();
-            document.getElementById('fd_form_title').textContent = 'Editar Capacitación';
-            document.getElementById('fd_id').value = it.id;
-            document.getElementById('fd_nombre').value = it.nombre;
-            document.getElementById('fd_fecha').value = it.fecha || '';
-            document.getElementById('fd_aei').value = it.codAei;
-            document.getElementById('fd_modalidad').value = it.modalidad;
-            document.getElementById('fd_participantes').value = it.participantes;
-            document.getElementById('fd_progreso').value = it.progresoEvidencia;
-            document.getElementById('fd_estado').value = it.estado;
-            
-            if(it.imagen && it.imagen.startsWith('http')) {
-                document.getElementById('fd_file_info').innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Evidencia cargada previamente.`;
-            }
-        }
-
-        function fd_save(e) {
-            e.preventDefault();
-            const fileInput = document.getElementById('fd_file');
-            const file = fileInput.files[0];
-
-            const executeSave = (fileData = null) => {
-                const data = {
-                    id: document.getElementById('fd_id').value,
-                    nombre: document.getElementById('fd_nombre').value,
-                    fecha: document.getElementById('fd_fecha').value,
-                    codAei: document.getElementById('fd_aei').value,
-                    modalidad: document.getElementById('fd_modalidad').value,
-                    participantes: document.getElementById('fd_participantes').value,
-                    progresoEvidencia: document.getElementById('fd_progreso').value,
-                    estado: document.getElementById('fd_estado').value,
-                    fileData: fileData
-                };
-
-                ui_showLoading("Guardando capacitación...");
-                google.script.run.withSuccessHandler(res => {
-                    ui_hideLoading();
-                    if (res.success) {
-                        Swal.fire('Éxito', 'Capacitación guardada correctamente', 'success');
-                        fd_closeForm();
-                        fd_load();
-                    } else { 
-                        Swal.fire('Error', res.message, 'error'); 
-                    }
-                }).formatoD_save(data);
+        window.FormatoDModule = (() => {
+            const state = {
+                data: [],
+                pei: []
             };
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    executeSave({
-                        base64: ev.target.result.split(',')[1],
-                        name: file.name,
-                        type: file.type
-                    });
+            const init = () => {
+                load();
+            };
+
+            const load = () => {
+                ui_showLoading("Cargando capacitaciones...");
+                google.script.run.withSuccessHandler(res => {
+                    state.pei = res.pei;
+                    renderSelectPei(res.pei);
+                    
+                    google.script.run.withSuccessHandler(data => {
+                        ui_hideLoading();
+                        state.data = data;
+                        renderTable(data);
+                    }).formatoD_get();
+                }).common_getAppData();
+            };
+
+            const renderSelectPei = (pei) => {
+                const sel = document.getElementById('fd_aei');
+                if(!sel) return;
+                sel.innerHTML = '<option value="" disabled selected>Seleccione acción PEI...</option>' + 
+                    pei.map(p => `<option value="${p.codAei}">[${p.codAei}] ${p.accion}</option>`).join('');
+            };
+
+            const renderTable = (items) => {
+                const tbody = document.getElementById('fd_table_body');
+                if(!items.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay capacitaciones registradas.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = items.map(it => {
+                    let badgeClass = 'badge-obs';
+                    if(it.estado === 'En Ejecución') badgeClass = 'badge-primary';
+                    if(it.estado === 'Completado') badgeClass = 'badge-success';
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="text-[10px] font-black text-primary uppercase mb-1">${it.area || '---'}</div>
+                                <div class="font-black text-slate-800">${it.nombre}</div>
+                                <div class="text-[11px] text-muted font-bold"><i class="fa-regular fa-calendar mr-1"></i> ${it.fecha || '-'}</div>
+                            </td>
+                            <td><div class="text-xs font-bold text-slate-600 max-w-[200px]">PEI: ${it.codAei || 'Sin vincular'}</div></td>
+                            <td>
+                                <div class="text-xs font-bold text-slate-700 mb-1">${it.modalidad}</div>
+                                <span class="badge ${badgeClass}">${it.estado}</span>
+                            </td>
+                            <td>
+                                <div class="text-xs font-black text-slate-700 mb-1">${it.participantes} Participantes</div>
+                                ${it.imagen && it.imagen.startsWith('http') 
+                                  ? `<a href="${it.imagen}" target="_blank" class="flex items-center gap-1 text-[11px] font-black text-blue-600"><i class="fa-solid fa-paperclip"></i> Ver evidencia</a>`
+                                  : '<span class="badge badge-obs" style="font-size:9px;">Sin evidencia</span>'}
+                            </td>
+                            <td class="text-right">
+                                <button class="btn-icon" onclick="FormatoDModule.edit('${it.id}')" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            const openForm = () => {
+                document.getElementById('fd_list_view').style.display = 'none';
+                document.getElementById('fd_form_view').style.display = 'block';
+                document.getElementById('fd_form_element').reset();
+                document.getElementById('fd_id').value = '';
+                document.getElementById('fd_file_info').textContent = '';
+                document.getElementById('fd_form_title').textContent = 'Nueva Capacitación';
+            };
+
+            const closeForm = () => {
+                document.getElementById('fd_list_view').style.display = 'block';
+                document.getElementById('fd_form_view').style.display = 'none';
+            };
+
+            const edit = (id) => {
+                const it = state.data.find(x => x.id === id);
+                if(!it) return;
+                
+                openForm();
+                document.getElementById('fd_form_title').textContent = 'Editar Capacitación';
+                document.getElementById('fd_id').value = it.id;
+                document.getElementById('fd_nombre').value = it.nombre;
+                document.getElementById('fd_fecha').value = it.fecha || '';
+                document.getElementById('fd_aei').value = it.codAei;
+                document.getElementById('fd_modalidad').value = it.modalidad;
+                document.getElementById('fd_participantes').value = it.participantes;
+                document.getElementById('fd_progreso').value = it.progresoEvidencia;
+                document.getElementById('fd_estado').value = it.estado;
+                
+                if(it.imagen && it.imagen.startsWith('http')) {
+                    document.getElementById('fd_file_info').innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Evidencia cargada previamente.`;
+                }
+            };
+
+            const save = (e) => {
+                e.preventDefault();
+                const fileInput = document.getElementById('fd_file');
+                const file = fileInput.files[0];
+
+                const executeSave = (fileData = null) => {
+                    const data = {
+                        id: document.getElementById('fd_id').value,
+                        nombre: document.getElementById('fd_nombre').value,
+                        fecha: document.getElementById('fd_fecha').value,
+                        codAei: document.getElementById('fd_aei').value,
+                        modalidad: document.getElementById('fd_modalidad').value,
+                        participantes: document.getElementById('fd_participantes').value,
+                        progresoEvidencia: document.getElementById('fd_progreso').value,
+                        estado: document.getElementById('fd_estado').value,
+                        fileData: fileData
+                    };
+
+                    ui_showLoading("Guardando capacitación...");
+                    google.script.run.withSuccessHandler(res => {
+                        ui_hideLoading();
+                        if (res.success) {
+                            Swal.fire('Éxito', 'Capacitación guardada correctamente', 'success');
+                            closeForm();
+                            load();
+                        } else { 
+                            Swal.fire('Error', res.message, 'error'); 
+                        }
+                    }).formatoD_save(data);
                 };
-                reader.readAsDataURL(file);
-            } else {
-                executeSave();
-            }
-        }
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        executeSave({
+                            base64: ev.target.result.split(',')[1],
+                            name: file.name,
+                            type: file.type
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    executeSave();
+                }
+            };
+
+            return { init, openForm, closeForm, edit, save };
+        })();
     </script>
 </div>

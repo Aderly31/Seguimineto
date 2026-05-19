@@ -1,19 +1,16 @@
 <script>
     /**
      * ===============================================================
-     * NÚCLEO LÓGICO SPA PRO + UI PREMIUM (Core v2)
+     * NÚCLEO LÓGICO SPA PRO + UI PREMIUM (Core v2.2)
      * ===============================================================
      */
     window.AppState = {
         session: null,
         currentView: 'view-home',
-        modules: {}, // Caché de vistas cargadas
+        modules: {}, 
         pop: { el: null, title: null, list: null, hideTimer: null, isOver: false }
     };
 
-    /**
-     * CARGA INICIAL
-     */
     document.addEventListener('DOMContentLoaded', () => {
         ui_showLoading("Iniciando sistema...");
         initPopover();
@@ -24,10 +21,7 @@
             
             if (data.access) {
                 renderDynamicSidebar(data.menu);
-                // Iniciar Home por defecto
                 navTo('home');
-                
-                // OPTIMIZACIÓN: Pre-cargar módulos en segundo plano tras 2 segundos
                 setTimeout(() => preloadAllModules(data.menu), 2000);
             } else {
                 window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>?page=no-access";
@@ -37,9 +31,6 @@
         .getAppPermissions();
     });
 
-    /**
-     * RENDERIZADO DE MENÚ PREMIUM (JERÁRQUICO)
-     */
     function renderDynamicSidebar(menuTree) {
         const menuRoot = document.getElementById('menu');
         if (!menuRoot) return;
@@ -51,7 +42,6 @@
             const title = node.title || node.nombre;
 
             if (isParent) {
-                // Estructura de Acordeón (Carpeta)
                 const item = document.createElement('div');
                 item.className = 'menu-item';
                 item.setAttribute('data-parent', urlKey);
@@ -84,7 +74,6 @@
                 });
                 menuRoot.appendChild(item);
             } else {
-                // Enlace Directo
                 const a = document.createElement('a');
                 a.className = 'menu-link';
                 a.href = "javascript:void(0)";
@@ -105,16 +94,10 @@
                 menuRoot.appendChild(a);
             }
         });
-        
-        // Restaurar estados de acordeón
         restoreAccordions();
     }
 
-    /**
-     * PRE-CARGA DE MÓDULOS (Background)
-     */
     function preloadAllModules(menuTree) {
-        console.log("Iniciando pre-carga de módulos...");
         const keys = [];
         const extractKeys = (nodes) => {
             nodes.forEach(n => {
@@ -124,11 +107,10 @@
         };
         extractKeys(menuTree);
 
-        // Cargar uno por uno con delay para no saturar
         keys.forEach((key, index) => {
             setTimeout(() => {
                 const fullId = 'view-' + key;
-                if (document.getElementById(fullId)) return; // Ya existe
+                if (document.getElementById(fullId)) return;
                 
                 google.script.run.withSuccessHandler(res => {
                     if (res && res.success && !document.getElementById(fullId)) {
@@ -139,16 +121,12 @@
                         v.style.display = 'none';
                         v.innerHTML = res.html;
                         container.appendChild(v);
-                        console.log("Módulo pre-cargado:", key);
                     }
                 }).getPageData(key);
             }, 500 * (index + 1));
         });
     }
 
-    /**
-     * NAVEGACIÓN SPA CON PERSISTENCIA EXTREMA (Disk Cache)
-     */
     window.navTo = function(viewId, linkElement) {
         if (!viewId) return;
         const key = String(viewId).toLowerCase().trim();
@@ -158,14 +136,12 @@
         hideSidebarMobile();
         closePopover(true);
 
-        // 1. Mostrar localmente si ya existe en el DOM (Memoria)
         const localView = document.getElementById(fullId);
         if (localView) {
             switchView(key, localView, linkElement);
             return;
         }
 
-        // 2. Intentar cargar desde localStorage (Disco)
         const cachedModule = localStorage.getItem('CORE_CACHE_' + key);
         const cachedVer = localStorage.getItem('CORE_VER');
 
@@ -182,7 +158,6 @@
             return;
         }
 
-        // 3. Si no hay nada en caché, cargar del servidor (Red)
         const loader = document.getElementById('loadingOverlay');
         if (loader) loader.classList.add('active');
         
@@ -199,7 +174,6 @@
                 newView.innerHTML = res.html;
                 container.appendChild(newView);
 
-                // Guardar en disco para la próxima vez
                 localStorage.setItem('CORE_CACHE_' + key, res.html);
                 localStorage.setItem('CORE_VER', appVer);
 
@@ -214,46 +188,33 @@
     };
 
     function switchView(key, element, link, forcedTitle) {
-        // Ocultar todas las secciones
-        document.querySelectorAll('.view-section').forEach(el => {
-            el.style.display = 'none';
-        });
-
-        // Mostrar la seleccionada
+        document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
         element.style.display = 'block';
         window.AppState.currentView = element.id;
 
-        // Actualizar Título en Topbar
         let title = "Inicio";
-        if (forcedTitle) {
-            title = forcedTitle;
-        } else if (link) {
-            // Limpiar iconos del texto
-            title = link.innerText.trim();
-        }
+        if (forcedTitle) title = forcedTitle;
+        else if (link) title = link.innerText.trim();
         
         const topTitleEl = document.getElementById('topbarTitle');
         if (topTitleEl) topTitleEl.innerText = title;
 
         updateMenuActiveState(key);
 
-        // Ejecutar Inicialización del Módulo (Init Pattern)
-        const initFunc = key + '_init';
-        if (typeof window[initFunc] === 'function') {
-            try {
-                window[initFunc]();
-            } catch(e) {
-                console.error("Error en init de " + key + ":", e);
-            }
+        // Ejecutar Inicialización del Módulo (Core v2 Modular Pattern)
+        const moduleName = key.charAt(0).toUpperCase() + key.slice(1) + 'Module';
+        const legacyInit = key + '_init';
+
+        if (window[moduleName] && typeof window[moduleName].init === 'function') {
+            try { window[moduleName].init(); } catch(e) { console.error(`Error en ${moduleName}.init():`, e); }
+        } else if (typeof window[legacyInit] === 'function') {
+            try { window[legacyInit](); } catch(e) { console.error(`Error en ${legacyInit}():`, e); }
         }
         
         const scrollDiv = document.getElementById('contentScroll');
         if (scrollDiv) scrollDiv.scrollTop = 0;
     }
 
-    /**
-     * LÓGICA DE UI (SIDEBAR / POPOVER)
-     */
     function isMobile() { return window.innerWidth <= 900; }
 
     function toggleSidebar() {
@@ -301,7 +262,6 @@
         });
     }
 
-    // POPOVER LOGIC
     function initPopover() {
         const p = window.AppState.pop;
         p.el = document.getElementById('sbPopover');
@@ -330,7 +290,6 @@
 
         p.title.innerText = title;
         p.list.innerHTML = html;
-        // Re-vincular clicks en el popover
         p.list.querySelectorAll('a').forEach(a => {
             const k = a.getAttribute('data-key') || key;
             a.onclick = () => navTo(k, a);
@@ -342,9 +301,7 @@
         p.el.style.top = r.top + 'px';
     }
 
-    function onMenuHoverLeave() {
-        scheduleHidePopover();
-    }
+    function onMenuHoverLeave() { scheduleHidePopover(); }
     function popoverEnter() { window.AppState.pop.isOver = true; }
     function popoverLeave() { window.AppState.pop.isOver = false; scheduleHidePopover(); }
     
@@ -360,9 +317,6 @@
         if (force) window.AppState.pop.el.style.display = 'none';
     }
 
-    /**
-     * UTILIDADES
-     */
     function executeScripts(container) {
         container.querySelectorAll('script').forEach(old => {
             const newS = document.createElement('script');
@@ -388,11 +342,9 @@
         }).then(r => {
             if (r.isConfirmed) {
                 google.script.run.withSuccessHandler(() => {
-                    // Limpiar caché local por seguridad
                     Object.keys(localStorage).forEach(key => {
                         if (key.startsWith('CORE_CACHE_')) localStorage.removeItem(key);
                     });
-                    // Recargar URL base
                     window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>";
                 }).auth_logout();
             }

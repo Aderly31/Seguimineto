@@ -1,8 +1,6 @@
 <div id="home_root">
     <style>
         .h-container { animation: fadeIn 0.4s ease; }
-        
-        /* Banner Header */
         .h-header { 
             background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
             padding: 40px; border-radius: 28px; color: white; margin-bottom: 32px;
@@ -11,29 +9,24 @@
         }
         .h-header h1 { font-size: 32px; font-weight: 950; margin: 0; letter-spacing: -1.5px; }
         .h-header p { margin: 8px 0 0; opacity: 0.9; font-size: 16px; font-weight: 500; }
-
-        /* Stats Row */
+        
         .h-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 40px; }
         .h-stat-card { 
             background: white; border: 1px solid var(--line); border-radius: 24px; padding: 24px; 
             text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: all 0.3s;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .h-stat-card:hover { transform: translateY(-5px); border-color: var(--c-primary); }
-        .h-stat-label { font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+        .h-stat-card:hover { transform: translateY(-5px); border-color: var(--c-primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .h-stat-icon { width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; color: var(--c-primary); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+        .h-stat-label { font-size: 12px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
         .h-stat-val { font-size: 32px; font-weight: 950; color: var(--c-primary); letter-spacing: -1px; }
 
-        /* Carousel Section */
         .h-carousel-section { background: white; border: 1px solid var(--line); border-radius: 28px; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .h-carousel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .h-carousel-header h2 { margin: 0; font-size: 18px; font-weight: 950; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Marquee Styles */
         .h-marquee {
-            --items: 1;
-            --duration: 30s;
-            --item-w: 280px;
-            --item-h: 400px;
-            --gap: 20px;
+            --items: 1; --duration: 30s; --item-w: 280px; --item-h: 400px; --gap: 20px;
             position: relative; width: 100%; height: var(--item-h); overflow: hidden;
             -webkit-mask-image: linear-gradient(to right, transparent, #000 10% 90%, transparent);
             mask-image: linear-gradient(to right, transparent, #000 10% 90%, transparent);
@@ -52,12 +45,7 @@
         .h-marquee-body h3 { margin: 0; font-size: 16px; font-weight: 900; color: var(--c-primary); }
         .h-marquee-body p { margin: 0; font-size: 13px; color: #64748b; line-height: 1.4; font-weight: 500; }
         
-        .h-badge-row { padding: 0 20px 20px; display: flex; gap: 8px; }
-        .h-pill { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 999px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; }
-
-        @keyframes h_marquee_anim {
-            100% { transform: translateX(calc((var(--items) * (var(--item-w) + var(--gap))) * -1)); }
-        }
+        @keyframes h_marquee_anim { 100% { transform: translateX(calc((var(--items) * (var(--item-w) + var(--gap))) * -1)); } }
 
         .h-clock { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); padding: 10px 20px; border-radius: 12px; font-weight: 900; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; }
     </style>
@@ -73,37 +61,36 @@
 
         <div class="h-stats">
             <div class="h-stat-card">
+                <div class="h-stat-icon"><i class="fa-solid fa-chart-line"></i></div>
                 <div class="h-stat-label">Indicadores</div>
-                <div class="h-stat-val">A</div>
-                <div class="text-[10px] font-bold text-muted mt-2">FORMULARIO DE METAS</div>
+                <div class="h-stat-val" id="h_stat_a">...</div>
             </div>
             <div class="h-stat-card">
+                <div class="h-stat-icon"><i class="fa-solid fa-list-check"></i></div>
                 <div class="h-stat-label">Actividades</div>
-                <div class="h-stat-val">B</div>
-                <div class="text-[10px] font-bold text-muted mt-2">GESTIÓN DE LOGROS</div>
+                <div class="h-stat-val" id="h_stat_b">...</div>
             </div>
             <div class="h-stat-card">
+                <div class="h-stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div class="h-stat-label">Riesgos</div>
-                <div class="h-stat-val">C</div>
-                <div class="text-[10px] font-bold text-muted mt-2">MITIGACIÓN</div>
+                <div class="h-stat-val" id="h_stat_c">...</div>
             </div>
             <div class="h-stat-card">
+                <div class="h-stat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 <div class="h-stat-label">Capacitación</div>
-                <div class="h-stat-val">D</div>
-                <div class="text-[10px] font-bold text-muted mt-2">FORTALECIMIENTO</div>
+                <div class="h-stat-val" id="h_stat_d">...</div>
             </div>
         </div>
 
         <section class="h-carousel-section">
             <div class="h-carousel-header">
                 <h2>Banners Informativos</h2>
-                <button class="btn-icon" onclick="h_load(true)" title="Actualizar">
+                <button class="btn-icon" onclick="HomeModule.load(true)" title="Actualizar">
                     <i class="fa-solid fa-rotate"></i>
                 </button>
             </div>
 
             <div id="h_marquee" class="h-marquee">
-                <!-- Dinámico -->
                 <div style="padding:100px; text-align:center; color:#94a3b8; font-weight:800;">Cargando novedades...</div>
             </div>
         </section>
@@ -111,66 +98,72 @@
 
     <script>
         /**
-         * Lógica del Módulo: Inicio (Home)
+         * HomeModule (Core v2 Modular)
          */
-        function home_init() {
-            h_startClock();
-            h_load();
-        }
+        window.HomeModule = (() => {
+            let clockInterval = null;
 
-        function h_startClock() {
-            const el = document.getElementById('h_clock');
-            if(!el) return;
-            const tick = () => {
-                const d = new Date();
-                el.textContent = d.toLocaleTimeString('es-PE', { hour12: false });
+            const init = () => {
+                if (clockInterval) clearInterval(clockInterval);
+                startClock();
+                load();
+                loadStats();
             };
-            tick();
-            setInterval(tick, 1000);
-        }
 
-        function h_load(showToast) {
-            google.script.run.withSuccessHandler(items => {
-                h_renderCarousel(items || []);
-                if(showToast) Swal.fire({ icon:'success', title:'Sincronizado', timer:800, showConfirmButton:false });
-            }).bannerhome_list();
-        }
+            const startClock = () => {
+                const el = document.getElementById('h_clock');
+                if(!el) return;
+                const tick = () => {
+                    const d = new Date();
+                    el.textContent = d.toLocaleTimeString('es-PE', { hour12: false });
+                };
+                tick();
+                clockInterval = setInterval(tick, 1000);
+            };
 
-        function h_renderCarousel(items) {
-            const el = document.getElementById('h_marquee');
-            if(!el) return;
+            const load = (showToast) => {
+                google.script.run.withSuccessHandler(items => {
+                    renderCarousel(items || []);
+                    if(showToast) Swal.fire({ icon:'success', title:'Sincronizado', timer:800, showConfirmButton:false });
+                }).bannerhome_list();
+            };
 
-            const fallback = "https://i.postimg.cc/t4RzjJzc/UAC_frontis.jpg";
-            
-            if(!items.length) {
-                el.style.setProperty('--items', '1');
-                el.innerHTML = `
-                    <article style="--i:0; left:50%; transform:translateX(-50%); animation:none;">
+            const loadStats = () => {
+                // Placeholder para carga de estadísticas reales si se implementa en el backend
+                // Por ahora simulamos o dejamos en 0/estático
+                document.getElementById('h_stat_a').textContent = 'A';
+                document.getElementById('h_stat_b').textContent = 'B';
+                document.getElementById('h_stat_c').textContent = 'C';
+                document.getElementById('h_stat_d').textContent = 'D';
+            };
+
+            const renderCarousel = (items) => {
+                const el = document.getElementById('h_marquee');
+                if(!el) return;
+                const fallback = "https://i.postimg.cc/t4RzjJzc/UAC_frontis.jpg";
+                
+                if(!items.length) {
+                    el.style.setProperty('--items', '1');
+                    el.innerHTML = `<article style="--i:0; left:50%; transform:translateX(-50%); animation:none;">
                         <img src="${fallback}" alt="UAC">
-                        <div class="h-marquee-body">
-                            <h3>Portal UAC</h3>
-                            <p>Bienvenido al sistema de seguimiento institucional.</p>
-                        </div>
-                        <div class="h-badge-row"><span class="h-pill">INFO</span><span class="h-pill">UAC</span></div>
-                    </article>
-                `;
-                return;
-            }
+                        <div class="h-marquee-body"><h3>Portal UAC</h3><p>Bienvenido al sistema de seguimiento institucional.</p></div>
+                    </article>`;
+                    return;
+                }
 
-            el.style.setProperty('--items', items.length);
-            el.innerHTML = items.map((it, idx) => `
-                <article style="--i:${idx};">
-                    <img src="${it.url_imagen || fallback}" alt="Banner" onerror="this.src='${fallback}'">
-                    <div class="h-marquee-body">
-                        <h3>${it.titulo || 'Novedad'}</h3>
-                        <p>${it.descripcion || 'Sin descripción disponible.'}</p>
-                    </div>
-                    <div class="h-badge-row">
-                        <span class="h-pill">INFO</span>
-                        <span class="h-pill">V.2.1</span>
-                    </div>
-                </article>
-            `).join('');
-        }
+                el.style.setProperty('--items', items.length);
+                el.innerHTML = items.map((it, idx) => `
+                    <article style="--i:${idx};">
+                        <img src="${it.url_imagen || fallback}" alt="Banner" onerror="this.src='${fallback}'">
+                        <div class="h-marquee-body">
+                            <h3>${it.titulo || 'Novedad'}</h3>
+                            <p>${it.descripcion || 'Sin descripción disponible.'}</p>
+                        </div>
+                    </article>
+                `).join('');
+            };
+
+            return { init, load };
+        })();
     </script>
 </div>

@@ -1,7 +1,6 @@
 <div id="formatoc_root">
     <style>
         .fc-container { animation: fadeIn 0.4s ease; }
-        
         .fc-header { 
             background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
             padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
@@ -25,7 +24,6 @@
         .field-input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 4px rgba(0,65,123,0.1); background: #fff; }
         
         .btn-plus { background: white; color: var(--c-primary); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-plus:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
     </style>
 
     <div class="fc-container">
@@ -36,7 +34,7 @@
                     <h1>Formato C: Gestión de Riesgos</h1>
                     <p>Identificación y mitigación de brechas críticas</p>
                 </div>
-                <button class="btn-plus" onclick="fc_openForm()">
+                <button class="btn-plus" onclick="FormatoCModule.openForm()">
                     <i class="fa-solid fa-triangle-exclamation"></i> Registrar Riesgo
                 </button>
             </header>
@@ -74,7 +72,7 @@
                     </div>
                 </div>
 
-                <form id="fc_form_element" onsubmit="fc_save(event)">
+                <form id="fc_form_element" onsubmit="FormatoCModule.save(event)">
                     <input type="hidden" id="fc_id">
                     <div class="fc-form-body">
                         <div class="form-grid">
@@ -85,7 +83,7 @@
                             
                             <div>
                                 <label class="field-label">Área *</label>
-                                <select id="fc_area" class="field-input" required onchange="fc_handleAreaChange(this.value)">
+                                <select id="fc_area" class="field-input" required onchange="FormatoCModule.handleAreaChange(this.value)">
                                     <option value="">Seleccione área...</option>
                                 </select>
                             </div>
@@ -133,7 +131,7 @@
                     </div>
 
                     <div class="fa-form-footer">
-                        <button type="button" class="btn-obs" onclick="fc_closeForm()">Cancelar</button>
+                        <button type="button" class="btn-obs" onclick="FormatoCModule.closeForm()">Cancelar</button>
                         <button type="submit" class="btn-app">Guardar Riesgo</button>
                     </div>
                 </form>
@@ -143,146 +141,150 @@
 
     <script>
         /**
-         * Lógica del Módulo: Formato C
+         * FormatoCModule (Core v2 Modular)
          */
-        window.FC_STATE = {
-            data: [],
-            areas: []
-        };
-
-        function formatoc_init() {
-            fc_load();
-        }
-
-        function fc_load() {
-            ui_showLoading("Cargando riesgos...");
-            google.script.run.withSuccessHandler(res => {
-                window.FC_STATE.areas = res.areas;
-                fc_renderSelectAreas(res.areas);
-                
-                google.script.run.withSuccessHandler(data => {
-                    ui_hideLoading();
-                    window.FC_STATE.data = data;
-                    fc_renderTable(data);
-                }).formatoC_get();
-            }).common_getAppData();
-        }
-
-        function fc_renderSelectAreas(areas) {
-            const sel = document.getElementById('fc_area');
-            if(!sel) return;
-            sel.innerHTML = '<option value="">Seleccione área...</option>' + 
-                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
-        }
-
-        function fc_handleAreaChange(areaId) {
-            const sel = document.getElementById('fc_aei');
-            sel.innerHTML = '<option value="">Cargando...</option>';
-            google.script.run.withSuccessHandler(aeis => {
-                if(!aeis || !aeis.length) {
-                    sel.innerHTML = '<option value="">Sin vinculación PEI</option>';
-                } else {
-                    sel.innerHTML = '<option value="">Seleccione AEI...</option>' + 
-                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                }
-            }).common_getVinculacion(areaId);
-        }
-
-        function fc_renderTable(items) {
-            const tbody = document.getElementById('fc_table_body');
-            if(!items.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay riesgos identificados.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = items.map(it => {
-                let badgeClass = 'badge-obs';
-                if(it.prioridad === 'Alta') badgeClass = 'badge-danger';
-                if(it.prioridad === 'Media') badgeClass = 'badge-warning';
-                if(it.prioridad === 'Baja') badgeClass = 'badge-success';
-
-                return `
-                    <tr>
-                        <td>
-                            <div class="font-black text-slate-800">${it.riesgo}</div>
-                            <div class="text-[10px] text-muted font-bold">CAUSA: ${it.causa || '-'}</div>
-                        </td>
-                        <td>
-                            <div class="text-xs font-black text-primary uppercase">${it.area}</div>
-                            <div class="text-[10px] text-slate-500 font-bold">PEI: ${it.codAei}</div>
-                        </td>
-                        <td>
-                            <div class="mb-1"><span class="badge ${badgeClass}">${it.prioridad}</span></div>
-                            <div class="text-[10px] font-black uppercase text-slate-400">${it.estado}</div>
-                        </td>
-                        <td><div class="text-xs font-black text-slate-700">${it.fechaObjetivo}</div></td>
-                        <td class="text-right">
-                            <button class="btn-icon" onclick="fc_edit('${it.id}')" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function fc_openForm() {
-            document.getElementById('fc_list_view').style.display = 'none';
-            document.getElementById('fc_form_view').style.display = 'block';
-            document.getElementById('fc_form_element').reset();
-            document.getElementById('fc_id').value = '';
-            document.getElementById('fc_form_title').textContent = 'Registro de Riesgo';
-        }
-
-        function fc_closeForm() {
-            document.getElementById('fc_list_view').style.display = 'block';
-            document.getElementById('fc_form_view').style.display = 'none';
-        }
-
-        function fc_edit(id) {
-            const it = window.FC_STATE.data.find(x => x.id === id);
-            if(!it) return;
-            
-            fc_openForm();
-            document.getElementById('fc_form_title').textContent = 'Editar Riesgo';
-            document.getElementById('fc_id').value = it.id;
-            document.getElementById('fc_riesgo').value = it.riesgo;
-            document.getElementById('fc_area').value = it.area;
-            document.getElementById('fc_causa').value = it.causa;
-            document.getElementById('fc_accion').value = it.accion;
-            document.getElementById('fc_prioridad').value = it.prioridad;
-            document.getElementById('fc_fechaObj').value = it.fechaObjetivo;
-            document.getElementById('fc_estado').value = it.estado;
-            
-            fc_handleAreaChange(it.area);
-            setTimeout(() => { document.getElementById('fc_aei').value = it.codAei; }, 800);
-        }
-
-        function fc_save(e) {
-            e.preventDefault();
-            const data = {
-                id: document.getElementById('fc_id').value,
-                riesgo: document.getElementById('fc_riesgo').value,
-                area: document.getElementById('fc_area').value,
-                codAei: document.getElementById('fc_aei').value,
-                causa: document.getElementById('fc_causa').value,
-                accion: document.getElementById('fc_accion').value,
-                prioridad: document.getElementById('fc_prioridad').value,
-                fechaObjetivo: document.getElementById('fc_fechaObj').value,
-                estado: document.getElementById('fc_estado').value
+        window.FormatoCModule = (() => {
+            const state = {
+                data: [],
+                areas: []
             };
 
-            ui_showLoading("Guardando riesgo...");
-            google.script.run.withSuccessHandler(res => {
-                ui_hideLoading();
-                if(res.success) {
-                    Swal.fire('Éxito', 'Riesgo registrado correctamente', 'success');
-                    fc_closeForm();
-                    fc_load();
-                } else {
-                    Swal.fire('Error', res.message, 'error');
+            const init = () => {
+                load();
+            };
+
+            const load = () => {
+                ui_showLoading("Cargando riesgos...");
+                google.script.run.withSuccessHandler(res => {
+                    state.areas = res.areas;
+                    renderSelectAreas(res.areas);
+                    
+                    google.script.run.withSuccessHandler(data => {
+                        ui_hideLoading();
+                        state.data = data;
+                        renderTable(data);
+                    }).formatoC_get();
+                }).common_getAppData();
+            };
+
+            const renderSelectAreas = (areas) => {
+                const sel = document.getElementById('fc_area');
+                if(!sel) return;
+                sel.innerHTML = '<option value="">Seleccione área...</option>' + 
+                    areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
+            };
+
+            const handleAreaChange = (areaId) => {
+                const sel = document.getElementById('fc_aei');
+                sel.innerHTML = '<option value="">Cargando...</option>';
+                google.script.run.withSuccessHandler(aeis => {
+                    if(!aeis || !aeis.length) {
+                        sel.innerHTML = '<option value="">Sin vinculación PEI</option>';
+                    } else {
+                        sel.innerHTML = '<option value="">Seleccione AEI...</option>' + 
+                            aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                    }
+                }).common_getVinculacion(areaId);
+            };
+
+            const renderTable = (items) => {
+                const tbody = document.getElementById('fc_table_body');
+                if(!items.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-muted">No hay riesgos identificados.</td></tr>';
+                    return;
                 }
-            }).formatoC_save(data);
-        }
+
+                tbody.innerHTML = items.map(it => {
+                    let badgeClass = 'badge-obs';
+                    if(it.prioridad === 'Alta') badgeClass = 'badge-danger';
+                    if(it.prioridad === 'Media') badgeClass = 'badge-warning';
+                    if(it.prioridad === 'Baja') badgeClass = 'badge-success';
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="font-black text-slate-800">${it.riesgo}</div>
+                                <div class="text-[10px] text-muted font-bold">CAUSA: ${it.causa || '-'}</div>
+                            </td>
+                            <td>
+                                <div class="text-xs font-black text-primary uppercase">${it.area}</div>
+                                <div class="text-[10px] text-slate-500 font-bold">PEI: ${it.codAei}</div>
+                            </td>
+                            <td>
+                                <div class="mb-1"><span class="badge ${badgeClass}">${it.prioridad}</span></div>
+                                <div class="text-[10px] font-black uppercase text-slate-400">${it.estado}</div>
+                            </td>
+                            <td><div class="text-xs font-black text-slate-700">${it.fechaObjetivo}</div></td>
+                            <td class="text-right">
+                                <button class="btn-icon" onclick="FormatoCModule.edit('${it.id}')" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            const openForm = () => {
+                document.getElementById('fc_list_view').style.display = 'none';
+                document.getElementById('fc_form_view').style.display = 'block';
+                document.getElementById('fc_form_element').reset();
+                document.getElementById('fc_id').value = '';
+                document.getElementById('fc_form_title').textContent = 'Registro de Riesgo';
+            };
+
+            const closeForm = () => {
+                document.getElementById('fc_list_view').style.display = 'block';
+                document.getElementById('fc_form_view').style.display = 'none';
+            };
+
+            const edit = (id) => {
+                const it = state.data.find(x => x.id === id);
+                if(!it) return;
+                
+                openForm();
+                document.getElementById('fc_form_title').textContent = 'Editar Riesgo';
+                document.getElementById('fc_id').value = it.id;
+                document.getElementById('fc_riesgo').value = it.riesgo;
+                document.getElementById('fc_area').value = it.area;
+                document.getElementById('fc_causa').value = it.causa;
+                document.getElementById('fc_accion').value = it.accion;
+                document.getElementById('fc_prioridad').value = it.prioridad;
+                document.getElementById('fc_fechaObj').value = it.fechaObjetivo;
+                document.getElementById('fc_estado').value = it.estado;
+                
+                handleAreaChange(it.area);
+                setTimeout(() => { document.getElementById('fc_aei').value = it.codAei; }, 800);
+            };
+
+            const save = (e) => {
+                e.preventDefault();
+                const data = {
+                    id: document.getElementById('fc_id').value,
+                    riesgo: document.getElementById('fc_riesgo').value,
+                    area: document.getElementById('fc_area').value,
+                    codAei: document.getElementById('fc_aei').value,
+                    causa: document.getElementById('fc_causa').value,
+                    accion: document.getElementById('fc_accion').value,
+                    prioridad: document.getElementById('fc_prioridad').value,
+                    fechaObjetivo: document.getElementById('fc_fechaObj').value,
+                    estado: document.getElementById('fc_estado').value
+                };
+
+                ui_showLoading("Guardando riesgo...");
+                google.script.run.withSuccessHandler(res => {
+                    ui_hideLoading();
+                    if(res.success) {
+                        Swal.fire('Éxito', 'Riesgo registrado correctamente', 'success');
+                        closeForm();
+                        load();
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                }).formatoC_save(data);
+            };
+
+            return { init, openForm, closeForm, edit, save, handleAreaChange };
+        })();
     </script>
 </div>

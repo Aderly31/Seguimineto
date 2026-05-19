@@ -1,7 +1,6 @@
 <div id="formatoa_root">
     <style>
         .fa-container { animation: fadeIn 0.4s ease; }
-        
         .fa-header { 
             background: linear-gradient(135deg, var(--c-primary) 0%, #002d56 100%);
             padding: 32px; border-radius: 24px; color: white; margin-bottom: 32px;
@@ -39,7 +38,7 @@
                     <h1>Formato A: Indicadores</h1>
                     <p>Monitoreo semestral de metas institucionales</p>
                 </div>
-                <button class="btn-plus" onclick="fa_openForm()">
+                <button class="btn-plus" onclick="FormatoAModule.openForm()">
                     <i class="fa-solid fa-circle-plus"></i> Nuevo Indicador
                 </button>
             </header>
@@ -78,7 +77,7 @@
                     </div>
                 </div>
 
-                <form id="fa_form_element" onsubmit="fa_save(event)">
+                <form id="fa_form_element" onsubmit="FormatoAModule.save(event)">
                     <input type="hidden" id="fa_id">
                     <div class="fa-form-body">
                         <div class="form-grid">
@@ -89,7 +88,7 @@
                             
                             <div>
                                 <label class="field-label">Área *</label>
-                                <select id="fa_area" class="field-input" required onchange="fa_handleAreaChange(this.value)">
+                                <select id="fa_area" class="field-input" required onchange="FormatoAModule.handleAreaChange(this.value)">
                                     <option value="">Seleccione área...</option>
                                 </select>
                             </div>
@@ -124,7 +123,7 @@
                     </div>
 
                     <div class="fa-form-footer">
-                        <button type="button" class="btn-obs" onclick="fa_closeForm()">Cancelar</button>
+                        <button type="button" class="btn-obs" onclick="FormatoAModule.closeForm()">Cancelar</button>
                         <button type="submit" class="btn-app">Guardar Indicador</button>
                     </div>
                 </form>
@@ -134,150 +133,153 @@
 
     <script>
         /**
-         * Lógica del Módulo: Formato A
+         * FormatoAModule (Core v2 Modular)
          */
-        window.FA_STATE = {
-            data: [],
-            areas: []
-        };
-
-        function formatoa_init() {
-            fa_load();
-        }
-
-        function fa_load() {
-            ui_showLoading("Cargando indicadores...");
-            google.script.run.withSuccessHandler(res => {
-                window.FA_STATE.areas = res.areas;
-                fa_renderSelectAreas(res.areas);
-                
-                google.script.run.withSuccessHandler(data => {
-                    ui_hideLoading();
-                    window.FA_STATE.data = data;
-                    fa_renderTable(data);
-                }).formatoA_get();
-            }).common_getAppData();
-        }
-
-        function fa_renderSelectAreas(areas) {
-            const sel = document.getElementById('fa_area');
-            if(!sel) return;
-            sel.innerHTML = '<option value="">Seleccione área...</option>' + 
-                areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
-        }
-
-        function fa_handleAreaChange(areaId) {
-            const sel = document.getElementById('fa_aei');
-            sel.innerHTML = '<option value="">Cargando vinculación...</option>';
-            google.script.run.withSuccessHandler(aeis => {
-                if(!aeis || !aeis.length) {
-                    sel.innerHTML = '<option value="">Sin vinculación PEI</option>';
-                } else {
-                    sel.innerHTML = '<option value="">Seleccione AEI...</option>' + 
-                        aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
-                }
-            }).common_getVinculacion(areaId);
-        }
-
-        function fa_renderTable(items) {
-            const tbody = document.getElementById('fa_table_body');
-            if(!items.length) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-10 text-muted">No hay indicadores registrados.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = items.map(it => {
-                const color = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
-                let badgeClass = 'badge-primary';
-                if(it.estado === 'Borrador') badgeClass = 'badge-obs';
-                if(it.estado === 'Enviado') badgeClass = 'badge-success';
-
-                return `
-                    <tr>
-                        <td>
-                            <div class="font-black text-slate-800">${it.nombre}</div>
-                            <div class="text-[11px] text-muted font-bold">${it.responsable || 'Sin responsable'}</div>
-                        </td>
-                        <td class="font-bold text-slate-700">${it.metaAnual}</td>
-                        <td class="font-bold text-slate-700">${it.resultado}</td>
-                        <td>
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-black text-slate-500">${it.avance}%</span>
-                                <div class="prog-bar">
-                                    <div class="prog-fill" style="width:${it.avance}%; background:${color}"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge ${badgeClass}">${it.estado}</span></td>
-                        <td class="text-right">
-                            <div class="flex justify-end gap-2">
-                                <button class="btn-icon" onclick="fa_edit('${it.id}')" title="Editar">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                ${it.enlace ? `<a href="${it.enlace}" target="_blank" class="btn-icon" style="color:var(--c-primary)"><i class="fa-solid fa-link"></i></a>` : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function fa_openForm() {
-            document.getElementById('fa_list_view').style.display = 'none';
-            document.getElementById('fa_form_view').style.display = 'block';
-            document.getElementById('fa_form_element').reset();
-            document.getElementById('fa_id').value = '';
-            document.getElementById('fa_form_title').textContent = 'Nuevo Indicador';
-        }
-
-        function fa_closeForm() {
-            document.getElementById('fa_list_view').style.display = 'block';
-            document.getElementById('fa_form_view').style.display = 'none';
-        }
-
-        function fa_edit(id) {
-            const it = window.FA_STATE.data.find(x => x.id === id);
-            if(!it) return;
-            
-            fa_openForm();
-            document.getElementById('fa_form_title').textContent = 'Editar Indicador';
-            document.getElementById('fa_id').value = it.id;
-            document.getElementById('fa_nombre').value = it.nombre;
-            document.getElementById('fa_area').value = it.area;
-            document.getElementById('fa_meta').value = it.metaAnual;
-            document.getElementById('fa_resultado').value = it.resultado;
-            document.getElementById('fa_fuente').value = it.fuente;
-            document.getElementById('fa_enlace').value = it.enlace;
-            
-            // Cargar AEI
-            fa_handleAreaChange(it.area);
-            setTimeout(() => { document.getElementById('fa_aei').value = it.codAei; }, 800);
-        }
-
-        function fa_save(e) {
-            e.preventDefault();
-            const data = {
-                id: document.getElementById('fa_id').value,
-                nombre: document.getElementById('fa_nombre').value,
-                area: document.getElementById('fa_area').value,
-                codAei: document.getElementById('fa_aei').value,
-                metaAnual: Number(document.getElementById('fa_meta').value),
-                resultado: Number(document.getElementById('fa_resultado').value),
-                fuente: document.getElementById('fa_fuente').value,
-                enlace: document.getElementById('fa_enlace').value
+        window.FormatoAModule = (() => {
+            const state = {
+                data: [],
+                areas: []
             };
 
-            ui_showLoading("Guardando indicador...");
-            google.script.run.withSuccessHandler(res => {
-                ui_hideLoading();
-                if(res.success) {
-                    Swal.fire('Éxito', 'Indicador guardado correctamente', 'success');
-                    fa_closeForm();
-                    fa_load();
-                } else {
-                    Swal.fire('Error', res.message, 'error');
+            const init = () => {
+                load();
+            };
+
+            const load = () => {
+                ui_showLoading("Cargando indicadores...");
+                google.script.run.withSuccessHandler(res => {
+                    state.areas = res.areas;
+                    renderSelectAreas(res.areas);
+                    
+                    google.script.run.withSuccessHandler(data => {
+                        ui_hideLoading();
+                        state.data = data;
+                        renderTable(data);
+                    }).formatoA_get();
+                }).common_getAppData();
+            };
+
+            const renderSelectAreas = (areas) => {
+                const sel = document.getElementById('fa_area');
+                if(!sel) return;
+                sel.innerHTML = '<option value="">Seleccione área...</option>' + 
+                    areas.map(a => `<option value="${a.id}">${a.label}</option>`).join('');
+            };
+
+            const handleAreaChange = (areaId) => {
+                const sel = document.getElementById('fa_aei');
+                sel.innerHTML = '<option value="">Cargando vinculación...</option>';
+                google.script.run.withSuccessHandler(aeis => {
+                    if(!aeis || !aeis.length) {
+                        sel.innerHTML = '<option value="">Sin vinculación PEI</option>';
+                    } else {
+                        sel.innerHTML = '<option value="">Seleccione AEI...</option>' + 
+                            aeis.map(a => `<option value="${a.codAei}">[${a.codAei}] ${a.accion}</option>`).join('');
+                    }
+                }).common_getVinculacion(areaId);
+            };
+
+            const renderTable = (items) => {
+                const tbody = document.getElementById('fa_table_body');
+                if(!items.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-10 text-muted">No hay indicadores registrados.</td></tr>';
+                    return;
                 }
-            }).formatoA_save(data);
-        }
+
+                tbody.innerHTML = items.map(it => {
+                    const color = it.avance >= 90 ? '#10b981' : (it.avance >= 50 ? '#00417B' : '#f59e0b');
+                    let badgeClass = 'badge-primary';
+                    if(it.estado === 'Borrador') badgeClass = 'badge-obs';
+                    if(it.estado === 'Enviado') badgeClass = 'badge-success';
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="font-black text-slate-800">${it.nombre}</div>
+                                <div class="text-[11px] text-muted font-bold">${it.responsable || 'Sin responsable'}</div>
+                            </td>
+                            <td class="font-bold text-slate-700">${it.metaAnual}</td>
+                            <td class="font-bold text-slate-700">${it.resultado}</td>
+                            <td>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-slate-500">${it.avance}%</span>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill" style="width:${it.avance}%; background:${color}"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge ${badgeClass}">${it.estado}</span></td>
+                            <td class="text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button class="btn-icon" onclick="FormatoAModule.edit('${it.id}')" title="Editar">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    ${it.enlace ? `<a href="${it.enlace}" target="_blank" class="btn-icon" style="color:var(--c-primary)"><i class="fa-solid fa-link"></i></a>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            const openForm = () => {
+                document.getElementById('fa_list_view').style.display = 'none';
+                document.getElementById('fa_form_view').style.display = 'block';
+                document.getElementById('fa_form_element').reset();
+                document.getElementById('fa_id').value = '';
+                document.getElementById('fa_form_title').textContent = 'Nuevo Indicador';
+            };
+
+            const closeForm = () => {
+                document.getElementById('fa_list_view').style.display = 'block';
+                document.getElementById('fa_form_view').style.display = 'none';
+            };
+
+            const edit = (id) => {
+                const it = state.data.find(x => x.id === id);
+                if(!it) return;
+                
+                openForm();
+                document.getElementById('fa_form_title').textContent = 'Editar Indicador';
+                document.getElementById('fa_id').value = it.id;
+                document.getElementById('fa_nombre').value = it.nombre;
+                document.getElementById('fa_area').value = it.area;
+                document.getElementById('fa_meta').value = it.metaAnual;
+                document.getElementById('fa_resultado').value = it.resultado;
+                document.getElementById('fa_fuente').value = it.fuente;
+                document.getElementById('fa_enlace').value = it.enlace;
+                
+                handleAreaChange(it.area);
+                setTimeout(() => { document.getElementById('fa_aei').value = it.codAei; }, 800);
+            };
+
+            const save = (e) => {
+                e.preventDefault();
+                const data = {
+                    id: document.getElementById('fa_id').value,
+                    nombre: document.getElementById('fa_nombre').value,
+                    area: document.getElementById('fa_area').value,
+                    codAei: document.getElementById('fa_aei').value,
+                    metaAnual: Number(document.getElementById('fa_meta').value),
+                    resultado: Number(document.getElementById('fa_resultado').value),
+                    fuente: document.getElementById('fa_fuente').value,
+                    enlace: document.getElementById('fa_enlace').value
+                };
+
+                ui_showLoading("Guardando indicador...");
+                google.script.run.withSuccessHandler(res => {
+                    ui_hideLoading();
+                    if(res.success) {
+                        Swal.fire('Éxito', 'Indicador guardado correctamente', 'success');
+                        closeForm();
+                        load();
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                }).formatoA_save(data);
+            };
+
+            return { init, openForm, closeForm, edit, save, handleAreaChange };
+        })();
     </script>
 </div>

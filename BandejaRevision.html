@@ -1,16 +1,12 @@
 <div id="bandejarevision_root">
     <style>
         .br-container { animation: fadeIn 0.4s ease; }
-        
-        /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .stat-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         .stat-val { font-size: 24px; font-weight: 950; color: var(--c-primary); }
         .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-top: 4px; }
 
-        /* Split Layout */
         .br-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
-        
         .br-sidebar { display: flex; flex-direction: column; gap: 12px; }
         .br-card { background: white; border-radius: 20px; border: 1px solid var(--line); padding: 20px; }
         .br-card h3 { font-size: 14px; font-weight: 900; margin-bottom: 16px; color: var(--c-primary); text-transform: uppercase; border-left: 4px solid var(--c-cyan); padding-left: 10px; }
@@ -23,7 +19,6 @@
         .area-item:hover { background: #f8fafc; color: var(--c-primary); transform: translateX(5px); }
         .area-item.active { background: #eff6ff; color: var(--c-primary); border-color: #bfdbfe; box-shadow: 0 4px 12px rgba(0,65,123,0.1); }
 
-        /* Tabs */
         .tabs-nav { display: flex; gap: 4px; margin-bottom: 16px; background: #f1f5f9; padding: 4px; border-radius: 14px; }
         .tab-btn { 
             flex: 1; padding: 10px; font-weight: 800; font-size: 12px; color: var(--muted); 
@@ -31,13 +26,11 @@
         }
         .tab-btn.active { background: white; color: var(--c-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* Table */
         .table-responsive { border-radius: 16px; border: 1px solid var(--line); overflow: hidden; background: white; }
         .br-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .br-table th { background: #f8fafc; padding: 14px; text-align: left; font-weight: 800; color: #475569; border-bottom: 1px solid var(--line); }
         .br-table td { padding: 14px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
         
-        /* Decision */
         .decision-section { margin-top: 24px; }
         .decision-card { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 2px solid #e2e8f0; }
         .decision-card textarea { 
@@ -52,7 +45,6 @@
         .btn-app { background: var(--c-primary); color: white; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,65,123,0.2); }
         .btn-app:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-        /* History */
         .history-list { display: flex; flex-direction: column; gap: 12px; }
         .history-item { padding: 12px; border-radius: 12px; background: #f8fafc; border: 1px solid var(--line); }
         .h-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -65,7 +57,6 @@
 
     <div class="br-container">
         <div class="br-layout">
-            <!-- Sidebar Left -->
             <aside class="br-sidebar">
                 <div class="br-card">
                     <h3>Áreas Pendientes</h3>
@@ -75,7 +66,6 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main class="br-main">
                 <div id="br_emptyState" class="br-card text-center py-10">
                     <i class="fa-solid fa-inbox fa-3x mb-4" style="color:var(--line);"></i>
@@ -98,10 +88,10 @@
                     <div class="br-card mb-6">
                         <h3 id="br_selectedTitle">Cargando área...</h3>
                         <nav class="tabs-nav">
-                            <button class="tab-btn active" onclick="br_switchTab('A', event)">Indicadores</button>
-                            <button class="tab-btn" onclick="br_switchTab('B', event)">Actividades</button>
-                            <button class="tab-btn" onclick="br_switchTab('C', event)">Riesgos</button>
-                            <button class="tab-btn" onclick="br_switchTab('D', event)">Capacitaciones</button>
+                            <button class="tab-btn active" onclick="BandejaRevisionModule.switchTab('A', event)">Indicadores</button>
+                            <button class="tab-btn" onclick="BandejaRevisionModule.switchTab('B', event)">Actividades</button>
+                            <button class="tab-btn" onclick="BandejaRevisionModule.switchTab('C', event)">Riesgos</button>
+                            <button class="tab-btn" onclick="BandejaRevisionModule.switchTab('D', event)">Capacitaciones</button>
                         </nav>
 
                         <div class="table-responsive">
@@ -116,8 +106,8 @@
                         <h3><i class="fa-solid fa-spell-check mr-2"></i> Evaluación y Dictamen</h3>
                         <textarea id="br_comments" rows="4" placeholder="Escriba aquí los detalles técnicos de la observación o aprobación..."></textarea>
                         <div class="btn-group">
-                            <button class="btn-obs" onclick="br_submit('OBSERVADO')">Observar</button>
-                            <button class="btn-app" onclick="br_submit('APROBADO')">Aprobar Todo</button>
+                            <button class="btn-obs" onclick="BandejaRevisionModule.submit('OBSERVADO')">Observar</button>
+                            <button class="btn-app" onclick="BandejaRevisionModule.submit('APROBADO')">Aprobar Todo</button>
                         </div>
                     </div>
 
@@ -134,149 +124,153 @@
 
     <script>
         /**
-         * Lógica del Módulo: Bandeja de Revisión
+         * BandejaRevisionModule (Core v2 Modular)
          */
-        window.BR_STATE = {
-            data: null,
-            selectedArea: null,
-            activeTab: 'A'
-        };
-
-        /**
-         * Inicializador (SPA Pattern)
-         */
-        function bandejarevision_init() {
-            br_load();
-        }
-
-        function br_load() {
-            google.script.run.withSuccessHandler(res => {
-                window.BR_STATE.data = res;
-                br_renderAreaList(res.areas);
-            }).bandeja_getInbox();
-        }
-
-        function br_renderAreaList(areas) {
-            const list = document.getElementById('br_areaList');
-            if(!areas || !areas.length) {
-                list.innerHTML = '<div class="text-center p-4 text-muted text-sm font-bold">No hay reportes pendientes.</div>';
-                return;
-            }
-            list.innerHTML = areas.map(a => `
-                <div class="area-item" onclick="br_selectArea('${a}')" id="br-area-${a.replace(/\s/g, '_')}">
-                    <i class="fa-solid fa-building-circle-check"></i>
-                    <span>${a}</span>
-                </div>
-            `).join('');
-        }
-
-        function br_selectArea(area) {
-            window.BR_STATE.selectedArea = area;
-            
-            // UI Update
-            document.getElementById('br_emptyState').style.display = 'none';
-            document.getElementById('br_content').style.display = 'block';
-            
-            document.querySelectorAll('.area-item').forEach(el => el.classList.remove('active'));
-            const activeEl = document.getElementById('br-area-' + area.replace(/\s/g, '_'));
-            if(activeEl) activeEl.classList.add('active');
-
-            document.getElementById('br_selectedTitle').textContent = 'Expediente: ' + area;
-            
-            br_switchTab(window.BR_STATE.activeTab);
-            br_loadHistory(area);
-        }
-
-        function br_switchTab(tab, event) {
-            window.BR_STATE.activeTab = tab;
-            if(event) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                event.target.classList.add('active');
-            }
-
-            const items = window.BR_STATE.data.formatos[tab].filter(d => d.area === window.BR_STATE.selectedArea);
-            br_renderTable(tab, items);
-        }
-
-        function br_renderTable(tab, items) {
-            const head = document.getElementById('br_tableHeader');
-            const body = document.getElementById('br_tableBody');
-
-            const headers = {
-                'A': '<tr><th>Indicador</th><th>Meta/Avance</th><th>Estado</th></tr>',
-                'B': '<tr><th>Actividad</th><th>Eje Estratégico</th><th>Logro / Resultado</th></tr>',
-                'C': '<tr><th>Riesgo Identificado</th><th>Prioridad</th><th>Estado</th></tr>',
-                'D': '<tr><th>Capacitación</th><th>Modalidad</th><th>Estado</th></tr>'
+        window.BandejaRevisionModule = (() => {
+            const state = {
+                data: null,
+                selectedArea: null,
+                activeTab: 'A'
             };
 
-            head.innerHTML = headers[tab];
-            
-            if(!items.length) {
-                body.innerHTML = '<tr><td colspan="3" class="text-center p-10 text-muted italic">Sin datos registrados en este formato.</td></tr>';
-                return;
-            }
+            const init = () => {
+                load();
+            };
 
-            body.innerHTML = items.map(d => {
-                if (tab === 'A') return `<tr><td><div class="font-bold">${d.nombre}</div></td><td>${d.resultado}/${d.metaAnual} (${d.avance}%)</td><td><span class="h-status st-APROBADO">${d.estado}</span></td></tr>`;
-                if (tab === 'B') return `<tr><td><div class="font-bold">${d.titulo}</div><div class="text-xs text-muted">${d.fecha}</div></td><td>${d.eje}</td><td>${d.logro || '-'}</td></tr>`;
-                if (tab === 'C') return `<tr><td><div class="font-bold">${d.riesgo}</div></td><td>${d.prioridad}</td><td>${d.estado}</td></tr>`;
-                if (tab === 'D') return `<tr><td><div class="font-bold">${d.nombre}</div><div class="text-xs text-muted">${d.fecha}</div></td><td>${d.modalidad}</td><td>${d.estado}</td></tr>`;
-                return '';
-            }).join('');
-        }
+            const load = () => {
+                ui_showLoading("Cargando bandeja...");
+                google.script.run.withSuccessHandler(res => {
+                    ui_hideLoading();
+                    state.data = res;
+                    renderAreaList(res.areas);
+                }).bandeja_getInbox();
+            };
 
-        function br_submit(status) {
-            const area = window.BR_STATE.selectedArea;
-            const comments = document.getElementById('br_comments').value;
-            
-            if(status === 'OBSERVADO' && !comments) {
-                return Swal.fire('Comentario Requerido', 'Para observar un expediente debe detallar los motivos en el campo de comentarios.', 'warning');
-            }
-
-            Swal.fire({
-                title: `¿Confirmar ${status}?`,
-                text: `El área de ${area} recibirá una notificación con su dictamen.`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: status === 'APROBADO' ? '#00417B' : '#e11d48',
-                confirmButtonText: 'Confirmar Dictamen'
-            }).then(res => {
-                if(res.isConfirmed) {
-                    ui_showLoading("Guardando revisión...");
-                    google.script.run.withSuccessHandler(resp => {
-                        ui_hideLoading();
-                        Swal.fire('Dictamen Guardado', resp.message, 'success');
-                        document.getElementById('br_comments').value = '';
-                        br_loadHistory(area);
-                    }).bandeja_updateStatus(area, status, comments);
-                }
-            });
-        }
-
-        function br_loadHistory(area) {
-            const list = document.getElementById('br_historyList');
-            google.script.run.withSuccessHandler(logs => {
-                if(!logs.length) {
-                    list.innerHTML = '<div class="text-center p-4 text-muted italic">Sin revisiones previas registradas.</div>';
+            const renderAreaList = (areas) => {
+                const list = document.getElementById('br_areaList');
+                if(!list) return;
+                if(!areas || !areas.length) {
+                    list.innerHTML = '<div class="text-center p-4 text-muted text-sm font-bold">No hay reportes pendientes.</div>';
                     return;
                 }
-                list.innerHTML = logs.map(l => `
-                    <div class="history-item">
-                        <div class="h-meta">
-                            <span class="h-date"><i class="fa-regular fa-clock mr-1"></i> ${new Date(l.timestamp).toLocaleString()}</span>
-                            <span class="h-status st-${l.decision}">${l.decision}</span>
-                        </div>
-                        <div class="h-comment">${l.comentarios || 'Aprobación técnica sin observaciones adicionales.'}</div>
-                        <div class="text-[9px] text-muted mt-2 font-bold uppercase">Revisor: ${l.revisorEmail}</div>
+                list.innerHTML = areas.map(a => `
+                    <div class="area-item" onclick="BandejaRevisionModule.selectArea('${a}')" id="br-area-${a.replace(/\s/g, '_')}">
+                        <i class="fa-solid fa-building-circle-check"></i>
+                        <span>${a}</span>
                     </div>
                 `).join('');
+            };
+
+            const selectArea = (area) => {
+                state.selectedArea = area;
                 
-                // Update stats
-                if(logs[0]) {
-                    document.getElementById('br_statStatus').textContent = logs[0].decision;
-                    document.getElementById('br_statDate').textContent = new Date(logs[0].timestamp).toLocaleDateString();
+                document.getElementById('br_emptyState').style.display = 'none';
+                document.getElementById('br_content').style.display = 'block';
+                
+                document.querySelectorAll('.area-item').forEach(el => el.classList.remove('active'));
+                const activeEl = document.getElementById('br-area-' + area.replace(/\s/g, '_'));
+                if(activeEl) activeEl.classList.add('active');
+
+                document.getElementById('br_selectedTitle').textContent = 'Expediente: ' + area;
+                
+                switchTab(state.activeTab);
+                loadHistory(area);
+            };
+
+            const switchTab = (tab, event) => {
+                state.activeTab = tab;
+                if(event) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    event.target.classList.add('active');
                 }
-            }).bandeja_getHistory(area);
-        }
+
+                if(!state.data) return;
+                const items = state.data.formatos[tab].filter(d => d.area === state.selectedArea);
+                renderTable(tab, items);
+            };
+
+            const renderTable = (tab, items) => {
+                const head = document.getElementById('br_tableHeader');
+                const body = document.getElementById('br_tableBody');
+
+                const headers = {
+                    'A': '<tr><th>Indicador</th><th>Meta/Avance</th><th>Estado</th></tr>',
+                    'B': '<tr><th>Actividad</th><th>Eje Estratégico</th><th>Logro / Resultado</th></tr>',
+                    'C': '<tr><th>Riesgo Identificado</th><th>Prioridad</th><th>Estado</th></tr>',
+                    'D': '<tr><th>Capacitación</th><th>Modalidad</th><th>Estado</th></tr>'
+                };
+
+                head.innerHTML = headers[tab];
+                
+                if(!items.length) {
+                    body.innerHTML = '<tr><td colspan="3" class="text-center p-10 text-muted italic">Sin datos registrados en este formato.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = items.map(d => {
+                    if (tab === 'A') return `<tr><td><div class="font-bold">${d.nombre}</div></td><td>${d.resultado}/${d.metaAnual} (${d.avance}%)</td><td><span class="h-status st-APROBADO">${d.estado}</span></td></tr>`;
+                    if (tab === 'B') return `<tr><td><div class="font-bold">${d.titulo}</div><div class="text-xs text-muted">${d.fecha}</div></td><td>${d.eje}</td><td>${d.logro || '-'}</td></tr>`;
+                    if (tab === 'C') return `<tr><td><div class="font-bold">${d.riesgo}</div></td><td>${d.prioridad}</td><td>${d.estado}</td></tr>`;
+                    if (tab === 'D') return `<tr><td><div class="font-bold">${d.nombre}</div><div class="text-xs text-muted">${d.fecha}</div></td><td>${d.modalidad}</td><td>${d.estado}</td></tr>`;
+                    return '';
+                }).join('');
+            };
+
+            const submitDecision = (status) => {
+                const area = state.selectedArea;
+                const comments = document.getElementById('br_comments').value;
+                
+                if(status === 'OBSERVADO' && !comments) {
+                    return Swal.fire('Comentario Requerido', 'Para observar un expediente debe detallar los motivos en el campo de comentarios.', 'warning');
+                }
+
+                Swal.fire({
+                    title: `¿Confirmar ${status}?`,
+                    text: `El área de ${area} recibirá una notificación con su dictamen.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: status === 'APROBADO' ? 'var(--c-primary)' : '#e11d48',
+                    confirmButtonText: 'Confirmar Dictamen'
+                }).then(res => {
+                    if(res.isConfirmed) {
+                        ui_showLoading("Guardando revisión...");
+                        google.script.run.withSuccessHandler(resp => {
+                            ui_hideLoading();
+                            Swal.fire('Dictamen Guardado', resp.message, 'success');
+                            document.getElementById('br_comments').value = '';
+                            loadHistory(area);
+                            load(); // Refresh areas list
+                        }).bandeja_updateStatus(area, status, comments);
+                    }
+                });
+            };
+
+            const loadHistory = (area) => {
+                const list = document.getElementById('br_historyList');
+                google.script.run.withSuccessHandler(logs => {
+                    if(!logs.length) {
+                        list.innerHTML = '<div class="text-center p-4 text-muted italic">Sin revisiones previas registradas.</div>';
+                        return;
+                    }
+                    list.innerHTML = logs.map(l => `
+                        <div class="history-item">
+                            <div class="h-meta">
+                                <span class="h-date"><i class="fa-regular fa-clock mr-1"></i> ${new Date(l.timestamp).toLocaleString()}</span>
+                                <span class="h-status st-${l.decision}">${l.decision}</span>
+                            </div>
+                            <div class="h-comment">${l.comentarios || 'Aprobación técnica sin observaciones adicionales.'}</div>
+                            <div class="text-[9px] text-muted mt-2 font-bold uppercase">Revisor: ${l.revisorEmail}</div>
+                        </div>
+                    `).join('');
+                    
+                    if(logs[0]) {
+                        document.getElementById('br_statStatus').textContent = logs[0].decision;
+                        document.getElementById('br_statDate').textContent = new Date(logs[0].timestamp).toLocaleDateString();
+                    }
+                }).bandeja_getHistory(area);
+            };
+
+            return { init, load, selectArea, switchTab, submit: submitDecision };
+        })();
     </script>
 </div>
