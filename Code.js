@@ -1,9 +1,8 @@
 /**
  * ===============================================================
- * NÚCLEO DEL SERVIDOR (Core v2)
+ * 2. FUNCIONES DE ARRANQUE (WEB APP)
  * ===============================================================
  */
-
 function doGet(e) {
   const page = String(e?.parameter?.page || '').toLowerCase().trim();
 
@@ -45,6 +44,7 @@ function include(filename) {
   try {
     const template = HtmlService.createTemplateFromFile(filename);
     template.config = APP_CONFIG;
+    // Pasar sesión si existe para que los módulos puedan usarla
     try { template.session = Auth.getSession(); } catch(e){}
     return template.evaluate().getContent();
   } catch (e) {
@@ -52,6 +52,7 @@ function include(filename) {
   }
 }
 
+// Alias para compatibilidad con diseños anteriores
 function include_(filename) { return include(filename); }
 
 /**
@@ -59,7 +60,8 @@ function include_(filename) { return include(filename); }
  */
 function getPageData(pageKey) {
   const cache = CacheService.getUserCache();
-  const cacheKey = 'PAGE_HTML_' + pageKey.toLowerCase();
+  // Incluir VERSION en la clave para que un push con nueva versión invalide automáticamente
+  const cacheKey = 'PAGE_HTML_' + APP_CONFIG.VERSION + '_' + pageKey.toLowerCase();
 
   try {
     const cachedHtml = cache.get(cacheKey);
@@ -72,12 +74,15 @@ function getPageData(pageKey) {
 
     const filename = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
     const html = include(filename);
-    
-    const { routes } = SheetService.getRoutesForRole(session.rol);
+
+    const routes = SheetService.getRoutesForRole(session.rol).routes;
     const title = (routes[pageKey.toLowerCase()] ? routes[pageKey.toLowerCase()].title : filename);
 
     const result = { success: true, html: html, title: title };
+
+    // Cachear por 10 minutos
     cache.put(cacheKey, html, 600);
+
     return result;
   } catch (e) {
     return { success: false, message: e.message };
@@ -89,12 +94,14 @@ function getPageData(pageKey) {
  */
 function getAppPermissions() {
   const cache = CacheService.getUserCache();
-  const cacheKey = 'USER_PERMS_' + Session.getActiveUser().getEmail();
+  const cacheKey = 'USER_PERMS_' + APP_CONFIG.VERSION + '_' + Session.getActiveUser().getEmail();
   
   try {
+    // 1. Intentar recuperar de caché (Evita lectura de Sheets)
     const cached = cache.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
+    // 2. Si no hay caché, validar sesión y leer Sheets
     const session = Auth.getSession();
     if (!session) return { access: false, message: "Sesión no válida" };
 
@@ -116,7 +123,9 @@ function getAppPermissions() {
       routes: routes 
     };
 
-    cache.put(cacheKey, JSON.stringify(result), 900);
+    // 3. Guardar en caché por 1 hora (3600 seg)
+    cache.put(cacheKey, JSON.stringify(result), 3600);
+    
     return result;
   } catch (e) {
     return { access: false, error: e.message };
@@ -124,7 +133,21 @@ function getAppPermissions() {
 }
 
 /**
- * FUNCIONES COMPARTIDAS (HELPERS UNIFICADOS)
+ * Limpieza forzada de caché (ejecutada en cada recarga de la app)
+ */
+function clearUserCache() {
+  try {
+    const cache = CacheService.getUserCache();
+    const ver = APP_CONFIG.VERSION;
+    const userEmail = Session.getActiveUser().getEmail();
+    // Limpiar permisos
+    cache.remove('USER_PERMS_' + ver + '_' + userEmail);
+    // Las claves PAGE_HTML_ se invalidan automáticamente al cambiar VERSION
+  } catch(e) {}
+}
+
+/**
+ * Helper: abre el Spreadsheet principal
  */
 function getSS() {
   return SpreadsheetApp.openById(APP_CONFIG.SPREADSHEET_ID);

@@ -1,0 +1,255 @@
+<div class="mod-container">
+  <div class="mod-hero">
+    <div class="mod-hero-content">
+      <h1 class="mod-title"><i class="fa-solid fa-chart-simple"></i> Indicadores</h1>
+      <p class="mod-subtitle">Gestión de indicadores de gestión</p>
+    </div>
+    <div class="mod-hero-actions">
+      <div class="mod-search">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" id="indicadoresSearch" placeholder="Buscar indicador..." oninput="indicadores_filterTable()">
+      </div>
+      <span class="mod-count" id="indicadoresCount">0 registros</span>
+    </div>
+  </div>
+
+  <div class="mod-card">
+    <div class="mod-table-wrapper">
+      <table class="mod-table" id="indicadoresTable">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Área</th>
+            <th>Código AEI</th>
+            <th>Meta Anual</th>
+            <th>Resultado Semestre</th>
+            <th>Avance</th>
+            <th>Estado</th>
+            <th>Responsable</th>
+            <th>Fuente</th>
+          </tr>
+        </thead>
+        <tbody id="indicadoresBody"></tbody>
+      </table>
+    </div>
+    <div class="mod-empty" id="indicadoresEmpty">
+      <i class="fa-solid fa-chart-simple"></i>
+      <p>No hay indicadores registrados</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mod-container { padding: 0; font-family: 'Inter', sans-serif; color: #1a202c; }
+  .mod-hero {
+    background: #003366;
+    padding: 25px 30px;
+    border-radius: 0 0 20px 20px;
+    color: white;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .mod-hero-content {}
+  .mod-title { font-size: 28px; font-weight: 900; margin: 0; }
+  .mod-title i { margin-right: 10px; color: #00CEFE; }
+  .mod-subtitle { font-size: 14px; opacity: 0.8; margin: 4px 0 0 0; }
+  .mod-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .mod-search {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(5px);
+  }
+  .mod-search input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    font-size: 14px;
+    min-width: 200px;
+  }
+  .mod-search input::placeholder { color: rgba(255,255,255,0.6); }
+  .mod-search i { color: rgba(255,255,255,0.6); }
+  .mod-count {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .mod-card {
+    background: white;
+    border-radius: 16px;
+    margin: 0 20px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .mod-table-wrapper { overflow-x: auto; }
+  .mod-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .mod-table thead { background: #f8fafc; }
+  .mod-table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 700;
+    color: #00417B;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .mod-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+  .mod-table tbody tr:hover { background: #f8fafc; }
+  .mod-table tbody tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-ok { background: #dcfce7; color: #166534; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-err { background: #fee2e2; color: #991b1b; }
+  .badge-info { background: #dbeafe; color: #1e40af; }
+  .badge-neutral { background: #f1f5f9; color: #475569; }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .progress-label { font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+  .mod-empty {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    color: #94a3b8;
+  }
+  .mod-empty i { font-size: 40px; margin-bottom: 10px; }
+  .mod-empty p { margin: 0; font-size: 15px; }
+  .mod-empty.show { display: flex; }
+</style>
+
+<script>
+  window.indicadores_init = function() {
+    loadIndicadores();
+  };
+
+  function loadIndicadores() {
+    ui_showLoading("Cargando indicadores...");
+    google.script.run
+      .withSuccessHandler(res => {
+        ui_hideLoading();
+        if (res && res.success) {
+          window._indicadoresData = res.data || [];
+          indicadores_renderTable(window._indicadoresData);
+        } else {
+          ui_showError("Error al cargar indicadores");
+        }
+      })
+      .withFailureHandler(err => {
+        ui_hideLoading();
+        console.error("Error Indicadores:", err);
+      })
+      .indicadores_list();
+  }
+
+  window.indicadores_renderTable = function(data) {
+    const tbody = document.getElementById('indicadoresBody');
+    const empty = document.getElementById('indicadoresEmpty');
+    const count = document.getElementById('indicadoresCount');
+
+    count.textContent = data.length + ' registros';
+
+    if (!data.length) {
+      tbody.innerHTML = '';
+      empty.classList.add('show');
+      return;
+    }
+    empty.classList.remove('show');
+
+    tbody.innerHTML = data.map(r => {
+      const avance = parseFloat(r.avance) || 0;
+      const pct = Math.min(Math.max(avance, 0), 100);
+      const barColor = pct >= 80 ? '#22c55e' : pct >= 50 ? '#eab308' : '#ef4444';
+      const estadoClass = {
+        'completado': 'badge-ok', 'completo': 'badge-ok', 'ok': 'badge-ok',
+        'en proceso': 'badge-warn', 'proceso': 'badge-warn', 'pendiente': 'badge-warn',
+        'no iniciado': 'badge-err'
+      }[String(r.estado || '').toLowerCase().trim()] || 'badge-info';
+
+      return `<tr>
+        <td><strong>${esc(r.nombre || '')}</strong></td>
+        <td>${esc(r.area || '')}</td>
+        <td><span class="badge badge-neutral">${esc(r.codAei || r.codaei || '')}</span></td>
+        <td>${esc(r.metaAnual || r.metaanual || '')}</td>
+        <td>${esc(r.resultadoSemestre || r.resultadosemestre || '')}</td>
+        <td>
+          <div class="progress-bar">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${pct}%;background:${barColor}"></div>
+            </div>
+            <span class="progress-label" style="color:${barColor}">${pct}%</span>
+          </div>
+        </td>
+        <td><span class="badge ${estadoClass}">${esc(r.estado || '')}</span></td>
+        <td>${esc(r.responsable || '')}</td>
+        <td>${esc(r.fuente || '')}</td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.indicadores_filterTable = function() {
+    const q = document.getElementById('indicadoresSearch').value.toLowerCase().trim();
+    const data = window._indicadoresData || [];
+    if (!q) return indicadores_renderTable(data);
+    const filtered = data.filter(r =>
+      String(r.nombre || '').toLowerCase().includes(q) ||
+      String(r.area || '').toLowerCase().includes(q) ||
+      String(r.responsable || '').toLowerCase().includes(q) ||
+      String(r.codAei || r.codaei || '').toLowerCase().includes(q)
+    );
+    indicadores_renderTable(filtered);
+  };
+
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, function(m) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });}
+</script>

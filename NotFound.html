@@ -1,23 +1,5 @@
-<div id="notfound_root">
-    <style>
-        .nf-container { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 80px 20px; text-align: center; animation: fadeIn 0.4s ease;
-        }
-        .nf-icon { font-size: 80px; color: #cbd5e1; margin-bottom: 30px; }
-        .nf-title { font-size: 32px; font-weight: 950; color: #0f172a; margin: 0 0 12px; letter-spacing: -1px; }
-        .nf-text { font-size: 16px; color: #64748b; margin: 0 0 40px; font-weight: 500; max-width: 400px; line-height: 1.6; }
-    </style>
-
-    <div class="nf-container">
-        <div class="nf-icon">
-            <i class="fa-solid fa-compass-drafting"></i>
-        </div>
-        <h1 class="nf-title">404 - Página no encontrada</h1>
-        <p class="nf-text">Lo sentimos, la sección que intentas consultar no existe o ha sido movida temporalmente.</p>
-        
-        <button class="btn-app" onclick="ui_navigate('home')">
-            <i class="fa-solid fa-house mr-2"></i> Volver al Inicio
-        </button>
-    </div>
+<div class="card">
+  <h2>404 - No encontrado</h2>
+  <p>La página solicitada no existe.</p>
+  <a href="<?= appUrl ?>?page=home" target="_top">Volver al inicio</a>
 </div>

@@ -9,14 +9,12 @@ const APP_CONFIG = {
   SPREADSHEET_ID: '1OpRmcCY4BEN8KeJUPiF1N5Uzex7I3OrR0EJesqfZGo0',
   TIMEZONE: "America/Lima",
 
-  // 2. Nombres de Hojas (Core + Negocio)
+  // 2. Nombres de Hojas de Sistema (Permisos y Contenido)
   SHEETS: {
-    // Sistema
-    USUARIOS: 'usuarios',
-    PAGINAS: 'Paginas',
-    ROLES: "Roles", // Requerido por Core v2
-    BANNER_HOME: "banner_home", // Requerido por Core v2
-    
+    USUARIOS: "Usuarios",
+    PAGINAS: "paginas",
+    ROLES: "Roles",
+    BANNER_HOME: "banner_home",
     // Negocio (Seguimineto)
     INDICADORES: 'Indicadores',
     ACTIVIDADES: 'Actividades',
@@ -28,10 +26,59 @@ const APP_CONFIG = {
     VINCULACION: 'Vinculacion'
   },
 
-  // 3. Branding y Seguridad
-  NAME: 'Sistema de Seguimiento',
+  // 3. Definición de Columnas por Módulo
+  COLUMNS: {
+    USUARIOS: [
+      'Email', 'Nombre', 'Apellido', 'Rol', 'Estado'
+    ],
+    PAGINAS: [
+      'titulo', 'url', 'activo', 'rol', 'padre'
+    ],
+    ROLES: [
+      'rol', 'descripcion'
+    ]
+  },
+
+  // 4. Schema de Hojas de Negocio
+  SCHEMA: [
+    {
+      name: APP_CONFIG.SHEETS.INDICADORES,
+      headers: ['id', 'nombre', 'area', 'codAei', 'metaAnual', 'resultadoSemestre', 'avance', 'estado', 'responsable', 'fuente', 'detallesfuente', 'enlace', 'fechaCreacion']
+    },
+    {
+      name: APP_CONFIG.SHEETS.ACTIVIDADES,
+      headers: ['id', 'titulo', 'area', 'codAei', 'descripcion', 'impacto', 'estado', 'imagen', 'fechaCreacion']
+    },
+    {
+      name: APP_CONFIG.SHEETS.RIESGOS,
+      headers: ['id', 'riesgo', 'area', 'codAei', 'causa', 'impacto', 'prioridad', 'accion', 'estado', 'fechaObjetivo', 'fechaCreacion']
+    },
+    {
+      name: APP_CONFIG.SHEETS.CAPACITACIONES,
+      headers: ['id', 'nombre', 'area', 'codAei', 'fecha', 'modalidad', 'participantes', 'progresoEvidencia', 'estado', 'fechaCreacion']
+    },
+    {
+      name: APP_CONFIG.SHEETS.REVISIONES,
+      headers: ['timestamp', 'envioId', 'facultad', 'revisorEmail', 'decision', 'comentarios']
+    },
+    {
+      name: APP_CONFIG.SHEETS.AREAS,
+      headers: ['area', 'descripcion', 'dependencia']
+    },
+    {
+      name: APP_CONFIG.SHEETS.PEI,
+      headers: ['Código', 'Descripción', 'Nombre del indicador 1/', 'Logro Alcanzado 2025 2/', 'Medio de Verificación 3/']
+    },
+    {
+      name: APP_CONFIG.SHEETS.VINCULACION,
+      headers: ['area', 'codAei']
+    }
+  ],
+
+  // 5. Branding y Seguridad
+  NAME: 'Central de Informes',
   LOGO: 'https://i.postimg.cc/RVgcXF3f/logo_uac_blanco.png',
   LOGIN_BG: 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg',
   DOMAIN: 'uandina.edu.pe',
-  VERSION: '2.2.0' 
+  VERSION: '2.4.7'
 };
