@@ -39,46 +39,45 @@ const APP_CONFIG = {
     ]
   },
 
-  // 4. Schema de Hojas de Negocio
-  SCHEMA: [
-    {
-      name: APP_CONFIG.SHEETS.INDICADORES,
-      headers: ['id', 'nombre', 'area', 'codAei', 'metaAnual', 'resultadoSemestre', 'avance', 'estado', 'responsable', 'fuente', 'detallesfuente', 'enlace', 'fechaCreacion']
-    },
-    {
-      name: APP_CONFIG.SHEETS.ACTIVIDADES,
-      headers: ['id', 'titulo', 'area', 'codAei', 'descripcion', 'impacto', 'estado', 'imagen', 'fechaCreacion']
-    },
-    {
-      name: APP_CONFIG.SHEETS.RIESGOS,
-      headers: ['id', 'riesgo', 'area', 'codAei', 'causa', 'impacto', 'prioridad', 'accion', 'estado', 'fechaObjetivo', 'fechaCreacion']
-    },
-    {
-      name: APP_CONFIG.SHEETS.CAPACITACIONES,
-      headers: ['id', 'nombre', 'area', 'codAei', 'fecha', 'modalidad', 'participantes', 'progresoEvidencia', 'estado', 'fechaCreacion']
-    },
-    {
-      name: APP_CONFIG.SHEETS.REVISIONES,
-      headers: ['timestamp', 'envioId', 'facultad', 'revisorEmail', 'decision', 'comentarios']
-    },
-    {
-      name: APP_CONFIG.SHEETS.AREAS,
-      headers: ['area', 'descripcion', 'dependencia']
-    },
-    {
-      name: APP_CONFIG.SHEETS.PEI,
-      headers: ['Código', 'Descripción', 'Nombre del indicador 1/', 'Logro Alcanzado 2025 2/', 'Medio de Verificación 3/']
-    },
-    {
-      name: APP_CONFIG.SHEETS.VINCULACION,
-      headers: ['area', 'codAei']
-    }
-  ],
-
-  // 5. Branding y Seguridad
+  // 4. Branding y Seguridad
   NAME: 'Central de Informes',
   LOGO: 'https://i.postimg.cc/RVgcXF3f/logo_uac_blanco.png',
   LOGIN_BG: 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg',
   DOMAIN: 'uandina.edu.pe',
   VERSION: '2.4.7'
 };
+
+const SCHEMA = [
+  {
+    name: APP_CONFIG.SHEETS.INDICADORES,
+    headers: ['id', 'nombre', 'area', 'codAei', 'metaAnual', 'resultadoSemestre', 'avance', 'estado', 'responsable', 'fuente', 'detallesfuente', 'enlace', 'fechaCreacion']
+  },
+  {
+    name: APP_CONFIG.SHEETS.ACTIVIDADES,
+    headers: ['id', 'titulo', 'area', 'codAei', 'descripcion', 'impacto', 'estado', 'imagen', 'fechaCreacion']
+  },
+  {
+    name: APP_CONFIG.SHEETS.RIESGOS,
+    headers: ['id', 'riesgo', 'area', 'codAei', 'causa', 'impacto', 'prioridad', 'accion', 'estado', 'fechaObjetivo', 'fechaCreacion']
+  },
+  {
+    name: APP_CONFIG.SHEETS.CAPACITACIONES,
+    headers: ['id', 'nombre', 'area', 'codAei', 'fecha', 'modalidad', 'participantes', 'progresoEvidencia', 'estado', 'fechaCreacion']
+  },
+  {
+    name: APP_CONFIG.SHEETS.REVISIONES,
+    headers: ['timestamp', 'envioId', 'facultad', 'revisorEmail', 'decision', 'comentarios']
+  },
+  {
+    name: APP_CONFIG.SHEETS.AREAS,
+    headers: ['area', 'descripcion', 'dependencia']
+  },
+  {
+    name: APP_CONFIG.SHEETS.PEI,
+    headers: ['Código', 'Descripción', 'Nombre del indicador 1/', 'Logro Alcanzado 2025 2/', 'Medio de Verificación 3/']
+  },
+  {
+    name: APP_CONFIG.SHEETS.VINCULACION,
+    headers: ['area', 'codAei']
+  }
+];
