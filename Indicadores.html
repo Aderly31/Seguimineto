@@ -173,10 +173,8 @@
   };
 
   function loadIndicadores() {
-    ui_showLoading("Cargando indicadores...");
     google.script.run
       .withSuccessHandler(res => {
-        ui_hideLoading();
         if (res && res.success) {
           window._indicadoresData = res.data || [];
           indicadores_renderTable(window._indicadoresData);
@@ -185,7 +183,6 @@
         }
       })
       .withFailureHandler(err => {
-        ui_hideLoading();
         console.error("Error Indicadores:", err);
       })
       .indicadores_list();

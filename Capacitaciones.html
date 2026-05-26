@@ -152,10 +152,8 @@
   };
 
   function loadCapacitaciones() {
-    ui_showLoading("Cargando capacitaciones...");
     google.script.run
       .withSuccessHandler(res => {
-        ui_hideLoading();
         if (res && res.success) {
           window._capacitacionesData = res.data || [];
           capacitaciones_renderTable(window._capacitacionesData);
@@ -164,7 +162,6 @@
         }
       })
       .withFailureHandler(err => {
-        ui_hideLoading();
         console.error("Error Capacitaciones:", err);
       })
       .capacitaciones_list();

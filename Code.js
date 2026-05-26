@@ -1,5 +1,116 @@
 /**
  * ===============================================================
+ * 1. SHEET SERVICE (ORM sobre Google Sheets)
+ * ===============================================================
+ */
+const SheetService = {
+  getSheet_(name) {
+    const id = APP_CONFIG.SPREADSHEET_ID;
+    return SpreadsheetApp.openById(id).getSheetByName(name);
+  },
+
+  readObjects(sheetName) {
+    const sheet = this.getSheet_(sheetName);
+    if (!sheet) return [];
+    const data = sheet.getDataRange().getValues();
+    if (!data || data.length < 2) return [];
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    const norm = h => String(h).trim().toLowerCase()
+      .replace(/[áäàâã]/g,'a').replace(/[éëèêẽ]/g,'e')
+      .replace(/[íïìîĩ]/g,'i').replace(/[óöòôõ]/g,'o')
+      .replace(/[úüùûũ]/g,'u').replace(/[ñ]/g,'n')
+      .replace(/[ç]/g,'c')
+      .replace(/[^a-z0-9_]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+
+    return rows.map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        const key = norm(h) || 'col' + i;
+        obj[key] = row[i];
+      });
+      return obj;
+    }).filter(r => Object.values(r).some(v => String(v || '').trim() !== ''));
+  },
+
+  findUserByEmail(email) {
+    const data = this.readObjects(APP_CONFIG.SHEETS.USUARIOS);
+    const user = data.find(r => {
+      const e = String(r.email || r.Email || '').toLowerCase().trim();
+      return e === String(email).toLowerCase().trim();
+    });
+    if (!user) return null;
+    return {
+      email: user.email || user.Email || '',
+      name: user.name || user.Name || user.nombre || user.Nombre || '',
+      nombre: user.nombre || user.Nombre || user.name || user.Name || '',
+      apellido: user.apellido || user.Apellido || '',
+      rol: user.rol || user.Rol || '',
+      area: user.area || user.Area || '',
+      isActive: String(user.estado || user.Estado || '').toLowerCase() !== 'inactivo'
+    };
+  },
+
+  getRoutesForRole(rol) {
+    const paginas = this.readObjects(APP_CONFIG.SHEETS.PAGINAS);
+    const userRol = String(rol || '').toLowerCase().trim();
+
+    const routes = {};
+    const children = {};
+
+    paginas.forEach(p => {
+      const activo = String(p.activo || 'si').toLowerCase().trim();
+      if (activo === 'no' || activo === 'false' || activo === '0') return;
+
+      const pRol = String(p.rol || '').toLowerCase().trim();
+      if (pRol !== '' && pRol !== userRol) return;
+
+      const key = String(p.url || '').toLowerCase().trim();
+      if (!key) return;
+
+      const title = p.titulo || key;
+      const parent = String(p.padre || '').toLowerCase().trim();
+
+      routes[key] = { title, url: key };
+
+      if (parent) {
+        if (!children[parent]) children[parent] = [];
+        children[parent].push({ urlKey: key, title, nombre: title, children: [] });
+      }
+    });
+
+    const menuTree = [];
+    const added = new Set();
+
+    paginas.forEach(p => {
+      const activo = String(p.activo || 'si').toLowerCase().trim();
+      if (activo === 'no' || activo === 'false' || activo === '0') return;
+
+      const pRol = String(p.rol || '').toLowerCase().trim();
+      if (pRol !== '' && pRol !== userRol) return;
+
+      const key = String(p.url || '').toLowerCase().trim();
+      if (!key || added.has(key)) return;
+
+      const parent = String(p.padre || '').toLowerCase().trim();
+      if (!parent) {
+        menuTree.push({
+          urlKey: key,
+          title: p.titulo || key,
+          nombre: p.titulo || key,
+          children: children[key] || []
+        });
+        added.add(key);
+      }
+    });
+
+    return { routes, menuTree };
+  }
+};
+
+/**
+ * ===============================================================
  * 2. FUNCIONES DE ARRANQUE (WEB APP)
  * ===============================================================
  */

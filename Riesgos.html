@@ -154,10 +154,8 @@
   };
 
   function loadRiesgos() {
-    ui_showLoading("Cargando riesgos...");
     google.script.run
       .withSuccessHandler(res => {
-        ui_hideLoading();
         if (res && res.success) {
           window._riesgosData = res.data || [];
           riesgos_renderTable(window._riesgosData);
@@ -166,7 +164,6 @@
         }
       })
       .withFailureHandler(err => {
-        ui_hideLoading();
         console.error("Error Riesgos:", err);
       })
       .riesgos_list();

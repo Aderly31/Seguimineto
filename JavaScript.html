@@ -22,15 +22,18 @@
             }
         });
 
-        ui_showLoading("Actualizando sistema...");
+        const initLoader = document.getElementById('loadingOverlay');
+        if (initLoader) initLoader.classList.add('active');
         initPopover();
         
         // Limpiar caché en servidor y luego obtener permisos
         google.script.run.withSuccessHandler(() => {
             google.script.run.withSuccessHandler(data => {
-                ui_hideLoading();
                 window.AppState.session = data;
                 
+                const initLoader = document.getElementById('loadingOverlay');
+                if (initLoader) initLoader.classList.remove('active');
+
                 if (data.access) {
                     renderDynamicSidebar(data.menu);
                     navTo('home');
@@ -47,10 +50,27 @@
     /**
      * RENDERIZADO DE MENÚ PREMIUM (JERÁRQUICO)
      */
+    const DEFAULT_MENU = [
+        { urlKey: 'home', title: 'Inicio', icon: 'fa-house', children: [] },
+        { urlKey: 'indicadores', title: 'Indicadores', icon: 'fa-chart-simple', children: [] },
+        { urlKey: 'actividades', title: 'Actividades', icon: 'fa-list-check', children: [] },
+        { urlKey: 'riesgos', title: 'Riesgos', icon: 'fa-triangle-exclamation', children: [] },
+        { urlKey: 'capacitaciones', title: 'Capacitaciones', icon: 'fa-chalkboard-user', children: [] }
+    ];
+
     function renderDynamicSidebar(menuTree) {
         const menuRoot = document.getElementById('menu');
         if (!menuRoot) return;
         menuRoot.innerHTML = '';
+
+        if (!menuTree || menuTree.length === 0) {
+            menuTree = DEFAULT_MENU;
+        } else {
+            const hasHome = menuTree.some(n => (n.urlKey || n.id) === 'home');
+            if (!hasHome) {
+                menuTree.unshift(DEFAULT_MENU[0]);
+            }
+        }
 
         menuTree.forEach(node => {
             const isParent = node.children && node.children.length > 0;
@@ -130,6 +150,10 @@
         const k = String(key || '').toLowerCase();
 
         if (k === 'home' || t.includes('inicio')) return 'fa-house';
+        if (t.includes('indicador')) return 'fa-chart-simple';
+        if (t.includes('activdad') || t.includes('actividad')) return 'fa-list-check';
+        if (t.includes('riesgo')) return 'fa-triangle-exclamation';
+        if (t.includes('capacitacion') || t.includes('capacitación')) return 'fa-chalkboard-user';
         if (t.includes('usuario')) return 'fa-user-gear';
         if (t.includes('admisi')) return 'fa-id-card';
         if (t.includes('pregrado')) return 'fa-graduation-cap';
@@ -220,12 +244,8 @@
         }
 
         // 3. Si no hay nada en caché, cargar del servidor (Red)
-        const loader = document.getElementById('loadingOverlay');
-        if (loader) loader.classList.add('active');
-        
         google.script.run
             .withSuccessHandler(res => {
-                if (loader) loader.classList.remove('active');
                 if (!res || !res.success) return ui_showError(res?.message || "Error.");
 
                 const container = document.getElementById('mainContent');
@@ -240,12 +260,10 @@
                 localStorage.setItem('CORE_CACHE_' + key, res.html);
                 localStorage.setItem('CORE_VER', appVer);
 
-                // ✅ CORREGIDO: ejecutar scripts ANTES de switchView para que _init esté definido
                 executeScripts(newView);
                 switchView(key, newView, linkElement, res.title);
             })
             .withFailureHandler(err => {
-                if (loader) loader.classList.remove('active');
                 ui_showError("Sin conexión.");
             })
             .getPageData(key);

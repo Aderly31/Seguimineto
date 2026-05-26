@@ -29,7 +29,7 @@ const APP_CONFIG = {
   // 3. Definición de Columnas por Módulo
   COLUMNS: {
     USUARIOS: [
-      'Email', 'Nombre', 'Apellido', 'Rol', 'Estado'
+      'email', 'name', 'nombre', 'apellido', 'rol', 'area', 'estado'
     ],
     PAGINAS: [
       'titulo', 'url', 'activo', 'rol', 'padre'
@@ -40,11 +40,11 @@ const APP_CONFIG = {
   },
 
   // 4. Branding y Seguridad
-  NAME: 'Central de Informes',
+  NAME: 'Seguimiento',
   LOGO: 'https://i.postimg.cc/RVgcXF3f/logo_uac_blanco.png',
   LOGIN_BG: 'https://i.postimg.cc/t4RzjJzc/UAC-frontis.jpg',
   DOMAIN: 'uandina.edu.pe',
-  VERSION: '2.4.7'
+  VERSION: '2.5.0'
 };
 
 const SCHEMA = [

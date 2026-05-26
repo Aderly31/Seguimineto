@@ -149,10 +149,8 @@
   };
 
   function loadActividades() {
-    ui_showLoading("Cargando actividades...");
     google.script.run
       .withSuccessHandler(res => {
-        ui_hideLoading();
         if (res && res.success) {
           window._actividadesData = res.data || [];
           actividades_renderTable(window._actividadesData);
@@ -161,7 +159,6 @@
         }
       })
       .withFailureHandler(err => {
-        ui_hideLoading();
         console.error("Error Actividades:", err);
       })
       .actividades_list();
