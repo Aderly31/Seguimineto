@@ -15,7 +15,7 @@ const APP_CONFIG = {
     PAGINAS: "paginas",
     ROLES: "Roles",
     BANNER_HOME: "banner_home",
-    // Negocio (Seguimineto)
+    // Negocio (Seguimiento)
     INDICADORES: 'Indicadores',
     ACTIVIDADES: 'Actividades',
     RIESGOS: 'Riesgos',

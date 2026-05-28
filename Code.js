@@ -126,7 +126,17 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // 2. Validación de Sesión (Gatekeeper)
+  // 2. Ruta de No Autorizado (sin validar sesión para evitar loop)
+  if (page === 'no-access' || page === 'no-autorizado') {
+    const t = HtmlService.createTemplateFromFile('NoAutorizado');
+    t.config = APP_CONFIG;
+    t.message = 'No tienes permisos para acceder al sistema o tu cuenta está inactiva. Contacta al administrador.';
+    return t.evaluate()
+      .setTitle('Acceso Denegado - ' + APP_CONFIG.NAME)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // 3. Validación de Sesión (Gatekeeper)
   const session = Auth.getSession();
   
   if (!session) {
@@ -137,7 +147,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // 3. Carga de Aplicación Principal
+  // 4. Carga de Aplicación Principal
   const template = HtmlService.createTemplateFromFile('Main');
   template.config = APP_CONFIG;
   template.session = session;
@@ -153,7 +163,8 @@ function doGet(e) {
  */
 function include(filename) {
   try {
-    const template = HtmlService.createTemplateFromFile(filename);
+    const safeName = String(filename).replace(/[^a-zA-Z0-9_\-]/g, '');
+    const template = HtmlService.createTemplateFromFile(safeName);
     template.config = APP_CONFIG;
     // Pasar sesión si existe para que los módulos puedan usarla
     try { template.session = Auth.getSession(); } catch(e){}
@@ -223,7 +234,7 @@ function getAppPermissions() {
       return { access: false, email: userEmail };
     }
 
-    const { routes, menuTree } = SheetService.getRoutesForRole(user.rol);
+    const { routes, menuTree } = SheetService.getRoutesForRole(user.rol || 'invitado');
 
     const result = {
       access: true,

@@ -1,462 +1,470 @@
 <script>
-    /**
-     * ===============================================================
-     * NÚCLEO LÓGICO SPA PRO + UI PREMIUM (Core v2)
-     * ===============================================================
-     */
-    window.AppState = {
-        session: null,
-        currentView: 'view-home',
-        modules: {}, // Caché de vistas cargadas
-        pop: { el: null, title: null, list: null, hideTimer: null, isOver: false }
-    };
+  /**
+  * ===============================================================
+  * NÚCLEO LÓGICO SPA PRO + UI PREMIUM (Core v2)
+  * ===============================================================
+  */
+  window.AppState = {
+    session: null,
+    currentView: 'view-home',
+    modules: {}, // Caché de vistas cargadas
+    pop: { el: null, title: null, list: null, hideTimer: null, isOver: false }
+  };
 
-    /**
-     * CARGA INICIAL
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-        // LIMPIEZA DE CACHÉ EN CADA RECARGA (Solicitado)
-        Object.keys(localStorage).forEach(k => {
-            if (k.startsWith('CORE_CACHE_') || k.startsWith('CORE_VER')) {
-                localStorage.removeItem(k);
-            }
-        });
-
-        const initLoader = document.getElementById('loadingOverlay');
-        if (initLoader) initLoader.classList.add('active');
-        initPopover();
-        
-        // Limpiar caché en servidor y luego obtener permisos
-        google.script.run.withSuccessHandler(() => {
-            google.script.run.withSuccessHandler(data => {
-                window.AppState.session = data;
-                
-                const initLoader = document.getElementById('loadingOverlay');
-                if (initLoader) initLoader.classList.remove('active');
-
-                if (data.access) {
-                    renderDynamicSidebar(data.menu);
-                    navTo('home');
-                    setTimeout(() => preloadAllModules(data.menu), 2000);
-                } else {
-                    window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>?page=no-access";
-                }
-            })
-            .withFailureHandler(err => ui_showError("Error de conexión: " + err))
-            .getAppPermissions();
-        }).clearUserCache();
+  /**
+  * CARGA INICIAL
+  */
+  document.addEventListener('DOMContentLoaded', () => {
+    // LIMPIEZA DE CACHÉ EN CADA RECARGA (Solicitado)
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('CORE_CACHE_') || k.startsWith('CORE_VER')) {
+        localStorage.removeItem(k);
+      }
     });
 
-    /**
-     * RENDERIZADO DE MENÚ PREMIUM (JERÁRQUICO)
-     */
-    const DEFAULT_MENU = [
-        { urlKey: 'home', title: 'Inicio', icon: 'fa-house', children: [] },
-        { urlKey: 'indicadores', title: 'Indicadores', icon: 'fa-chart-simple', children: [] },
-        { urlKey: 'actividades', title: 'Actividades', icon: 'fa-list-check', children: [] },
-        { urlKey: 'riesgos', title: 'Riesgos', icon: 'fa-triangle-exclamation', children: [] },
-        { urlKey: 'capacitaciones', title: 'Capacitaciones', icon: 'fa-chalkboard-user', children: [] }
-    ];
+    const initLoader = document.getElementById('loadingOverlay');
+    if (initLoader) initLoader.classList.add('active');
+    initPopover();
+    
+    // Limpiar caché en servidor y luego obtener permisos
+    google.script.run.withSuccessHandler(() => {
+      google.script.run.withSuccessHandler(data => {
+        window.AppState.session = data;
+        
+        const initLoader = document.getElementById('loadingOverlay');
+        if (initLoader) initLoader.classList.remove('active');
 
-    function renderDynamicSidebar(menuTree) {
-        const menuRoot = document.getElementById('menu');
-        if (!menuRoot) return;
-        menuRoot.innerHTML = '';
-
-        if (!menuTree || menuTree.length === 0) {
-            menuTree = DEFAULT_MENU;
+        if (data.access) {
+          renderDynamicSidebar(data.menu);
+          navTo('home');
+          setTimeout(() => preloadAllModules(data.menu), 2000);
         } else {
-            const hasHome = menuTree.some(n => (n.urlKey || n.id) === 'home');
-            if (!hasHome) {
-                menuTree.unshift(DEFAULT_MENU[0]);
-            }
+          window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>?page=no-access";
         }
+      })
+      .withFailureHandler(err => ui_showError("Error de conexión: " + err))
+      .getAppPermissions();
+    }).clearUserCache();
+  });
 
-        menuTree.forEach(node => {
-            const isParent = node.children && node.children.length > 0;
-            const urlKey = node.urlKey || node.id;
-            const title = node.title || node.nombre;
-            const iconClass = ui_getIcon(title, urlKey, node.icon);
+  /**
+  * RENDERIZADO DE MENÚ PREMIUM (JERÁRQUICO)
+  */
+  const DEFAULT_MENU = [
+    { urlKey: 'home', title: 'Inicio', icon: 'fa-house', children: [] },
+    { urlKey: 'indicadores', title: 'Indicadores', icon: 'fa-chart-simple', children: [] },
+    { urlKey: 'actividades', title: 'Actividades', icon: 'fa-list-check', children: [] },
+    { urlKey: 'riesgos', title: 'Riesgos', icon: 'fa-triangle-exclamation', children: [] },
+    { urlKey: 'capacitaciones', title: 'Capacitaciones', icon: 'fa-chalkboard-user', children: [] }
+  ];
 
-            if (isParent) {
-                // Estructura de Acordeón (Carpeta)
-                const item = document.createElement('div');
-                item.className = 'menu-item';
-                item.setAttribute('data-parent', urlKey);
-                item.setAttribute('data-title', title);
+  function renderDynamicSidebar(menuTree) {
+    const menuRoot = document.getElementById('menu');
+    if (!menuRoot) return;
+    menuRoot.innerHTML = '';
 
-                item.innerHTML = `
-                    <button class="menu-btn" type="button" 
-                            data-kind="parent" data-key="${urlKey}" data-title="${title}"
-                            onmouseenter="onMenuHoverEnter(event)" onmouseleave="onMenuHoverLeave(event)"
-                            onclick="toggleAccordion('${urlKey}'); navTo('${urlKey}', this)">
-                        <div class="menu-left">
-                            <i class="fa-solid ${iconClass}"></i>
-                            <span class="menu-text">${title}</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down chev"></i>
-                    </button>
-                    <div class="submenu"><div class="submenu-inner"></div></div>
-                `;
-                item.setAttribute('data-kind', 'parent');
+    if (!menuTree || menuTree.length === 0) {
+      menuTree = DEFAULT_MENU;
+    } else {
+      const hasHome = menuTree.some(n => (n.urlKey || n.id) === 'home');
+      if (!hasHome) {
+        menuTree.unshift(DEFAULT_MENU[0]);
+      }
+    }
 
-                const submenuInner = item.querySelector('.submenu-inner');
-                node.children.forEach(ch => {
-                    const chKey = ch.urlKey || ch.id;
-                    const chTitle = ch.title || ch.nombre;
-                    const chIcon = ui_getIcon(chTitle, chKey, ch.icon);
-                    const a = document.createElement('a');
-                    a.href = "javascript:void(0)";
-                    a.setAttribute('data-key', chKey);
-                    a.setAttribute('data-title', chTitle);
-                    a.setAttribute('data-kind', 'leaf');
-                    a.onclick = (e) => navTo(chKey, a);
-                    a.innerHTML = `<i class="fa-solid ${chIcon}"></i> <span class="menu-text">${chTitle}</span>`;
-                    submenuInner.appendChild(a);
-                });
-                menuRoot.appendChild(item);
-            } else {
-                // Enlace Directo
-                const a = document.createElement('a');
-                a.className = 'menu-link';
-                a.href = "javascript:void(0)";
-                a.setAttribute('data-key', urlKey);
-                a.setAttribute('data-title', title);
-                a.setAttribute('data-kind', 'leaf');
-                a.onmouseenter = onMenuHoverEnter;
-                a.onmouseleave = onMenuHoverLeave;
-                a.onclick = (e) => navTo(urlKey, a);
+    menuTree.forEach(node => {
+      const isParent = node.children && node.children.length > 0;
+      const urlKey = node.urlKey || node.id;
+      const title = node.title || node.nombre;
+      const iconClass = ui_getIcon(title, urlKey, node.icon);
 
-                a.innerHTML = `
-                    <div class="menu-left">
-                        <i class="fa-solid ${iconClass}"></i>
-                        <span class="menu-text">${title}</span>
-                    </div>
-                `;
-                menuRoot.appendChild(a);
-            }
+      if (isParent) {
+        // Estructura de Acordeón (Carpeta)
+        const item = document.createElement('div');
+        item.className = 'menu-item';
+        item.setAttribute('data-parent', urlKey);
+        item.setAttribute('data-title', title);
+
+        item.innerHTML = `
+          <button class="menu-btn" type="button" 
+              data-kind="parent" data-key="${urlKey}" data-title="${title}"
+              onmouseenter="onMenuHoverEnter(event)" onmouseleave="onMenuHoverLeave(event)"
+              onclick="toggleAccordion('${urlKey}'); navTo('${urlKey}', this)">
+            <div class="menu-left">
+              <i class="fa-solid ${iconClass}"></i>
+              <span class="menu-text">${title}</span>
+            </div>
+            <i class="fa-solid fa-chevron-down chev"></i>
+          </button>
+          <div class="submenu"><div class="submenu-inner"></div></div>
+        `;
+        item.setAttribute('data-kind', 'parent');
+
+        const submenuInner = item.querySelector('.submenu-inner');
+        node.children.forEach(ch => {
+          const chKey = ch.urlKey || ch.id;
+          const chTitle = ch.title || ch.nombre;
+          const chIcon = ui_getIcon(chTitle, chKey, ch.icon);
+          const a = document.createElement('a');
+          a.href = "javascript:void(0)";
+          a.setAttribute('data-key', chKey);
+          a.setAttribute('data-title', chTitle);
+          a.setAttribute('data-kind', 'leaf');
+          a.onclick = (e) => navTo(chKey, a);
+          a.innerHTML = `<i class="fa-solid ${chIcon}"></i> <span class="menu-text">${chTitle}</span>`;
+          submenuInner.appendChild(a);
         });
-        
-        restoreAccordions();
-    }
+        menuRoot.appendChild(item);
+      } else {
+        // Enlace Directo
+        const a = document.createElement('a');
+        a.className = 'menu-link';
+        a.href = "javascript:void(0)";
+        a.setAttribute('data-key', urlKey);
+        a.setAttribute('data-title', title);
+        a.setAttribute('data-kind', 'leaf');
+        a.onmouseenter = onMenuHoverEnter;
+        a.onmouseleave = onMenuHoverLeave;
+        a.onclick = (e) => navTo(urlKey, a);
 
-    /**
-     * MAPEADOR DE ICONOS INTELIGENTE
-     */
-    function ui_getIcon(title, key, customIcon) {
-        if (customIcon && customIcon.startsWith('fa-')) return customIcon;
-        
-        const t = String(title || '').toLowerCase();
-        const k = String(key || '').toLowerCase();
+        a.innerHTML = `
+          <div class="menu-left">
+            <i class="fa-solid ${iconClass}"></i>
+            <span class="menu-text">${title}</span>
+          </div>
+        `;
+        menuRoot.appendChild(a);
+      }
+    });
+    
+    restoreAccordions();
+  }
 
-        if (k === 'home' || t.includes('inicio')) return 'fa-house';
-        if (t.includes('indicador')) return 'fa-chart-simple';
-        if (t.includes('activdad') || t.includes('actividad')) return 'fa-list-check';
-        if (t.includes('riesgo')) return 'fa-triangle-exclamation';
-        if (t.includes('capacitacion') || t.includes('capacitación')) return 'fa-chalkboard-user';
-        if (t.includes('usuario')) return 'fa-user-gear';
-        if (t.includes('admisi')) return 'fa-id-card';
-        if (t.includes('pregrado')) return 'fa-graduation-cap';
-        if (t.includes('posgrado')) return 'fa-user-graduate';
-        if (t.includes('segunda especialidad')) return 'fa-user-md';
-        if (t.includes('externo')) return 'fa-user-tie';
-        if (t.includes('sugerencias') || t.includes('reclamo')) return 'fa-comment-dots';
-        if (t.includes('general')) return 'fa-layer-group';
-        if (t.includes('configuraci') || t.includes('ajuste')) return 'fa-gear';
-        if (t.includes('base de datos') || t.includes('bd')) return 'fa-database';
-        if (t.includes('formulario') || t.includes('registro')) return 'fa-clipboard-list';
-        
-        return customIcon || 'fa-circle-dot';
-    }
+  /**
+  * MAPEADOR DE ICONOS INTELIGENTE
+  */
+  function ui_getIcon(title, key, customIcon) {
+    if (customIcon && customIcon.startsWith('fa-')) return customIcon;
+    
+    const t = String(title || '').toLowerCase();
+    const k = String(key || '').toLowerCase();
 
-    /**
-     * PRE-CARGA DE MÓDULOS (Background)
-     */
-    function preloadAllModules(menuTree) {
-        console.log("Iniciando pre-carga de módulos...");
-        const keys = [];
-        const extractKeys = (nodes) => {
-            nodes.forEach(n => {
-                if (n.children && n.children.length > 0) extractKeys(n.children);
-                else if (n.urlKey && n.urlKey !== 'home') keys.push(n.urlKey);
-            });
-        };
-        extractKeys(menuTree);
+    if (k === 'home' || t.includes('inicio')) return 'fa-house';
+    if (t.includes('indicador')) return 'fa-chart-simple';
+    if (t.includes('actividad')) return 'fa-list-check';
+    if (t.includes('riesgo')) return 'fa-triangle-exclamation';
+    if (t.includes('capacitacion') || t.includes('capacitación')) return 'fa-chalkboard-user';
+    if (t.includes('usuario')) return 'fa-user-gear';
+    if (t.includes('admisi')) return 'fa-id-card';
+    if (t.includes('pregrado')) return 'fa-graduation-cap';
+    if (t.includes('posgrado')) return 'fa-user-graduate';
+    if (t.includes('segunda especialidad')) return 'fa-user-md';
+    if (t.includes('externo')) return 'fa-user-tie';
+    if (t.includes('sugerencias') || t.includes('reclamo')) return 'fa-comment-dots';
+    if (t.includes('general')) return 'fa-layer-group';
+    if (t.includes('configuraci') || t.includes('ajuste')) return 'fa-gear';
+    if (t.includes('base de datos') || t.includes('bd')) return 'fa-database';
+    if (t.includes('formulario') || t.includes('registro')) return 'fa-clipboard-list';
+    
+    return customIcon || 'fa-circle-dot';
+  }
 
-        keys.forEach((key, index) => {
-            setTimeout(() => {
-                const fullId = 'view-' + key;
-                if (document.getElementById(fullId)) return;
+  /**
+  * PRE-CARGA DE MÓDULOS (Background)
+  */
+  function preloadAllModules(menuTree) {
+    console.log("Iniciando pre-carga de módulos...");
+    const keys = [];
+    const extractKeys = (nodes) => {
+      nodes.forEach(n => {
+        if (n.children && n.children.length > 0) extractKeys(n.children);
+        else if (n.urlKey && n.urlKey !== 'home') keys.push(n.urlKey);
+      });
+    };
+    extractKeys(menuTree);
 
-                google.script.run.withSuccessHandler(res => {
-                    if (res && res.success && !document.getElementById(fullId)) {
-                        const container = document.getElementById('mainContent');
-                        const v = document.createElement('div');
-                        v.id = fullId;
-                        v.className = 'view-section';
-                        v.style.display = 'none';
-                        v.innerHTML = res.html;
-                        container.appendChild(v);
-                        // ✅ CORREGIDO: ejecutar scripts en preload para que los init queden definidos
-                        executeScripts(v);
-                        console.log("Módulo pre-cargado:", key);
-                    }
-                }).getPageData(key);
-            }, 500 * (index + 1));
-        });
-    }
-
-    /**
-     * NAVEGACIÓN SPA CON PERSISTENCIA EXTREMA (Disk Cache)
-     */
-    window.navTo = function(viewId, linkElement) {
-        if (!viewId) return;
-        const key = String(viewId).toLowerCase().trim();
+    keys.forEach((key, index) => {
+      setTimeout(() => {
         const fullId = 'view-' + key;
-        const appVer = "<?= config.VERSION ?>";
+        if (document.getElementById(fullId)) return;
 
-        hideSidebarMobile();
-        closePopover(true);
-
-        // 1. Mostrar localmente si ya existe en el DOM (Memoria)
-        const localView = document.getElementById(fullId);
-        if (localView) {
-            switchView(key, localView, linkElement);
-            return;
-        }
-
-        // 2. Intentar cargar desde localStorage (Disco)
-        const cachedModule = localStorage.getItem('CORE_CACHE_' + key);
-        const cachedVer = localStorage.getItem('CORE_VER');
-
-        if (cachedModule && cachedVer === appVer) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.success && !document.getElementById(fullId)) {
             const container = document.getElementById('mainContent');
             const v = document.createElement('div');
             v.id = fullId;
             v.className = 'view-section';
             v.style.display = 'none';
-            v.innerHTML = cachedModule;
+            v.innerHTML = res.html;
             container.appendChild(v);
-            // ✅ CORREGIDO: ejecutar scripts ANTES de switchView para que _init esté definido
             executeScripts(v);
-            switchView(key, v, linkElement);
-            return;
-        }
+            console.log("Módulo pre-cargado:", key);
+          }
+        })
+        .withFailureHandler(err => {
+          console.warn("Error en pre-carga de " + key + ":", err);
+        })
+        .getPageData(key);
+      }, 500 * (index + 1));
+    });
+  }
 
-        // 3. Si no hay nada en caché, cargar del servidor (Red)
-        google.script.run
-            .withSuccessHandler(res => {
-                if (!res || !res.success) return ui_showError(res?.message || "Error.");
+  /**
+  * NAVEGACIÓN SPA CON PERSISTENCIA EXTREMA (Disk Cache)
+  */
+  window.navTo = function(viewId, linkElement) {
+    if (!viewId) return;
+    const key = String(viewId).toLowerCase().trim();
+    const fullId = 'view-' + key;
+    const appVer = "<?= config.VERSION ?>";
 
-                const container = document.getElementById('mainContent');
-                const newView = document.createElement('div');
-                newView.id = fullId;
-                newView.className = 'view-section';
-                newView.style.display = 'none';
-                newView.innerHTML = res.html;
-                container.appendChild(newView);
+    hideSidebarMobile();
+    closePopover(true);
 
-                // Guardar en disco para la próxima vez
-                localStorage.setItem('CORE_CACHE_' + key, res.html);
-                localStorage.setItem('CORE_VER', appVer);
-
-                executeScripts(newView);
-                switchView(key, newView, linkElement, res.title);
-            })
-            .withFailureHandler(err => {
-                ui_showError("Sin conexión.");
-            })
-            .getPageData(key);
-    };
-
-    function switchView(key, element, link, forcedTitle) {
-        // Ocultar todas las secciones
-        document.querySelectorAll('.view-section').forEach(el => {
-            el.style.display = 'none';
-        });
-
-        // Mostrar la seleccionada
-        element.style.display = 'block';
-        window.AppState.currentView = element.id;
-
-        // Actualizar Título en Topbar
-        let title = "Inicio";
-        if (forcedTitle) {
-            title = forcedTitle;
-        } else if (link) {
-            // Limpiar iconos del texto
-            title = link.innerText.trim();
-        }
-        
-        const topTitleEl = document.getElementById('topbarTitle');
-        if (topTitleEl) topTitleEl.innerText = title;
-
-        updateMenuActiveState(key);
-
-        // Ejecutar Inicialización del Módulo (Init Pattern)
-        const initFunc = key + '_init';
-        if (typeof window[initFunc] === 'function') {
-            try {
-                window[initFunc]();
-            } catch(e) {
-                console.error("Error en init de " + key + ":", e);
-            }
-        }
-        
-        const scrollDiv = document.getElementById('contentScroll');
-        if (scrollDiv) scrollDiv.scrollTop = 0;
+    // 1. Mostrar localmente si ya existe en el DOM (Memoria)
+    const localView = document.getElementById(fullId);
+    if (localView) {
+      switchView(key, localView, linkElement);
+      return;
     }
 
-    /**
-     * LÓGICA DE UI (SIDEBAR / POPOVER)
-     */
-    function isMobile() { return window.innerWidth <= 900; }
+    // 2. Intentar cargar desde localStorage (Disco)
+    const cachedModule = localStorage.getItem('CORE_CACHE_' + key);
+    const cachedVer = localStorage.getItem('CORE_VER');
 
-    function toggleSidebar() {
-        const app = document.getElementById('appRoot');
-        const sb = document.getElementById('sidebar');
-        const ov = document.getElementById('overlay');
-
-        if (isMobile()) {
-            sb.classList.toggle('open');
-            ov.classList.toggle('show');
-        } else {
-            app.classList.toggle('sidebar-collapsed');
-            closePopover(true);
-        }
+    if (cachedModule && cachedVer === appVer) {
+      const container = document.getElementById('mainContent');
+      const v = document.createElement('div');
+      v.id = fullId;
+      v.className = 'view-section';
+      v.style.display = 'none';
+      v.innerHTML = cachedModule;
+      container.appendChild(v);
+      // ✅ CORREGIDO: ejecutar scripts ANTES de switchView para que _init esté definido
+      executeScripts(v);
+      switchView(key, v, linkElement);
+      return;
     }
 
-    function hideSidebarMobile() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('overlay').classList.remove('show');
+    // 3. Si no hay nada en caché, cargar del servidor (Red)
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res || !res.success) return ui_showError(res?.message || "Error.");
+
+        const container = document.getElementById('mainContent');
+        const newView = document.createElement('div');
+        newView.id = fullId;
+        newView.className = 'view-section';
+        newView.style.display = 'none';
+        newView.innerHTML = res.html;
+        container.appendChild(newView);
+
+        // Guardar en disco para la próxima vez
+        localStorage.setItem('CORE_CACHE_' + key, res.html);
+        localStorage.setItem('CORE_VER', appVer);
+
+        executeScripts(newView);
+        switchView(key, newView, linkElement, res.title);
+      })
+      .withFailureHandler(err => {
+        ui_showError("Sin conexión.");
+      })
+      .getPageData(key);
+  };
+
+  function switchView(key, element, link, forcedTitle) {
+    // Ocultar todas las secciones
+    document.querySelectorAll('.view-section').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // Mostrar la seleccionada
+    element.style.display = 'block';
+    window.AppState.currentView = element.id;
+
+    // Actualizar Título en Topbar
+    let title = "Inicio";
+    if (forcedTitle) {
+      title = forcedTitle;
+    } else if (link) {
+      // Limpiar iconos del texto
+      title = link.innerText.trim();
     }
-
-    function toggleAccordion(key) {
-        if (document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
-        const el = document.querySelector(`.menu-item[data-parent="${key}"]`);
-        if (el) {
-            el.classList.toggle('open');
-            localStorage.setItem('core_acc_' + key, el.classList.contains('open') ? '1' : '0');
-        }
-    }
-
-    function restoreAccordions() {
-        document.querySelectorAll('.menu-item[data-parent]').forEach(el => {
-            const key = el.getAttribute('data-parent');
-            if (localStorage.getItem('core_acc_' + key) === '1') el.classList.add('open');
-        });
-    }
-
-    function filterMenu() {
-        const q = document.getElementById('menuSearch').value.toLowerCase();
-        document.querySelectorAll('.menu-link, .menu-item').forEach(el => {
-            const txt = (el.getAttribute('data-title') || el.innerText).toLowerCase();
-            const hasMatch = txt.includes(q);
-            el.style.display = hasMatch ? '' : 'none';
-            if (hasMatch && q.length > 2 && el.classList.contains('menu-item')) el.classList.add('open');
-        });
-    }
-
-    // POPOVER LOGIC
-    function initPopover() {
-        const p = window.AppState.pop;
-        p.el = document.getElementById('sbPopover');
-        p.title = document.getElementById('popTitle');
-        p.list = document.getElementById('popList');
-    }
-
-    function onMenuHoverEnter(ev) {
-        if (isMobile() || !document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
-        const target = ev.currentTarget;
-        const p = window.AppState.pop;
-
-        if (p.hideTimer) clearTimeout(p.hideTimer);
-
-        const kind = target.getAttribute('data-kind');
-        const title = target.getAttribute('data-title');
-        const key = target.getAttribute('data-key');
-
-        let html = '';
-        if (kind === 'parent') {
-            const parent = target.closest('.menu-item');
-            html = parent.querySelector('.submenu').innerHTML;
-        } else {
-            html = `<a href="javascript:void(0)" onclick="navTo('${key}')"><i class="fa-solid fa-arrow-right"></i><span>Abrir</span></a>`;
-        }
-
-        p.title.innerText = title;
-        p.list.innerHTML = html;
-        // Re-vincular clicks en el popover
-        p.list.querySelectorAll('a').forEach(a => {
-            const k = a.getAttribute('data-key') || key;
-            a.onclick = () => navTo(k, a);
-        });
-
-        p.el.style.display = 'block';
-        const r = target.getBoundingClientRect();
-        p.el.style.left = (r.right + 10) + 'px';
-        p.el.style.top = r.top + 'px';
-    }
-
-    function onMenuHoverLeave() {
-        scheduleHidePopover();
-    }
-    function popoverEnter() { window.AppState.pop.isOver = true; }
-    function popoverLeave() { window.AppState.pop.isOver = false; scheduleHidePopover(); }
     
-    function scheduleHidePopover() {
-        const p = window.AppState.pop;
-        if (p.hideTimer) clearTimeout(p.hideTimer);
-        p.hideTimer = setTimeout(() => {
-            if (!p.isOver) p.el.style.display = 'none';
-        }, 200);
+    const topTitleEl = document.getElementById('topbarTitle');
+    if (topTitleEl) topTitleEl.innerText = title;
+
+    updateMenuActiveState(key);
+
+    // Ejecutar Inicialización del Módulo (Init Pattern)
+    const initFunc = key + '_init';
+    if (typeof window[initFunc] === 'function') {
+      try {
+        window[initFunc]();
+      } catch(e) {
+        console.error("Error en init de " + key + ":", e);
+      }
+    }
+    
+    const scrollDiv = document.getElementById('contentScroll');
+    if (scrollDiv) scrollDiv.scrollTop = 0;
+  }
+
+  /**
+  * LÓGICA DE UI (SIDEBAR / POPOVER)
+  */
+  function isMobile() { return window.innerWidth <= 900; }
+
+  function toggleSidebar() {
+    const app = document.getElementById('appRoot');
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+
+    if (isMobile()) {
+      sb.classList.toggle('open');
+      ov.classList.toggle('show');
+    } else {
+      app.classList.toggle('sidebar-collapsed');
+      closePopover(true);
+    }
+  }
+
+  function hideSidebarMobile() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+  }
+
+  function toggleAccordion(key) {
+    if (document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
+    const el = document.querySelector(`.menu-item[data-parent="${key}"]`);
+    if (el) {
+      el.classList.toggle('open');
+      localStorage.setItem('core_acc_' + key, el.classList.contains('open') ? '1' : '0');
+    }
+  }
+
+  function restoreAccordions() {
+    document.querySelectorAll('.menu-item[data-parent]').forEach(el => {
+      const key = el.getAttribute('data-parent');
+      if (localStorage.getItem('core_acc_' + key) === '1') el.classList.add('open');
+    });
+  }
+
+  function filterMenu() {
+    const q = document.getElementById('menuSearch').value.toLowerCase();
+    document.querySelectorAll('.menu-link, .menu-item').forEach(el => {
+      const txt = (el.getAttribute('data-title') || el.innerText).toLowerCase();
+      const hasMatch = txt.includes(q);
+      el.style.display = hasMatch ? '' : 'none';
+      if (hasMatch && q.length > 2 && el.classList.contains('menu-item')) el.classList.add('open');
+    });
+  }
+
+  // POPOVER LOGIC
+  function initPopover() {
+    const p = window.AppState.pop;
+    p.el = document.getElementById('sbPopover');
+    p.title = document.getElementById('popTitle');
+    p.list = document.getElementById('popList');
+  }
+
+  function onMenuHoverEnter(ev) {
+    if (isMobile() || !document.getElementById('appRoot').classList.contains('sidebar-collapsed')) return;
+    const target = ev.currentTarget;
+    const p = window.AppState.pop;
+
+    if (p.hideTimer) clearTimeout(p.hideTimer);
+
+    const kind = target.getAttribute('data-kind');
+    const title = target.getAttribute('data-title');
+    const key = target.getAttribute('data-key');
+
+    let html = '';
+    if (kind === 'parent') {
+      const parent = target.closest('.menu-item');
+      html = parent.querySelector('.submenu').innerHTML;
+    } else {
+      html = `<a href="javascript:void(0)" onclick="navTo('${key}')"><i class="fa-solid fa-arrow-right"></i><span>Abrir</span></a>`;
     }
 
-    function closePopover(force) {
-        if (force) window.AppState.pop.el.style.display = 'none';
-    }
+    p.title.innerText = title;
+    p.list.innerHTML = html;
+    // Re-vincular clicks en el popover
+    p.list.querySelectorAll('a').forEach(a => {
+      const k = a.getAttribute('data-key') || key;
+      a.onclick = () => navTo(k, a);
+    });
 
-    /**
-     * UTILIDADES
-     */
-    function executeScripts(container) {
-        container.querySelectorAll('script').forEach(old => {
-            const newS = document.createElement('script');
-            Array.from(old.attributes).forEach(a => newS.setAttribute(a.name, a.value));
-            newS.appendChild(document.createTextNode(old.innerHTML));
-            old.parentNode.replaceChild(newS, old);
-        });
-    }
+    p.el.style.display = 'block';
+    const r = target.getBoundingClientRect();
+    p.el.style.left = (r.right + 10) + 'px';
+    p.el.style.top = r.top + 'px';
+  }
 
-    function updateMenuActiveState(key) {
-        document.querySelectorAll('.menu-link, .submenu a').forEach(el => el.classList.remove('active'));
-        const target = document.querySelector(`[data-key="${key}"]`);
-        if (target) target.classList.add('active');
-    }
+  function onMenuHoverLeave() {
+    scheduleHidePopover();
+  }
+  function popoverEnter() { window.AppState.pop.isOver = true; }
+  function popoverLeave() { window.AppState.pop.isOver = false; scheduleHidePopover(); }
+  
+  function scheduleHidePopover() {
+    const p = window.AppState.pop;
+    if (p.hideTimer) clearTimeout(p.hideTimer);
+    p.hideTimer = setTimeout(() => {
+      if (!p.isOver) p.el.style.display = 'none';
+    }, 200);
+  }
 
-    function logoutSystem() {
-        Swal.fire({
-            title: '¿Cerrar sesión?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Salir',
-            confirmButtonColor: '#00417B'
-        }).then(r => {
-            if (r.isConfirmed) {
-                google.script.run.withSuccessHandler(() => {
-                    // Limpiar caché local por seguridad
-                    Object.keys(localStorage).forEach(key => {
-                        if (key.startsWith('CORE_CACHE_')) localStorage.removeItem(key);
-                    });
-                    // Recargar URL base
-                    window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>";
-                }).auth_logout();
-            }
-        });
-    }
+  function closePopover(force) {
+    if (force) window.AppState.pop.el.style.display = 'none';
+  }
 
-    function ui_showLoading(m) { Swal.fire({ title: m, allowOutsideClick: false, didOpen: () => Swal.showLoading() }); }
-    function ui_hideLoading() { Swal.close(); }
-    function ui_showError(m) { Swal.fire({ icon: 'error', title: 'Error', text: m }); }
+  /**
+  * UTILIDADES
+  */
+  function executeScripts(container) {
+    container.querySelectorAll('script').forEach(old => {
+      const newS = document.createElement('script');
+      Array.from(old.attributes).forEach(a => newS.setAttribute(a.name, a.value));
+      newS.appendChild(document.createTextNode(old.innerHTML));
+      old.parentNode.replaceChild(newS, old);
+    });
+  }
+
+  function updateMenuActiveState(key) {
+    document.querySelectorAll('.menu-link, .submenu a').forEach(el => el.classList.remove('active'));
+    const target = document.querySelector(`[data-key="${key}"]`);
+    if (target) target.classList.add('active');
+  }
+
+  function logoutSystem() {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Salir',
+      confirmButtonColor: '#00417B'
+    }).then(r => {
+      if (r.isConfirmed) {
+        google.script.run.withSuccessHandler(() => {
+          // Limpiar caché local por seguridad
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('CORE_CACHE_')) localStorage.removeItem(key);
+          });
+          // Recargar URL base
+          window.top.location.href = "<?= ScriptApp.getService().getUrl() ?>";
+        }).auth_logout();
+      }
+    });
+  }
+
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, function(m) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });}
+
+  function ui_showLoading(m) { Swal.fire({ title: m, allowOutsideClick: false, didOpen: () => Swal.showLoading() }); }
+  function ui_hideLoading() { Swal.close(); }
+  function ui_showError(m) { Swal.fire({ icon: 'error', title: 'Error', text: m }); }
 
 </script>

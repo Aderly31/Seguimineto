@@ -1,8 +1,8 @@
 function capacitaciones_list() {
-  const session = Auth.getSession();
-  if (!session) throw new Error("Sesión no válida");
-
   try {
+    const session = Auth.getSession();
+    if (!session) return { success: false, message: "Sesión no válida" };
+
     const data = SheetService.readObjects(APP_CONFIG.SHEETS.CAPACITACIONES);
     return { success: true, data: data, total: data.length };
   } catch (e) {

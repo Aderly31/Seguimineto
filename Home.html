@@ -332,6 +332,7 @@
       })
       .withFailureHandler(err => {
         console.error("Error Home:", err);
+        ui_showError("Error al cargar datos del dashboard");
       })
       .home_getDashboardData();
   }
@@ -355,12 +356,16 @@
   }
 
   function updateUI() {
-    updateStats();
-    destroyAllCharts();
-    renderModuleChart();
-    renderStatesChart();
-    renderAreasChart();
-    renderAvanceChart();
+    try {
+      updateStats();
+      destroyAllCharts();
+      renderModuleChart();
+      renderStatesChart();
+      renderAreasChart();
+      renderAvanceChart();
+    } catch (e) {
+      console.error("Error actualizando dashboard:", e);
+    }
   }
 
   function updateStats() {

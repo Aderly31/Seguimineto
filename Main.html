@@ -2,101 +2,101 @@
 <html>
 
 <head>
-    <base target="_top">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <?!= include('Estilos'); ?>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <?!= include('Estilos'); ?>
 </head>
 
 <body>
-    <!-- Overlay para cerrar sidebar en móvil -->
-    <div class="overlay" id="overlay" onclick="hideSidebarMobile()"></div>
+  <!-- Overlay para cerrar sidebar en móvil -->
+  <div class="overlay" id="overlay" onclick="hideSidebarMobile()"></div>
 
-    <div class="app" id="appRoot">
-        <!-- BARRA LATERAL (SIDEBAR) -->
-        <aside class="sidebar" id="sidebar">
-            <div class="brand">
-                <img src="<?= config.LOGO ?>" alt="Logo">
-                <div class="brand-text">
-                    <div class="brand-title"><?= config.NAME ?></div>
-                    <div class="brand-sub">Panel Principal</div>
-                </div>
-            </div>
+  <div class="app" id="appRoot">
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img src="<?= config.LOGO ?>" alt="Logo">
+        <div class="brand-text">
+          <div class="brand-title"><?= config.NAME ?></div>
+          <div class="brand-sub">Panel Principal</div>
+        </div>
+      </div>
 
-            <div class="brand-sep" aria-hidden="true"></div>
+      <div class="brand-sep" aria-hidden="true"></div>
 
-            <!-- Acentos de color (Diseño Premium) -->
-            <div class="accents" aria-hidden="true">
-                <div class="accent-line c1"></div>
-                <div class="accent-line c2"></div>
-                <div class="accent-line c3"></div>
-                <div class="accent-line c4"></div>
-                <div class="accent-line c5"></div>
-            </div>
+      <!-- Acentos de color (Diseño Premium) -->
+      <div class="accents" aria-hidden="true">
+        <div class="accent-line c1"></div>
+        <div class="accent-line c2"></div>
+        <div class="accent-line c3"></div>
+        <div class="accent-line c4"></div>
+        <div class="accent-line c5"></div>
+      </div>
 
-            <!-- Buscador en el menú -->
-            <div class="sb-search" title="Buscar en el menú">
-                <i class="fa-solid fa-magnifying-glass" style="color:white; opacity:0.7;"></i>
-                <input id="menuSearch" placeholder="Buscar..." oninput="filterMenu()">
-            </div>
+      <!-- Buscador en el menú -->
+      <div class="sb-search" title="Buscar en el menú">
+        <i class="fa-solid fa-magnifying-glass" style="color:white; opacity:0.7;"></i>
+        <input id="menuSearch" placeholder="Buscar..." oninput="filterMenu()">
+      </div>
 
-            <!-- Contenedor del Menú Dinámico -->
-            <nav class="menu" id="menu">
-                <!-- Se inyecta dinámicamente desde JavaScript.html -->
-                <div class="text-center p-4" style="opacity:0.5; font-size:12px;">Cargando menú...</div>
-            </nav>
+      <!-- Contenedor del Menú Dinámico -->
+      <nav class="menu" id="menu">
+        <!-- Se inyecta dinámicamente desde JavaScript.html -->
+        <div class="text-center p-4" style="opacity:0.5; font-size:12px;">Cargando menú...</div>
+      </nav>
 
-            <!-- Footer del Sidebar -->
-            <div class="sidebar-footer">
-                <div>Usuario</div>
-                <strong><?= session.name ?></strong>
-                <div style="opacity:.7; font-size:10px;"><?= session.email ?></div>
-                <div style="opacity:.7; font-size:10px;">Rol: <?= session.rol ?></div>
-            </div>
-        </aside>
+      <!-- Footer del Sidebar -->
+      <div class="sidebar-footer">
+        <div>Usuario</div>
+        <strong><?= session.name ?></strong>
+        <div style="opacity:.7; font-size:10px;"><?= session.email ?></div>
+        <div style="opacity:.7; font-size:10px;">Rol: <?= session.rol ?></div>
+      </div>
+    </aside>
 
-        <!-- ÁREA PRINCIPAL -->
-        <main class="main">
-            <!-- TOPBAR -->
-            <div class="topbar">
-                <button class="btn-icon" type="button" onclick="toggleSidebar()" aria-label="Menú">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <button class="btn-icon" type="button" onclick="toggleSidebar()" aria-label="Menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
 
-                <div class="page-title" id="topbarTitle">Cargando...</div>
+        <div class="page-title" id="topbarTitle">Cargando...</div>
 
-                <button class="btn" onclick="logoutSystem()">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="d-none d-sm-inline">Salir</span>
-                </button>
-            </div>
+        <button class="btn" onclick="logoutSystem()">
+          <i class="fa-solid fa-right-from-bracket"></i> <span class="d-none d-sm-inline">Salir</span>
+        </button>
+      </div>
 
-            <!-- ÁREA DE CONTENIDO (CON SCROLL INDEPENDIENTE) -->
-            <div class="content-scroll" id="contentScroll">
-                <!-- Loader de Transición SPA -->
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="spinner"></div>
-                </div>
+      <!-- ÁREA DE CONTENIDO (CON SCROLL INDEPENDIENTE) -->
+      <div class="content-scroll" id="contentScroll">
+        <!-- Loader de Transición SPA -->
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div>
+        </div>
 
-                <!-- Contenedor de Vistas -->
-                <div class="content" id="mainContent">
-                    <!-- El contenido se inyecta vía SPA -->
-                </div>
-            </div>
-        </main>
-    </div>
+        <!-- Contenedor de Vistas -->
+        <div class="content" id="mainContent">
+          <!-- El contenido se inyecta vía SPA -->
+        </div>
+      </div>
+    </main>
+  </div>
 
-    <!-- POPOVER PARA SIDEBAR COLAPSADO -->
-    <div class="sb-popover" id="sbPopover" onmouseenter="popoverEnter()" onmouseleave="popoverLeave()">
-        <div class="pop-title" id="popTitle"></div>
-        <div class="pop-list" id="popList"></div>
-    </div>
+  <!-- POPOVER PARA SIDEBAR COLAPSADO -->
+  <div class="sb-popover" id="sbPopover" onmouseenter="popoverEnter()" onmouseleave="popoverLeave()">
+    <div class="pop-title" id="popTitle"></div>
+    <div class="pop-list" id="popList"></div>
+  </div>
 
-    <!-- Scripts Base y Motor de Navegación -->
-    <?!= include('JavaScript'); ?>
+  <!-- Scripts Base y Motor de Navegación -->
+  <?!= include('JavaScript'); ?>
 </body>
 
 </html>
